@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">intelipost_shipping_webhooks_listing.intelipost_shipping_webhooks_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>intelipost_shipping_webhooks_columns</spinner>
+        <deps>
+            <dep>intelipost_shipping_webhooks_listing.intelipost_shipping_webhooks_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="intelipost_shipping_webhooks_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="cacheRequests" xsi:type="boolean">false</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Intelipost_Shipping::webhooks</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="intelipost_shipping_webhooks_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks" />
+        <columnsControls name="columns_controls" />
+        <exportButton name="export_button" />
+        <filterSearch name="fulltext" />
+        <filters name="listing_filters" />
+        <paging name="listing_paging" />
+    </listingToolbar>
+
+    <columns name="intelipost_shipping_webhooks_columns">
+        <selectionsColumn name="ids" sortOrder="10">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </selectionsColumn>
+
+        <column name="entity_id" sortOrder="20">
+            <settings>
+                <filter>textRange</filter>
+                <sorting>desc</sorting>
+                <label translate="true">ID</label>
+            </settings>
+        </column>
+
+        <column name="order_increment_id" class="Intelipost\Shipping\Ui\Component\Listing\Column\OrderId" sortOrder="30">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <filter>text</filter>
+                <sortable>true</sortable>
+                <label translate="true">Order</label>
+            </settings>
+        </column>
+
+        <column name="status">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Status</label>
+                <resizeDefaultWidth>100</resizeDefaultWidth>
+            </settings>
+        </column>
+
+        <column name="payload">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Payload</label>
+            </settings>
+        </column>
+
+        <column name="message">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Message</label>
+                <resizeDefaultWidth>200</resizeDefaultWidth>
+            </settings>
+        </column>
+
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="1000">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Created</label>
+            </settings>
+        </column>
+    </columns>
+</listing>

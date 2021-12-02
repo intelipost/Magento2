@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!--
+/**
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Koin
+ * @package     Koin_Payment
+ *
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <!-- That table has compatibility with older Intelipost modules, that's why is text some fields -->
+    <table name="intelipost_quotes" resource="default" engine="innodb" comment="Intelipost Quote">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="quote_id" length="255" nullable="false" comment="Quote ID"/>
+        <column xsi:type="varchar" name="order_id" length="255" nullable="false" comment="Order ID"/>
+        <column xsi:type="varchar" name="order_increment_id" length="255" nullable="false" comment="Session ID"/>
+        <column xsi:type="varchar" name="carrier" length="255" nullable="false" comment="Carrier"/>
+        <column xsi:type="varchar" name="shipping_method" length="255" nullable="false" comment="Shipping Method"/>
+        <column xsi:type="text" name="products" nullable="false" comment="Products"/>
+        <column xsi:type="varchar" name="logistic_provider_name" length="255" nullable="false" comment="Logistics Provider Name"/>
+        <column xsi:type="varchar" name="description" length="255" nullable="false" comment="Description"/>
+        <column xsi:type="varchar" name="delivery_method_id" length="255" nullable="false" comment="Delivery Method ID"/>
+        <column xsi:type="varchar" name="delivery_estimate_business_days" length="255" nullable="false" comment="Delivery Estimate Business Days"/>
+        <column xsi:type="text" name="available_scheduling_dates" nullable="false" comment="Available Scheduling Dates" />
+        <column xsi:type="text" name="selected_scheduling_dates" nullable="false" comment="Selected Scheduling Dates" />
+        <column xsi:type="text" name="selected_scheduling_period" nullable="false" comment="Selected Scheduling Period" />
+        <column xsi:type="varchar" name="provider_shipping_cost" length="255" nullable="false" comment="Provider Shipping Cost"/>
+        <column xsi:type="varchar" name="final_shipping_cost" length="255" nullable="false" comment="Final Shipping Cost"/>
+        <column xsi:type="text" name="api_request" nullable="false" comment="API Request" />
+        <column xsi:type="text" name="api_response" nullable="false" comment="API Response" />
+        <column xsi:type="date" name="delivery_exact_estimated_date" nullable="false" comment="Delivery Exact Estimated Date" />
+        <column xsi:type="varchar" name="delivery_method_name" length="255" nullable="false" comment="Delivery Method Name" />
+        <column xsi:type="varchar" name="delivery_method_type" length="255" nullable="false" comment="Delivery Method Type" />
+        <column xsi:type="text" name="quote_volume" nullable="false" comment="Volume Quote Information" />
+        <column xsi:type="varchar" name="origin_zip_code" nullable="false" comment="Warehouse origin zip code" />
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated Datetime"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="INTELIPOST_SHIPPING_ORDER_ID" indexType="btree">
+            <column name="order_id"/>
+        </index>
+        <index referenceId="INTELIPOST_SHIPPING_ORDER_INCREMENT_ID" indexType="btree">
+            <column name="order_increment_id"/>
+        </index>
+        <index referenceId="INTELIPOST_SHIPPING_QUOTE_ID" indexType="btree">
+            <column name="quote_id"/>
+        </index>
+        <index referenceId="INTELIPOST_SHIPPING_SHIPPING_METHOD" indexType="btree">
+            <column name="shipping_method"/>
+        </index>
+    </table>
+
+    <table name="intelipost_invoices" resource="default" engine="innodb" comment="Intelipost Invoice">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="order_increment_id" length="255" nullable="false" comment="Order Number"/>
+        <column xsi:type="varchar" name="number" length="255" nullable="false" comment="Invoice Number"/>
+        <column xsi:type="varchar" name="series" length="255" nullable="false" comment="Order Series"/>
+        <column xsi:type="varchar" name="key" length="255" nullable="false" comment="Invoice Key"/>
+        <column xsi:type="timestamp" name="date" nullable="false" comment="Invoice Date"/>
+        <column xsi:type="decimal" name="products_value" precision="12" scale="4" nullable="false" comment="Invoice Products Value"/>
+        <column xsi:type="decimal" name="total_value" precision="12" scale="4" nullable="false" comment="Invoice Total Value"/>
+        <column xsi:type="varchar" name="cfop" length="255" nullable="false" comment="Invoice CFOP"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated Datetime"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="INTELIPOST_INVOICE_NUMBER" indexType="btree">
+            <column name="number"/>
+        </index>
+        <index referenceId="INTELIPOST_INVOICE_ORDER_INCREMENT_ID" indexType="btree">
+            <column name="order_increment_id"/>
+        </index>
+        <index referenceId="INTELIPOST_INVOICE_KEY" indexType="btree">
+            <column name="key"/>
+        </index>
+    </table>
+
+    <table name="intelipost_shipments" resource="default" engine="innodb" comment="Intelipost Shipment">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="order_increment_id" length="255" comment="Order Number"/>
+        <column xsi:type="int" name="delivery_method_id" padding="11" comment="Delivery Method ID"/>
+        <column xsi:type="int" name="delivery_estimate_business_days" padding="11" comment="Delivery Estimate Business Days" />
+        <column xsi:type="varchar" name="shipment_orders_type" length="255" comment="Shipment Orders Type" />
+        <column xsi:type="varchar" name="shipment_orders_sub_type" length="255" comment="Shipment Orders Sub Type" />
+        <column xsi:type="varchar" name="delivery_method_type" length="255" comment="Delivery Method Type" />
+        <column xsi:type="varchar" name="delivery_method_name" length="255" comment="Delivery Method Name" />
+        <column xsi:type="varchar" name="description" length="255" comment="Description" />
+        <column xsi:type="varchar" name="sales_channel" length="255" comment="Sales Channel" />
+        <column xsi:type="varchar" name="provider_shipping_costs" length="255" comment="Provider Shipping Costs" />
+        <column xsi:type="varchar" name="customer_shipping_costs" length="255" comment="Customer Shipping Costs" />
+        <column xsi:type="varchar" name="intelipost_status" length="255" comment="Status" />
+        <column xsi:type="text" name="volumes" comment="Volumes" />
+        <column xsi:type="tinyint" name="scheduled" comment="Scheduled" />
+        <column xsi:type="varchar" name="scheduling_window_start" length="255" comment="Scheduling Window Start" />
+        <column xsi:type="varchar" name="scheduling_window_end" length="255" comment="Scheduling Window End" />
+        <column xsi:type="varchar" name="tracking_code" length="255" comment="Tracking Code" />
+        <column xsi:type="varchar" name="intelipost_message" length="255" comment="Intelipost Message" />
+        <column xsi:type="varchar" name="products_ids" length="255" comment="Products Ids" />
+        <column xsi:type="timestamp" name="delivery_estimate_date_exact_iso" comment="Delivery Estimate Date Exact" />
+        <column xsi:type="timestamp" name="selected_scheduling_date" comment="Selected Scheduling Date" />
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated Datetime"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="INTELIPOST_SHIPMENT_ORDER_INCREMENT_ID" indexType="btree">
+            <column name="order_increment_id"/>
+        </index>
+    </table>
+
+    <table name="intelipost_webhooks" resource="default" engine="innodb" comment="Koin Callback">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="text" name="payload" nullable="false" comment="Payload"/>
+        <column xsi:type="varchar" name="status" length="255" nullable="false" comment="Status"/>
+        <column xsi:type="varchar" name="message" length="255" nullable="false" comment="Message"/>
+        <column xsi:type="varchar" name="order_increment_id" length="255" nullable="false" comment="Order Increment ID"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated Datetime"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="INTELIPOST_WEBHOOK_INCREMENT_ID" indexType="btree">
+            <column name="order_increment_id"/>
+        </index>
+        <index referenceId="INTELIPOST_WEBHOOK_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+
+    <table name="sales_order">
+        <column xsi:type="text" name="intelipost_quotes" nullable="true" comment="intelipost Quote"/>
+    </table>
+
+    <table name="sales_order_grid">
+        <column xsi:type="text" name="intelipost_quotes" nullable="true" comment="intelipost Quote"/>
+    </table>
+</schema>

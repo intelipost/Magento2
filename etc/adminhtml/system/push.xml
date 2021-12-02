@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="intelipost_push" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Send Orders to Intelipost</label>
+        <comment>You need to have this feature enabled on Intelipost</comment>
+        <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <label>Enabled</label>
+            <comment>If enabled it'll send order automatically to Intelipost</comment>
+            <config_path>intelipost_push/order_status/enabled</config_path>
+        </field>
+        <field id="enable_cron" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <label>Send orders to Intelipost by cron</label>
+            <config_path>intelipost_push/order_status/enable_cron</config_path>
+            <depends>
+                <field id="enabled">1</field>
+            </depends>
+        </field>
+        <field id="status_to_create" translate="label comment" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+            <label>Status to Create Orders on Intelipost</label>
+            <comment>If enabled, it'll create an order on Intelipost when the order are in one of these status</comment>
+            <config_path>intelipost_push/order_status/status_to_create</config_path>
+            <depends>
+                <field id="enabled">1</field>
+            </depends>
+        </field>
+        <field id="create_and_ship" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Create Shipment</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <comment>It'll create the shipment in the store after when the creating the order on Intelipost</comment>
+            <config_path>intelipost_push/order_status/create_and_ship</config_path>
+            <depends>
+                <field id="enabled">1</field>
+            </depends>
+        </field>
+        <field id="status_to_ready_to_ship" translate="label comment" type="multiselect" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Status to mark order as Ready to Ship</label>
+            <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+            <comment>When an order is in one of the status above, it'll mark the order as ready to ship</comment>
+            <config_path>intelipost_push/order_status/status_to_ready_to_ship</config_path>
+            <depends>
+                <field id="enabled">1</field>
+                <field id="create_and_ship">1</field>
+            </depends>
+        </field>
+        <field id="ready_to_ship_status" translate="label" type="select" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Ready to Ship Status</label>
+            <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+            <comment>When marking the order as Ready to Ship on Intelipost, it'll change the order status </comment>
+            <config_path>intelipost_push/order_status/ready_to_ship_status</config_path>
+            <depends>
+                <field id="enabled">1</field>
+                <field id="create_and_ship">1</field>
+            </depends>
+        </field>
+        <field id="status_to_shipped" translate="label comment" type="multiselect" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Status to Shipped Order</label>
+            <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+            <comment>When an order is in one of the status above, it'll mark the order as shipped</comment>
+            <config_path>intelipost_push/order_status/status_to_shipped</config_path>
+            <depends>
+                <field id="enabled">1</field>
+                <field id="create_and_ship">1</field>
+            </depends>
+        </field>
+        <field id="shipped_status" translate="label" type="select" sortOrder="310" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Shipped Status</label>
+            <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+            <comment>When creating the order on Intelipost, it'll change the order status</comment>
+            <config_path>intelipost_push/order_status/shipped_status</config_path>
+            <depends>
+                <field id="enabled">1</field>
+                <field id="create_and_ship">1</field>
+            </depends>
+        </field>
+    </group>
+</include>
+

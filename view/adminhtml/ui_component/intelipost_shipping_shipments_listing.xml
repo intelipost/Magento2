@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Push
+ * @copyright   Copyright (c) Intelipost
+ * @author      Alex Restani <alex.restani@intelipost.com.br>
+ */
+-->
+
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">intelipost_shipping_shipments_listing.intelipost_shipping_shipments_listing_data_source</item>
+        </item>
+    </argument>
+
+    <settings>
+        <spinner>intelipost_shipping_shipments_columns</spinner>
+        <deps>
+            <dep>intelipost_shipping_shipments_listing.intelipost_shipping_shipments_listing_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="intelipost_shipping_shipments_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="cacheRequests" xsi:type="boolean">false</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Intelipost_Shipping::shipments</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="intelipost_shipping_shipments_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks" />
+        <columnsControls name="columns_controls" />
+        <exportButton name="export_button" />
+        <filterSearch name="fulltext" />
+        <filters name="listing_filters" />
+        <massaction name="listing_massaction">
+            <action name="create_order">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to send selected items to Intelipost?</message>
+                        <title translate="true">Create Orders</title>
+                    </confirm>
+                    <url path="*/*/massCreate"/>
+                    <type>create_order</type>
+                    <label translate="true">Create Orders</label>
+                </settings>
+            </action>
+            <action name="ship_order">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to ship selected items on Intelipost?</message>
+                        <title translate="true">Ship Orders</title>
+                    </confirm>
+                    <url path="*/*/massShip"/>
+                    <type>ship_order</type>
+                    <label translate="true">Ship Orders</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging" />
+    </listingToolbar>
+
+    <columns name="intelipost_shipping_shipments_columns">
+        <selectionsColumn name="ids" sortOrder="10">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </selectionsColumn>
+
+        <column name="entity_id" sortOrder="20">
+            <settings>
+                <filter>textRange</filter>
+                <sorting>desc</sorting>
+                <label translate="true">ID</label>
+            </settings>
+        </column>
+
+        <column name="order_increment_id" class="Intelipost\Shipping\Ui\Component\Listing\Column\OrderId" sortOrder="30">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <filter>text</filter>
+                <sortable>true</sortable>
+                <label translate="true">Order</label>
+            </settings>
+        </column>
+
+        <column name="quote_id">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Quote ID</label>
+                <resizeDefaultWidth>100</resizeDefaultWidth>
+            </settings>
+        </column>
+
+        <column name="decription">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Description</label>
+            </settings>
+        </column>
+
+        <column name="delivery_method_name">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Delivery Method Name</label>
+            </settings>
+        </column>
+
+        <column name="provider_shipping_costs" class="Magento\Sales\Ui\Component\Listing\Column\Price">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Provider Shipping Costs</label>
+            </settings>
+        </column>
+
+        <column name="customer_shipping_costs" class="Magento\Sales\Ui\Component\Listing\Column\Price">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Customer Shipping Costs</label>
+            </settings>
+        </column>
+
+        <column name="intelipost_status">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Intelipost Status</label>
+            </settings>
+        </column>
+
+        <column name="tracking_code">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Tracking Code</label>
+            </settings>
+        </column>
+
+        <column name="intelipost_message">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Intelipost Message</label>
+            </settings>
+        </column>
+    </columns>
+</listing>
+

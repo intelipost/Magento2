@@ -1,0 +1,210 @@
+<?php
+/**
+ *
+ * @package Biz
+ * @author Thiago Contardi
+ * @copyright Copyright (c) 2020 Bizcommerce
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
+ */
+
+/**
+ * @var \Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$invoiceCollection = $block->getInvoicesCollection();
+?>
+<div id="order_invoice_block">
+    <?php if ($invoiceCollection->getSize() == 0): ?>
+        <section class="admin__page-section edit-order-invoices">
+            <div class="order-invoice-block" id="invoice_form">
+                <form id="submit_invoice_form" method="POST" action="<?= $block->getSubmitUrl() ?>" data-mage-init='{"validation": {}}'>
+                    <input type="hidden" name="form_key" value="<?= $block->getFormKey() ?>" />
+                    <input type="hidden" name="order_increment_id" value="<?= $block->getOrder()->getIncrementId() ?>" />
+                    <input type="hidden" name="order_id" value="<?= $block->getOrder()->getId() ?>" />
+
+                    <div class="admin__field">
+                        <label for="number" class="admin__field-label">
+                            <span class="required">*</span> <?= $escaper->escapeHtml(__('Invoice Number')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <input type="text" id="intelipost-invoice-number" name="number" maxlength="9"
+                                   placeholder="<?= $escaper->escapeHtml(__('Invoice Number with up to 9 digits')) ?>"
+                                   class="admin__control-text required-entry validate-integer validate-greater-than-zero"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="admin__field">
+                        <label for="series" class="admin__field-label">
+                            <span class="required">*</span> <?= $escaper->escapeHtml(__('Invoice Series')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <input type="text" id="intelipost-invoice-series" name="series" maxlength="3"
+                                   placeholder="<?= $escaper->escapeHtml(__('Invoice Series with up to 3 digits')) ?>"
+                                   class="admin__control-text required-entry validate-integer validate-greater-than-zero"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="admin__field">
+                        <label for="key" class="admin__field-label">
+                            <span class="required">*</span> <?= $escaper->escapeHtml(__('Invoice Key')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <input type="text" id="intelipost-invoice-key" name="invoice_key"
+                                   placeholder="<?= $escaper->escapeHtml(__('Invoice Key with 44 digits')) ?>"
+                                   maxlength="44"
+                                   class="admin__control-text required-entry validate-integer validate-greater-than-zero"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="admin__field">
+                        <label for="date" class="admin__field-label">
+                            <span class="required">*</span> <?= $escaper->escapeHtml(__('Invoice Date')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <input type="text" id="intelipost-invoice-date" name="date"
+                                   class="admin__control-text required-entry"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="admin__field">
+                        <label for="products_value" class="admin__field-label">
+                            <span class="required">*</span> <?= $escaper->escapeHtml(__('Products Value')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <input type="text" id="intelipost-invoice-products-value" name="products_value"
+                                   placeholder="<?= $escaper->escapeHtml(__('Total products; you should use '.' as decimal separator, e.g. 1567.19')) ?>"
+                                   class="admin__control-text required-entry validate-number"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="admin__field">
+                        <label for="total_value" class="admin__field-label">
+                            <span class="required">*</span> <?= $escaper->escapeHtml(__('Total Value')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <input type="text" id="intelipost-invoice-total-value"
+                                   name="total_value"
+                                   placeholder="<?= $escaper->escapeHtml(__('Total order; you should use '.' as decimal separator, e.g. 2543.19')) ?>"
+                                   class="admin__control-text required-entry validate-number"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="admin__field">
+                        <label for="cfop" class="admin__field-label">
+                            <?= $escaper->escapeHtml(__('CFOP')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <input type="text" id="cfop" name="intelipost-invoice-cfop" class="admin__control-text validate-number validate-greater-than-zero" maxlength="4"/>
+                        </div>
+                    </div>
+
+                    <div class="order-invoice-actions">
+                        <button type="submit" title="<?= __('Send') ?>" type="button" class="action-default scalable action-save action-secondary">
+                            <span><?= __('Send') ?></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <script>
+            require([
+                'jquery',
+                'mage/translate',
+                'mage/calendar'
+            ], function ($, $t) {
+                $('#intelipost-invoice-date').calendar({
+                    changeMonth: true,
+                    changeYear: true,
+                    showButtonPanel: true,
+                    currentText: $t('Go Today'),
+                    closeText: $t('Close'),
+                    showWeek: false,
+                    showOn: "both",
+                    showsTime: false,
+                    dateFormat: 'dd/mm/yy'
+                });
+            })
+        </script>
+    <?php else: ?>
+
+        <section  class="admin__page-section edit-order-invoices-grid">
+            <table class="data-table admin__table-primary table-invoice">
+                <thead>
+                <tr>
+                    <th><?= __('Invoice Number') ?></th>
+                    <th><?= __('Invoice Series') ?></th>
+                    <th><?= __('Invoice Key') ?></th>
+                    <th><?= __('Invoice Date') ?></th>
+                    <th><?= __('Products Value') ?></th>
+                    <th><?= __('Total Value') ?></th>
+                    <th><?= __('CFOP') ?></th>
+                    <th><?= __('Actions') ?></th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                /** @var \Intelipost\Shipping\Model\Invoice $invoice */
+                foreach($block->getInvoicesCollection() as $invoice): ?>
+                    <tr>
+                        <td><?= $invoice->getNumber() ?></td>
+                        <td><?= $invoice->getSeries() ?></td>
+                        <td><?= $invoice->getKey() ?></td>
+                        <td><?= $invoice->getDate() ?></td>
+                        <td><?= $invoice->getProductsValue() ?></td>
+                        <td><?= $invoice->getTotalValue() ?></td>
+                        <td><?= $invoice->getCfop() ?></td>
+                        <td>
+                            <button type="button" onclick="intelipostAlerter('<?= $block->getDeleteUrl($invoice->getId()) ?>')" class="button">
+                                <?= __('Delete') ?>
+                            </button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </section>
+        <script>
+            function intelipostAlerter(url) {
+                let yes = confirm("<?= __('Are you sure?') ?>");
+                if(yes) {
+                    submitAndReloadArea($('order_invoice_block').parentNode, url);
+                }
+            }
+        </script>
+    <?php endif ?>
+
+
+
+    <section  class="admin__page-section edit-order-webhooks-grid">
+        <p class="head_title"><?= __('Webhooks') ?></p>
+        <table class="data-table admin__table-primary table-invoice">
+            <thead>
+            <tr>
+                <th><?= __('Status') ?></th>
+                <th><?= __('Payload') ?></th>
+                <th><?= __('Message') ?></th>
+                <th><?= __('Created At') ?></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            /** @var \Intelipost\Shipping\Model\Webhook $webhook */
+            foreach($block->getWebhooksCollection() as $webhook): ?>
+                <tr>
+                    <td><?= $escaper->escapeHtml(__($webhook->getStatus())); ?></td>
+                    <td><?= $escaper->escapeHtml($webhook->getPayload()) ?></td>
+                    <td><?= $escaper->escapeHtml(__($webhook->getMessage())) ?></td>
+                    <td><?= $webhook->getCreatedAt() ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
+</div>

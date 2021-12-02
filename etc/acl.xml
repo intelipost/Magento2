@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+
+<config>
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Intelipost_Shipping::intelipost" title="Intelipost" translate="title" sortOrder="500">
+                    <resource id="Intelipost_Shipping::shipments" title="Order Shipments" translate="title" sortOrder="100" />
+                    <resource id="Intelipost_Shipping::invoices" title="Invoices" translate="title" sortOrder="200"/>
+                    <resource id="Intelipost_Shipping::webhooks" title="Webhooks" translate="title" sortOrder="300"/>
+                    <resource id="Intelipost_Shipping::settings" title="Settings" translate="title" sortOrder="1000"/>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>
+

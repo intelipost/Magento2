@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>General Settings.</label>
+        <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Enabled</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>carriers/intelipost/active</config_path>
+        </field>
+        <field id="api_key" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>API Key</label>
+            <comment>Key for API</comment>
+            <config_path>intelipost_basic/settings/api_key</config_path>
+        </field>
+        <field id="use_default_source" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <label>Use Default Source</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <comment>If Enabled, it'll use the Magento Default Source Postcode</comment>
+            <config_path>carriers/intelipost/use_default_source</config_path>
+        </field>
+        <field id="source" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Source Zip</label>
+            <config_path>carriers/intelipost/source</config_path>
+            <source_model>Intelipost\Shipping\Model\Config\Source\Stock\Sources</source_model>
+            <depends>
+                <field id="use_default_source">1</field>
+            </depends>
+        </field>
+        <field id="source_zip" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Source Zip</label>
+            <config_path>carriers/intelipost/source_zip</config_path>
+            <depends>
+                <field id="use_default_source">0</field>
+            </depends>
+        </field>
+        <field id="federal_tax_payer_id" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <source_model>Intelipost\Shipping\Model\Config\Source\Customer\Attributes</source_model>
+            <label>Federal tax payer id</label>
+            <comment>Select CPF attribute</comment>
+            <config_path>intelipost_push/attributes/federal_tax_payer_id</config_path>
+        </field>
+        <field id="product_page_shipping" translate="label" sortOrder="100"  type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Add Product Page Shipping</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>intelipost_basic/settings/product_page_shipping</config_path>
+        </field>
+        <field id="save_quote_database" translate="label comment" sortOrder="100"  type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Save Quote Database</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>intelipost_basic/settings/save_quote_database</config_path>
+            <comment>If enabled, it can use a huge amount of disk space because it'll save all quotes in a database table, it's only recommended for testing purposes</comment>
+        </field>
+    </group>
+</include>
+

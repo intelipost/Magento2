@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <intelipost_basic>
+            <settings>
+                <api_url><![CDATA[https://api.intelipost.com.br/api/v1/]]></api_url>
+                <product_page_shipping>1</product_page_shipping>
+            </settings>
+        </intelipost_basic>
+        <intelipost_push>
+            <attributes>
+                <enabled>1</enabled>
+                <federal_tax_payer_id>taxvat</federal_tax_payer_id>
+            </attributes>
+        </intelipost_push>
+        <carriers>
+            <intelipost>
+                <active>0</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Intelipost\Shipping\Model\Carrier\Intelipost</model>
+                <title>Intelipost</title>
+                <type>I</type>
+                <use_default_source>0</use_default_source>
+                <specificerrmsg>Esse método de envio não está disponível no momento.</specificerrmsg>
+                <riskareamsg>Esse cep faz parte de uma área de risco. Alguns serviços de entrega não oferecem entrega em áreas de risco.
+Nesses casos, é necessário monitorar a entrega e o processo de pedido para verificar a unidade de entrega mais próxima para retirada.
+Você receberá a notificação de quando sua encomenda estará disponível para retirada.
+                </riskareamsg>
+                <height_attribute>height</height_attribute>
+                <freeshipping_text>Frete Grátis</freeshipping_text>
+                <scheduled_title>Entrega Agendada</scheduled_title>
+                <default_weight>1</default_weight>
+                <default_height>2</default_height>
+                <width_attribute>width</width_attribute>
+                <default_width>16</default_width>
+                <length_attribute>length</length_attribute>
+                <default_length>11</default_length>
+                <custom_title><![CDATA[%s - Em média %s dias para entrega]]></custom_title>
+                <same_day_title><![CDATA[%s - entrega hoje]]></same_day_title>
+                <value_on_zero><![CDATA[0.01]]></value_on_zero>
+                <showmethod>1</showmethod>
+            </intelipost>
+        </carriers>
+    </default>
+</config>
+

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <preference for="Intelipost\Shipping\Api\Data\InvoiceInterface" type="Intelipost\Shipping\Model\Invoice"/>
+    <preference for="Intelipost\Shipping\Api\InvoiceRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\InvoiceRepository"/>
+    <preference for="Intelipost\Shipping\Api\Data\InvoiceSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
+    <preference for="Intelipost\Shipping\Api\Data\QuoteInterface" type="Intelipost\Shipping\Model\Quote"/>
+    <preference for="Intelipost\Shipping\Api\QuoteRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\QuoteRepository"/>
+    <preference for="Intelipost\Shipping\Api\Data\QuoteSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
+    <preference for="Intelipost\Shipping\Api\Data\ShipmentInterface" type="Intelipost\Shipping\Model\Shipment"/>
+    <preference for="Intelipost\Shipping\Api\ShipmentRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\ShipmentRepository"/>
+    <preference for="Intelipost\Shipping\Api\Data\ShipmentSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
+    <preference for="Intelipost\Shipping\Api\Data\WebhookInterface" type="Intelipost\Shipping\Model\Webhook"/>
+    <preference for="Intelipost\Shipping\Api\WebhookRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\WebhookRepository"/>
+    <preference for="Intelipost\Shipping\Api\Data\WebhookSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
+    <type name="Magento\Quote\Model\Quote\Address">
+        <plugin name="IntelipostQuoteAddress" type="Intelipost\Shipping\Plugin\Quote\Address" sortOrder="2" />
+    </type>
+
+    <type name="Magento\Quote\Model\Quote\Address\Rate">
+        <plugin name="IntelipostQuoteAddressRate" type="Intelipost\Shipping\Plugin\Quote\Address\Rate" sortOrder="2" />
+    </type>
+
+    <type name="Magento\Quote\Model\Cart\ShippingMethodConverter">
+        <plugin name="IntelipostQuoteAddressCartShippingMethodConverter" type="Intelipost\Shipping\Plugin\Quote\Cart\ShippingMethodConverter" sortOrder="2" />
+    </type>
+
+    <virtualType name="Intelipost\Shipping\Logger\IntelipostLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="error" xsi:type="object">Intelipost\Shipping\Logger\Handler\Error</item>
+                <item name="info" xsi:type="object">Intelipost\Shipping\Logger\Handler\Info</item>
+                <item name="debug" xsi:type="object">Intelipost\Shipping\Logger\Handler\Debug</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Intelipost\Shipping\Client\Intelipost">
+        <arguments>
+            <argument name="logger" xsi:type="object">Intelipost\Shipping\Logger\IntelipostLogger</argument>
+            <argument name="scopeConfig" xsi:type="object">\Magento\Framework\App\Config\ScopeConfigInterface</argument>
+        </arguments>
+    </type>
+
+    <type name="Intelipost\Shipping\Helper\Api">
+        <arguments>
+            <argument name="logger" xsi:type="object">Intelipost\Shipping\Logger\IntelipostLogger</argument>
+            <argument name="scopeConfig" xsi:type="object">\Magento\Framework\App\Config\ScopeConfigInterface</argument>
+            <argument name="cache" xsi:type="object">\Magento\Framework\App\CacheInterface</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="IntelipostShipmentCollection" type="Intelipost\Shipping\Model\ResourceModel\Shipment\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">intelipost_shipments</argument>
+            <argument name="resourceModel" xsi:type="string">Intelipost\Shipping\Model\ResourceModel\Shipment</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="IntelipostInvoiceCollection" type="Intelipost\Shipping\Model\ResourceModel\Invoice\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">intelipost_invoices</argument>
+            <argument name="resourceModel" xsi:type="string">Intelipost\Shipping\Model\ResourceModel\Invoice</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="IntelipostWebhookCollection" type="Intelipost\Shipping\Model\ResourceModel\Webhook\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">intelipost_webhooks</argument>
+            <argument name="resourceModel" xsi:type="string">Intelipost\Shipping\Model\ResourceModel\Webhook</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="intelipost_shipping_shipments_listing_data_source" xsi:type="string">IntelipostShipmentCollection</item>
+                <item name="intelipost_shipping_invoices_listing_data_source" xsi:type="string">IntelipostInvoiceCollection</item>
+                <item name="intelipost_shipping_webhooks_listing_data_source" xsi:type="string">IntelipostWebhookCollection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
+

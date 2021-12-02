@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+<config>
+    <menu>
+        <add id="Intelipost_Shipping::intelipost"
+             title="Intelipost"
+             module="Intelipost_Shipping"
+             sortOrder="60"
+             resource="Intelipost_Shipping::intelipost"/>
+
+        <add id="Intelipost_Shipping::shipments"
+             title="Order Shipments"
+             module="Intelipost_Shipping"
+             sortOrder="100"
+             parent="Intelipost_Shipping::intelipost"
+             resource="Intelipost_Shipping::shipments"
+             action="intelipost/shipments/"/>
+
+        <add id="Intelipost_Shipping::invoices"
+             title="Invoices"
+             module="Intelipost_Shipping"
+             sortOrder="200"
+             parent="Intelipost_Shipping::intelipost"
+             resource="Intelipost_Shipping::invoices"
+             action="intelipost/invoices/"/>
+
+        <add id="Intelipost_Shipping::webhooks"
+             title="Webhooks"
+             module="Intelipost_Shipping"
+             sortOrder="200"
+             parent="Intelipost_Shipping::intelipost"
+             resource="Intelipost_Shipping::webhooks"
+             action="intelipost/webhooks/"/>
+
+        <add id="Intelipost_Shipping::shipping_methods"
+             title="Settings"
+             module="Intelipost_Shipping"
+             sortOrder="1000"
+             resource="Intelipost_Shipping::settings"
+             parent="Intelipost_Shipping::intelipost"
+             action="adminhtml/system_config/edit/section/carriers/"
+        />
+    </menu>
+</config>
+

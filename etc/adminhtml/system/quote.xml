@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="intelipost_quotes" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Quotes</label>
+        <group id="intelipost_quotes_settings" translate="label" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Display Settings</label>
+            <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+            <field id="title" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Title</label>
+                <config_path>carriers/intelipost/title</config_path>
+            </field>
+
+            <field id="custom_title" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Custom Title</label>
+                <config_path>carriers/intelipost/custom_title</config_path>
+            </field>
+
+            <field id="same_day_title" translate="label" type="text" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Same Day Title</label>
+                <config_path>carriers/intelipost/same_day_title</config_path>
+            </field>
+
+            <field id="scheduled_title" translate="label" type="text" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Scheduled Title</label>
+                <config_path>carriers/intelipost/scheduled_title</config_path>
+            </field>
+
+            <field id="scheduled_last" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Sort Scheduled as last?</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>carriers/intelipost/scheduled_last</config_path>
+            </field>
+
+            <field id="estimate_delivery_date" translate="label" type="select" sortOrder="201" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Estimate Delivery Date</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>carriers/intelipost/estimate_delivery_date</config_path>
+            </field>
+
+            <field id="additional_delivery_date" translate="label" type="text" sortOrder="202" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Add Days to Quote</label>
+                <tooltip>It's also called as Handling Time</tooltip>
+                <comment>Quantity of Days to add to Delivery Time</comment>
+                <config_path>carriers/intelipost/additional_delivery_date</config_path>
+            </field>
+
+            <field id="calendar_only_checkout" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Display Scheduled Delivery Only at Checkout</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>carriers/intelipost/calendar_only_checkout</config_path>
+            </field>
+        </group>
+
+        <group id="intelipost_measures" translate="label" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Unit of measurement</label>
+            <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+            <field id="weight_unit" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Weight Unit</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Unit</source_model>
+                <config_path>carriers/intelipost/weight_unit</config_path>
+            </field>
+
+            <field id="default_weight" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Default Weight</label>
+                <config_path>carriers/intelipost/default_weight</config_path>
+            </field>
+
+            <field id="dimenstion_type" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Dimension Type</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\DimensionType</source_model>
+                <config_path>carriers/intelipost/dimenstion_type</config_path>
+            </field>
+
+            <field id="height_attribute" translate="label" type="select" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Height Attribute</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Attributes</source_model>
+                <config_path>carriers/intelipost/height_attribute</config_path>
+            </field>
+            <field id="default_height" translate="label" type="text" sortOrder="211" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Default Height</label>
+                <config_path>carriers/intelipost/default_height</config_path>
+            </field>
+
+            <field id="width_attribute" translate="label" type="select" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Width Attribute</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Attributes</source_model>
+                <config_path>carriers/intelipost/width_attribute</config_path>
+            </field>
+
+            <field id="default_width" translate="label" type="text" sortOrder="221" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Default Width</label>
+                <config_path>carriers/intelipost/default_width</config_path>
+            </field>
+
+            <field id="length_attribute" translate="label" type="select" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Length Attribute</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Attributes</source_model>
+                <config_path>carriers/intelipost/length_attribute</config_path>
+            </field>
+
+            <field id="default_length" translate="label" type="text" sortOrder="231" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Default Length</label>
+                <config_path>carriers/intelipost/default_length</config_path>
+            </field>
+        </group>
+
+        <group id="intelipost_freeshipping" translate="label" sortOrder="2000" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Free Shipping Conditions</label>
+            <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+            <field id="freeshipping_method" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Free Shipping Method</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Allmethods</source_model>
+                <config_path>carriers/intelipost/freeshipping_method</config_path>
+            </field>
+
+            <field id="freeshipping_text" translate="label" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Free Shipping Text</label>
+                <config_path>carriers/intelipost/freeshipping_text</config_path>
+            </field>
+        </group>
+
+        <group id="intelipost_tracking" translate="label" sortOrder="3000" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Tracking and Statuses</label>
+            <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+            <field id="webhook_enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Enable Webhook</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <tooltip><![CDATA[Protocol: "https";<br>Host: "urlloja.com.br";<br>Path: "/intelipost/webhook";<br>Autenticação: "Basic";<br>Usuário autenticação: "API KEY"]]></tooltip>
+                <comment><![CDATA[If enabled, Intelipost can change Magento orders status automatically. You'll need to add a new webhook on Intelipost]]></comment>
+                <config_path>carriers/intelipost/webhook_enabled</config_path>
+            </field>
+
+            <field id="create_shipment_automatically" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Create Shipment Automatically when an order is picked up</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <comment>With webhook enabled it'l create a shipment when there's an shipping event on Intelipost.</comment>
+                <config_path>carriers/intelipost/create_shipment_automatically</config_path>
+                <depends>
+                    <field id="webhook_enabled">1</field>
+                </depends>
+            </field>
+            <field id="notify_customer" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <label>Notify Customer for each new order update</label>
+                <config_path>carriers/intelipost/notify_customer</config_path>
+                <depends>
+                    <field id="webhook_enabled">1</field>
+                </depends>
+            </field>
+
+            <field id="track_pre_ship" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Track pre shipment events?</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <comment>When an order is created in Intelipost, it's possible to change the order status and notify the customer</comment>
+                <config_path>carriers/intelipost/track_pre_ship</config_path>
+            </field>
+            <field id="status_created" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status for Order Created on Intelipost</label>
+                <comment>When an order is created in Intelipost, the status can be changed</comment>
+                <config_path>carriers/intelipost/status_created</config_path>
+                <depends>
+                    <field id="track_pre_ship">1</field>
+                </depends>
+            </field>
+            <field id="status_ready_for_shipment" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Ready For Shipment Status</label>
+                <config_path>carriers/intelipost/status_ready_for_shipment</config_path>
+                <depends>
+                    <field id="track_pre_ship">1</field>
+                </depends>
+            </field>
+
+            <field id="status_shipped" translate="label" type="select" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status Shipped</label>
+                <config_path>carriers/intelipost/status_shipped</config_path>
+            </field>
+
+            <field id="status_delivered" translate="label" type="select" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status Delivered</label>
+                <config_path>carriers/intelipost/status_delivered</config_path>
+            </field>
+
+            <field id="status_delivery_failed" translate="label" type="select" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status for Delivery Failed</label>
+                <comment>Status for orders with "Delivery Failed" event</comment>
+                <config_path>carriers/intelipost/status_delivery_failed</config_path>
+            </field>
+            <field id="status_clarify_delivery_failed" translate="label" type="select" sortOrder="1010" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status for Clarify Delivery Failed</label>
+                <comment>Status for orders with "Clarify Delivery Failed" event</comment>
+                <config_path>carriers/intelipost/status_clarify_delivery_failed</config_path>
+            </field>
+        </group>
+
+        <group id="intelipost_system" translate="label" sortOrder="10000" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>System Settings</label>
+            <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+            <field id="cache_exp_time" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Cache Expiration Time</label>
+                <config_path>carriers/intelipost/cache_exp_time</config_path>
+            </field>
+
+            <field id="specificerrmsg" translate="label" type="textarea" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Displayed Error Message</label>
+                <config_path>carriers/intelipost/specificerrmsg</config_path>
+            </field>
+
+            <field id="delivery_risk_areas" translate="label" type="textarea" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Delivery for Risk Areas</label>
+                <config_path>carriers/intelipost/riskareamsg</config_path>
+            </field>
+
+            <field id="riskareamsg" translate="label" type="textarea" sortOrder="211" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Risk Area Message</label>
+                <config_path>carriers/intelipost/riskareamsg</config_path>
+                <depends>
+                    <field id="delivery_risk_areas">1</field>
+                </depends>
+            </field>
+
+            <field id="break_on_error" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Break On Error</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>carriers/intelipost/break_on_error</config_path>
+            </field>
+
+            <field id="value_on_zero" translate="label" type="text" sortOrder="310" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Value On Zero</label>
+                <config_path>carriers/intelipost/value_on_zero</config_path>
+            </field>
+
+            <field id="sallowspecific" translate="label" type="select" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Ship to Applicable Countries</label>
+                <frontend_class>shipping-applicable-country</frontend_class>
+                <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                <config_path>carriers/intelipost/sallowspecific</config_path>
+            </field>
+
+            <field id="specificcountry" translate="label" type="multiselect" sortOrder="330" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Ship to Specific Countries</label>
+                <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                <can_be_empty>1</can_be_empty>
+                <config_path>carriers/intelipost/specificcountry</config_path>
+            </field>
+
+            <field id="showmethod" translate="label" type="select" sortOrder="340" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Show Method if Not Applicable</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>carriers/intelipost/showmethod</config_path>
+            </field>
+
+            <field id="debug" translate="label" type="select" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Debug</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>carriers/intelipost/debug</config_path>
+            </field>
+
+            <field id="sort_order" translate="label" type="text" sortOrder="10000" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Sort Order</label>
+                <config_path>carriers/intelipost/sort_order</config_path>
+            </field>
+        </group>
+    </group>
+</include>
+

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Push
+ * @copyright   Copyright (c) 2016 Gamuza Technologies (http://www.gamuza.com.br/)
+ * @author      Eneias Ramos de Melo <eneias@gamuza.com.br>
+ */
+-->
+
+<page>
+    <body>
+        <referenceContainer name="content">
+            <uiComponent name="intelipost_shipping_shipments_listing" />
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,512 @@
+<?php
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+
+namespace Intelipost\Shipping\Helper;
+
+use Intelipost\Shipping\Api\QuoteRepositoryInterface;
+use Intelipost\Shipping\Model\QuoteFactory;
+use Magento\Backend\Model\Session\Quote;
+use Magento\Checkout\Model\Session;
+use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Customer\Model\ResourceModel\GroupRepository;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\State;
+use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\Session\SessionManager;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+
+class Data extends \Magento\Framework\App\Helper\AbstractHelper
+{
+    const RESULT_QUOTES = 'intelipost_result_shippings';
+    const RESULT_PICKUP = 'intelipost_result_pickup';
+
+    /** @var QuoteFactory */
+    protected $quoteFactory;
+
+    /** @var QuoteRepositoryInterface */
+    protected $quoteRepository;
+
+    /** @var OrderRepositoryInterface  */
+    protected $orderRepository;
+
+    /** @var SessionManager */
+    protected $sessionManager;
+
+    /** @var Quote */
+    protected $backendSession;
+
+    /** @var Session */
+    protected $checkoutSession;
+
+    /** @var CustomerSession */
+    protected $customerSession;
+
+    /** @var StoreManagerInterface */
+    protected $storeManager;
+
+    /** @var GroupRepository  */
+    protected $customerGroupRepository;
+
+    /** @var State */
+    protected $state;
+
+    /** @var Json */
+    protected $json;
+
+    /** @var OrderInterface  */
+    protected $order;
+
+    /** @var array */
+    protected $selectedSchedulingMethod = [];
+
+    /**
+     * @param Context $context
+     * @param QuoteFactory $quoteFactory
+     * @param QuoteRepositoryInterface $quoteRepository
+     * @param OrderRepositoryInterface $orderRepository
+     * @param SessionManager $sessionManager
+     * @param Quote $backendSession
+     * @param Json $json
+     * @param Session $checkoutSession
+     * @param CustomerSession $customerSession
+     * @param StoreManagerInterface $storeManager
+     * @param GroupRepository $customerGroupRepository
+     * @param OrderInterface $order
+     * @param State $state
+     */
+    public function __construct(
+        Context $context,
+        QuoteFactory $quoteFactory,
+        QuoteRepositoryInterface $quoteRepository,
+        OrderRepositoryInterface $orderRepository,
+        SessionManager $sessionManager,
+        Quote $backendSession,
+        Json $json,
+        Session $checkoutSession,
+        CustomerSession $customerSession,
+        StoreManagerInterface $storeManager,
+        GroupRepository $customerGroupRepository,
+        OrderInterface $order,
+        State $state
+    )
+    {
+        $this->quoteFactory = $quoteFactory;
+        $this->quoteRepository = $quoteRepository;
+        $this->json = $json;
+        $this->orderRepository = $orderRepository;
+        $this->sessionManager = $sessionManager;
+        $this->backendSession = $backendSession;
+        $this->checkoutSession = $checkoutSession;
+        $this->customerSession = $customerSession;
+        $this->storeManager = $storeManager;
+        $this->state = $state;
+        $this->order = $order;
+        $this->customerGroupRepository = $customerGroupRepository;
+
+        parent::__construct($context);
+    }
+
+    public function getPreDispatchEvents()
+    {
+        return ['NEW', 'READY_FOR_SHIPPING', 'SHIPPED'];
+    }
+
+    public function getPostDispatchEvents()
+    {
+        return ['TO_BE_DELIVERED', 'IN_TRANSIT', 'DELIVERED', 'CLARIFY_DELIVERY_FAIL', 'DELIVERY_FAILED'];
+    }
+
+    /**
+     * @param string $carrier
+     * @param string $description
+     * @param $estimatedDelivery
+     * @param false $scheduled
+     * @return mixed|string
+     */
+    public function getCustomCarrierTitle($carrier, $description, $estimatedDelivery, $scheduled = false, $riskMessage = '')
+    {
+        if ($scheduled) {
+            $text = $this->getConfig('scheduled_title');
+        } else {
+            if (!$estimatedDelivery) {
+                $text = sprintf($this->getConfig('same_day_title', $carrier), $description);
+            } else {
+                $text = sprintf($this->getConfig('custom_title', $carrier), $description, $estimatedDelivery);
+            }
+        }
+
+        return $text;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSessionId()
+    {
+        return $this->sessionManager->getSessionId();
+    }
+
+    /**
+     * @param string $key
+     * @return array|mixed
+     */
+    public function getResultQuotes($key = self::RESULT_QUOTES)
+    {
+        $result = $this->customerSession->getData($key);
+        return !empty($result) ? $result : [];
+    }
+
+    /**
+     * @param $carrier
+     * @param $id
+     * @param $method
+     * @param $postData
+     * @param false $volumes
+     * @return \Intelipost\Shipping\Model\Quote|null
+     */
+    public function saveQuote($carrier, $id, $method, $postData, $volumes = false)
+    {
+        $intelipostQuote = $this->quoteFactory->create();
+
+        $intelipostQuote->setSessionId($this->getSessionId());
+        $intelipostQuote->setCarrier($carrier);
+        $intelipostQuote->setQuoteId($id);
+        $intelipostQuote->setProducts($this->json->serialize($postData['products']));
+        $intelipostQuote->setOriginZipCode($postData['origin_zip_code']);
+
+        $intelipostQuote->setLogisticProviderName($method['logistic_provider_name']);
+        $intelipostQuote->setDescription($method['description']);
+
+        $intelipostQuote->setDeliveryMethodId($method['delivery_method_id']);
+        $intelipostQuote->setDeliveryEstimateBusinessDays($method['delivery_estimate_business_days']);
+
+        if (array_key_exists('delivery_estimate_date_exact_iso', $method)) {
+            $intelipostQuote->setDeliveryExactEstimatedDate($method['delivery_estimate_date_exact_iso']);
+        }
+
+        $intelipostQuote->setDeliveryMethodName($method['delivery_method_name']);
+
+        if (array_key_exists('delivery_method_type', $method)) {
+            $intelipostQuote->setDeliveryMethodType($method['delivery_method_type']);
+        }
+
+        $intelipostQuote->setAvailableSchedulingDates($method['available_scheduling_dates']);
+
+        $intelipostQuote->setProviderShippingCost($method['provider_shipping_cost']);
+        $intelipostQuote->setFinalShippingCost($method['final_shipping_cost']);
+
+        $intelipostQuote->setApiRequest($postData ['api_request']);
+        $intelipostQuote->setApiResponse($postData ['api_response']);
+
+        if (!empty($this->selectedSchedulingMethod)) {
+            if ($method['delivery_method_id'] == $this->selectedSchedulingMethod['delivery_method_id']) {
+                $intelipostQuote->setSelectedSchedulingDates($this->selectedSchedulingMethod['selected_scheduling_dates']);
+                $intelipostQuote->setSelectedSchedulingPeriod($this->selectedSchedulingMethod['selected_scheduling_period']);
+            }
+        }
+
+        $intelipostQuote->setQuoteVolume($volumes);
+
+        if ($this->getConfig('save_quote_database', 'intelipost_basic')) {
+            $this->quoteRepository->save($intelipostQuote);
+        }
+
+        return $intelipostQuote;
+    }
+
+    /**
+     * @param array|null $data
+     */
+    public function saveResultQuotes(array $data = null)
+    {
+        $this->customerSession->setData(self::RESULT_QUOTES, $data);
+    }
+
+    /**
+     * @param $response
+     */
+    public function checkFreeShipping(&$response)
+    {
+        $freeshippingMethod = $this->getConfig('freeshipping_method');
+        $freeshippingText = $this->getConfig('freeshipping_text');
+
+        $lowerPrice = PHP_INT_MAX;
+        $lowerDeliveryDate = PHP_INT_MAX;
+        $lowerMethod = null;
+
+        foreach ($response ['content']['delivery_options'] as $child) {
+            $deliveryMethodId = $child ['delivery_method_id'];
+            $finalShippingCost = $child ['final_shipping_cost'];
+            $deliveryEstimateDays = $child ['delivery_estimate_business_days'];
+
+            switch ($freeshippingMethod) {
+                case 'lower_price':
+                    if ($finalShippingCost < $lowerPrice) {
+                        $lowerPrice = $finalShippingCost;
+                        $lowerMethod = $deliveryMethodId;
+                    }
+                    break;
+                case 'lower_delivery_date':
+                    if ($deliveryEstimateDays < $lowerDeliveryDate) {
+                        $lowerDeliveryDate = $deliveryEstimateDays;
+                        $lowerMethod = $deliveryMethodId;
+                    }
+                    break;
+            }
+        }
+
+        foreach ($response ['content']['delivery_options'] as $id => $child) {
+            $deliveryMethodId = $child ['delivery_method_id'];
+            if (!strcmp($deliveryMethodId, $lowerMethod)) {
+                $response ['content']['delivery_options'][$id]['final_shipping_cost'] = 0;
+                $response ['content']['delivery_options'][$id]['description'] = $freeshippingText;
+                break;
+            }
+        }
+    }
+
+    /**
+     * @return float|int
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getDiscountAmount()
+    {
+        return ($this->getQuote()->getBaseSubtotal() - $this->getQuote()->getBaseSubtotalWithDiscount()) * -1;
+    }
+
+    /**
+     * @return \Magento\Quote\Api\Data\CartInterface|\Magento\Quote\Model\Quote
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getQuote()
+    {
+        if ($this->isAdmin()) {
+            $quote = $this->backendSession->getQuote();
+        } else {
+            $quote = $this->checkoutSession->getQuote();
+        }
+
+        return $quote;
+    }
+
+    /**
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isAdmin()
+    {
+        return $this->state->getAreaCode() == \Magento\Backend\App\Area\FrontNameResolver::AREA_CODE;
+    }
+
+    /**
+     * Get Subtotal Price
+     * @param int $defaultPrice
+     * @return float|int|mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getSubtotalAmount($defaultPrice = 0)
+    {
+        $result = $this->getQuote()->getBaseSubtotal();
+        if (intval($result) > 0) {
+            return $result;
+        }
+
+        return $defaultPrice;
+    }
+
+    /**
+     * @param array|null $additional
+     * @return array|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getAdditionalInformation(array $additional = null)
+    {
+        $result = [
+            'client_type' => $this->getCustomerGroup(),
+            'sales_channel' => $this->getStoreName(),
+            'shipped_date' => $this->getShippedDate(),
+        ];
+
+        $additionalData = (is_array($additional) ? $additional : []);
+
+        if (count($additionalData) > 0) {
+            $result = array_merge($result, $additional);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getCustomerGroup()
+    {
+        if ($this->isAdmin()) {
+            $currentGroupId = $this->backendSession->getQuote()->getCustomerGroupId();
+        } else {
+            $currentGroupId = $this->customerSession->getCustomerGroupId();
+        }
+
+        /** @var \Magento\Customer\Model\Group $customerGroup */
+        $customerGroup = $this->customerGroupRepository->getById($currentGroupId);
+        return strtolower($customerGroup->getCode());
+    }
+
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getStoreName()
+    {
+        return $this->storeManager->getStore()->getName();
+    }
+
+    /**
+     * @param bool $convert
+     * @return false|float|int|string
+     */
+    public function getShippedDate($convert = true)
+    {
+        $aditionalDeliveryDate = intval($this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date'));
+        $moreDays = '+' . intval($aditionalDeliveryDate) . ' days';
+
+        $timestamp = time();
+        $timestamp = strtotime($moreDays, $timestamp);
+
+        $wday = date('N', $timestamp);
+        if ($wday >= 6) {
+            $timestamp += (2 * 3600 * 24);
+        }
+
+        if (!$convert) {
+            return $timestamp;
+        }
+
+        $result = date('Y-m-d', $timestamp);
+
+        return $result;
+    }
+
+    /**
+     * @param $orderId
+     * @param $status
+     * @param $comment
+     */
+    public function updateOrder($orderId, $status, $comment)
+    {
+        $notifyCustomer = (bool) $this->getConfig('notify_customer');
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $this->orderRepository->get($orderId);
+        $order->addCommentToStatusHistory($comment, $status, $notifyCustomer);
+        $this->orderRepository->save($order);
+    }
+
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getPageIdentification()
+    {
+        $result = [
+            'ip' => $_SERVER ['REMOTE_ADDR'],
+            'session' => $this->getSessionId(),
+            'page_name' => $this->getPageName(),
+            'url' => $this->getCurrentUrl()
+        ];
+
+        return $result;
+    }
+
+    /**
+     * @param $config
+     * @param string $group
+     * @param string $section
+     * @return mixed
+     */
+    public function getConfig($config, $group = 'intelipost', $section = 'carriers')
+    {
+        return $this->scopeConfig->getValue(
+            $section . '/' . $group . '/' . $config,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getPageName()
+    {
+        $result = 'checkout';
+
+        if ($this->isAdmin()) {
+            $result = 'admin';
+        } else {
+            $originalPathInfo = $this->_request->getOriginalPathInfo();
+            if (!strcmp($originalPathInfo, '/intelipost/product/shipping/')) {
+                $result = 'product';
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getCurrentUrl()
+    {
+        $url = $this->storeManager->getStore()->getCurrentUrl();
+        $result = urldecode(htmlspecialchars_decode($url));
+        return $result;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function haveData()
+    {
+        $args = func_get_args();
+        $result = null;
+
+        foreach ($args as $_arg) {
+            if (!empty($_arg)) {
+                $result = $_arg;
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return \Psr\Log\LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->_logger;
+    }
+
+    /**
+     * @param $incrementId
+     * @return OrderInterface
+     */
+    public function loadOrder($incrementId)
+    {
+        return $this->order->loadByIncrementId($incrementId);
+    }
+}

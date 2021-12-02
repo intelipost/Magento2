@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Intelipost_Shipping::css/product.css"/>
+    </head>
+    <body>
+        <referenceContainer name="product.info.social">
+            <block class="Intelipost\Shipping\Block\Product\View"
+                   name="product.product.shipping"
+                   as="intelipost_product_shipping"
+                   ifconfig="intelipost_basic/settings/product_page_shipping"
+                   template="product/view/shipping.phtml"/>
+        </referenceContainer>
+    </body>
+</page>
+

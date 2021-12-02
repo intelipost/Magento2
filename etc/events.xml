@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+/*
+ * @package     Intelipost_Shipping
+ * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
+ * @author      Intelipost Team
+ */
+-->
+
+<config>
+    <event name="sales_order_place_after">
+        <observer name="intelipost_shipping_sales_order_place_after" instance="Intelipost\Shipping\Observer\Sales\OrderPlaceAfter"/>
+    </event>
+</config>
+
