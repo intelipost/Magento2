@@ -27,25 +27,21 @@ class MassShip extends \Intelipost\Shipping\Controller\Adminhtml\Shipments
 
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
-        $collectionData = $collection->getData();
         $errorCount = 0;
         $totalCount = 0;
-        foreach ($collectionData as $cData) {
-            $col = $this->shipped->shippedRequestBody($cData);
+        foreach ($collection as $shipment) {
+            $col = $this->shipped->shippedRequestBody($shipment);
             if ($col->getErrorMessages()) {
-                $this->messageManager->addErrorMessage('Entrega ' . $cData['order_increment_id'] . "</br>" . $col->getErrorMessages());
+                $incrementId = $shipment->getData('order_increment_id');
+                $this->messageManager->addErrorMessage(__('Delivery %1 : %2', $incrementId, $col->getErrorMessages()));
                 $errorCount++;
             }
             $totalCount++;
         }
         $successCount = $totalCount - $errorCount;
 
-        if ($successCount == 1) {
-            $this->messageManager->addSuccessMessage('Entrega despachada com sucesso: 1.');
-        }
-
-        if ($successCount > 1) {
-            $this->messageManager->addSuccessMessage('Entregas despachadas com sucesso: ' . $successCount . '.');
+        if ($successCount > 0) {
+            $this->messageManager->addSuccessMessage(__('%1 shipments sent', $successCount ));
         }
 
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);

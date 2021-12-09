@@ -102,7 +102,8 @@
         <column xsi:type="varchar" name="scheduling_window_start" length="255" comment="Scheduling Window Start" />
         <column xsi:type="varchar" name="scheduling_window_end" length="255" comment="Scheduling Window End" />
         <column xsi:type="varchar" name="tracking_code" length="255" comment="Tracking Code" />
-        <column xsi:type="varchar" name="intelipost_message" length="255" comment="Intelipost Message" />
+        <column xsi:type="varchar" name="tracking_url" length="255" comment="Tracking Url" />
+        <column xsi:type="text" name="intelipost_message" comment="Intelipost Message" />
         <column xsi:type="varchar" name="products_ids" length="255" comment="Products Ids" />
         <column xsi:type="timestamp" name="delivery_estimate_date_exact_iso" comment="Delivery Estimate Date Exact" />
         <column xsi:type="timestamp" name="selected_scheduling_date" comment="Selected Scheduling Date" />

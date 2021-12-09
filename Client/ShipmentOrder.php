@@ -171,23 +171,14 @@ class ShipmentOrder
             $shipmentMessage = str_replace('</br>', '', $messages);
 
         } else if ($result->status == 'OK') {
-            $volumes = $result->content->shipment_order_volume_array;
-            $lastVolume = $volumes[count($volumes) -1];
-            foreach ($volumes as $volume) {
-                if (isset($volume->tracking_code)) {
-                    $trackingCodes .= $volume->tracking_code;
-                    if ($volume !== $lastVolume) {
-                        $trackingCodes .= ', ';
-                    }
-                }
-            }
+            $trackingUrl = $result->content->tracking_url;
 
             $orderId = $shipment->getId();
             $status = $this->helper->getConfig('magento_status_after_create','order_status', 'intelipost_push');
             $this->updateOrderStatus($orderId, $status);
         }
 
-        $this->updateShipment($shipment->getId(), $shipmentStatus, $shipmentMessage, $trackingCodes);
+        $this->updateShipment($shipment->getId(), $shipmentStatus, $shipmentMessage, $trackingUrl);
     }
 
     /**
@@ -196,14 +187,14 @@ class ShipmentOrder
      * @param $message
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function updateShipment($shipmentId, $status, $message, $trackingCodes = '')
+    public function updateShipment($shipmentId, $status, $message, $trackingUrl)
     {
         /** @var \Intelipost\Shipping\Model\Shipment $shipmentModel */
         $shipmentModel = $this->shipmentRepository->getById($shipmentId);
         $shipmentModel->setIntelipostStatus($status);
         $shipmentModel->setIntelipostMessage($message);
-        if (!empty($trackingCodes)) {
-            $shipmentModel->setTrackingCode($trackingCodes);
+        if (!empty($trackingUrl)) {
+            $shipmentModel->setTrackingUrl($trackingUrl);
         }
         $this->shipmentRepository->save($shipmentModel);
     }

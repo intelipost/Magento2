@@ -99,7 +99,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     public function validateForCsrf(RequestInterface $request): ?bool
     {
         $authUser = $request->getServer('PHP_AUTH_USER');
-        $configApiKey = $this->helper->getConfig('api_key','settings', 'intelipost_basic');
+        $configApiKey = $this->helper->getConfig('api_key', 'settings', 'intelipost_basic');
         return ($authUser == $configApiKey);
     }
 
@@ -114,12 +114,13 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
                 $body = $this->getContent($request);
                 $trackingCode = $body['tracking_code'] ?? null;
+                $trackingUrl = $body['tracking_url'] ?? null;
                 $incrementId = $body['order_number'] ?? null;
                 $status = isset($body['history']) ? $body['history']['shipment_order_volume_state'] : null;
 
                 $this->saveWebhook($request->getContent(), $incrementId, $status);
 
-                $this->updateTrackingCode($incrementId, $trackingCode);
+                $this->updateTrackingCode($incrementId, $trackingCode, $trackingUrl);
 
                 $this->updateOrderStatus($incrementId, $body);
             } catch (\Exception $e) {
@@ -163,7 +164,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         $postDispatchEvents = $this->helper->getPostDispatchEvents();
 
         $trackPreShip = $this->helper->getConfig('track_pre_ship');
-        $trackPostShip = $this->helper->getConfig('track_post_ship');
 
         $state = $requestBody['history']['shipment_order_volume_state'];
         $statusDefaultName = $requestBody['history']['shipment_volume_micro_state']['default_name'];
@@ -171,7 +171,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
         if (
             (in_array($state, $preDispatchEvents) && $trackPreShip)
-            || (in_array($state, $postDispatchEvents) && $trackPostShip)
+            || (in_array($state, $postDispatchEvents))
         ) {
             switch (strtoupper($state)) {
                 case 'NEW':
@@ -250,11 +250,12 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function updateTrackingCode($incrementId, $trackingCode)
+    public function updateTrackingCode($incrementId, $trackingCode, $trackingUrl)
     {
-        if ($trackingCode != null) {
+        if ($trackingCode || $trackingUrl) {
             $shipment = $this->shipmentRepository->getByOrderIncrementId($incrementId);
             $shipment->setTrackingCode($trackingCode);
+            $shipment->setTrackingUrl($trackingUrl);
             $this->shipmentRepository->save($shipment);
         }
     }

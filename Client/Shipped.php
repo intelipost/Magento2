@@ -2,79 +2,77 @@
 
 namespace Intelipost\Shipping\Client;
 
-use Magento\Framework\Model\AbstractModel;
-
-class Shipped extends AbstractModel
+class Shipped
 {
-    public $shipArray = array();
-    public $order_number;
-    public $event_date;
+    /** @var string */
+    protected $message;
 
-    public $message;
+    /** @var \Intelipost\Shipping\Helper\Data  */
+    protected $helper;
 
-    protected $_helper;
-    protected $_helperApi;
-    protected $_date;
-    protected $_timezone;
-    protected $_shipment;
+    /** @var \Intelipost\Shipping\Helper\Api  */
+    protected $helperApi;
+
+    /** @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface  */
+    protected $timezone;
+
+    /** @var \Intelipost\Shipping\Api\ShipmentRepositoryInterface  */
+    protected $shipmentRepository;
 
     /**
      * @param \Intelipost\Shipping\Helper\Api $helperApi
      * @param \Intelipost\Shipping\Helper\Data $helper
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
      * @param \Intelipost\Shipping\Model\Shipment $shipment
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      */
     public function __construct(
         \Intelipost\Shipping\Helper\Api $helperApi,
         \Intelipost\Shipping\Helper\Data $helper,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Intelipost\Shipping\Model\Shipment $shipment,
+        \Intelipost\Shipping\Api\ShipmentRepositoryInterface $shipmentRepository,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
     )
     {
-        $this->_helper    = $helper;
-        $this->_helperApi = $helperApi;
-        $this->_date      = $date;
-        $this->_timezone  = $timezone;
-        $this->_shipment  = $shipment;
+        $this->helper = $helper;
+        $this->helperApi = $helperApi;
+        $this->timezone = $timezone;
+        $this->shipmentRepository = $shipmentRepository;
     }
 
     /**
-     * @param $collectionData
+     * @param $shipment
      * @throws \Exception
      */
-    public function shippedRequestBody($collectionData)
+    public function shippedRequestBody($shipment)
     {
-        $currentDateTimeUTC = (new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT);
-        $localizedDateTimeISO = $this->_timezone->date(new \DateTime($currentDateTimeUTC))->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT);
-        $this->event_date = (str_replace(' ', 'T', $localizedDateTimeISO)).'';
-
-        $this->order_number = $collectionData['order_increment_id'];
-
-        $requestBody = $this->prepareShippedRequestBody();
-        $this->sendShippedRequest(json_encode($requestBody), $collectionData);
-
+        $requestBody = $this->prepareShippedRequestBody($shipment);
+        $this->sendShippedRequest(json_encode($requestBody), $shipment);
         return $this;
     }
 
-    public function prepareShippedRequestBody()
+    /**
+     * @param $shipment
+     * @return \stdClass[]
+     */
+    public function prepareShippedRequestBody($shipment)
     {
-        $bodyObj               = new \stdClass();
-        $bodyObj->order_number = $this->order_number;
-        $bodyObj->event_date   = $this->event_date;
-        array_push($this->shipArray, $bodyObj);
-        return $this->shipArray;
+        $date = $this->timezone->date();
+        $eventDate = $date->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT);
+
+        $body = new \stdClass();
+        $body->order_number = $shipment->getData('order_increment_id');
+        $body->event_date  = str_replace(' ', 'T', $eventDate);
+
+        return [$body];
     }
 
     /**
      * @param $requestBody
-     * @param $collectionData
+     * @param $shipment
      * @throws \Exception
      */
-    public function sendShippedRequest($requestBody, $collectionData)
+    public function sendShippedRequest($requestBody, $shipment)
     {
-        $response = $this->_helperApi->apiRequest('POST', 'shipment_order/multi/shipped/with_date', $requestBody);
+        $response = $this->helperApi->apiRequest('POST', 'shipment_order/multi/shipped/with_date', $requestBody);
         $result = json_decode($response);
 
         if($result->status == 'ERROR') {
@@ -82,22 +80,25 @@ class Shipped extends AbstractModel
             $errorCount = 1;
 
             foreach ($result->messages as $_message) {
-                $messages .= ' Erro ('. $errorCount . '): ' .$_message->text. "</br>";
+                $messages .= __('Erro (%1): %2', $errorCount, $_message->text);
                 $errorCount++;
             }
             $this->message = $messages;
 
-            $collectionFactory = $this->_shipment->load($collectionData['id']);
-            $collectionFactory->setIntelipostStatus('error');
-            $collectionFactory->setIntelipostMessage(str_replace('</br>', '', $this->message));
-            $collectionFactory->save();
+            /** @var \Intelipost\Shipping\Model\Shipment $shipment */
+            $shipment = $this->shipmentRepository->getById($shipment->getId());
+            $shipment->setIntelipostStatus(\Intelipost\Shipping\Model\Shipment::STATUS_ERROR);
+            $shipment->setIntelipostMessage($this->message);
+            $this->shipmentRepository->save($shipment);
+
         }
 
         if($result->status == 'OK') {
-            $collectionFactory = $this->_shipment->load($collectionData['id']);
-            $collectionFactory->setIntelipostStatus(\Intelipost\Shipping\Model\Shipment::STATUS_SHIPPED);
-            $collectionFactory->setIntelipostMessage('Ok.');
-            $collectionFactory->save();
+            /** @var \Intelipost\Shipping\Model\Shipment $shipment */
+            $shipment = $this->shipmentRepository->getById($shipment->getId());
+            $shipment->setIntelipostStatus(\Intelipost\Shipping\Model\Shipment::STATUS_SHIPPED);
+            $shipment->setIntelipostMessage('Ok.');
+            $this->shipmentRepository->save($shipment);
         }
     }
 

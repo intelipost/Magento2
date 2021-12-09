@@ -44,7 +44,7 @@ class Volume
         $volume->products_nature = self::PRODUCTS_NATURE;
         $volume->is_icms_exempt = self::IS_ICMS_EXEMPT;
 
-        if (!empty($invoice)) {
+        if (!empty((array) $invoice)) {
             $volume->shipment_order_volume_invoice = $invoice;
         }
 
