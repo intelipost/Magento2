@@ -1,76 +1,74 @@
 <?php
-/*
- * @package     Intelipost_Shipping
- * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
- * @author      Intelipost Team
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 ?>
 
 <script>
+require([
+    'jquery',
+    'prototype',
+    'jquery/validate'
+], function (jQuery) {
 
-    require([
-        'jquery',
-        'prototype',
-        'jquery/validate'
-    ], function (jQuery) {
+    function enableProductShippingButton() {
+        Form.Element.enable('product-shipping-button');
+        $('product-shipping-button').removeClassName('no-display');
+    }
 
-        function enableProductShippingButton() {
-            Form.Element.enable('product-shipping-button');
-            $('product-shipping-button').removeClassName('no-display');
-        }
+    function disableProductShippingButton() {
+        Form.Element.disable('product-shipping-button');
+        $('product-shipping-button').addClassName('no-display');
+    }
 
-        function disableProductShippingButton() {
-            Form.Element.disable('product-shipping-button');
-            $('product-shipping-button').addClassName('no-display');
-        }
-
-        jQuery('#product-shipping-postcode').on('keyup', function () {
-            var value = $('product-shipping-postcode').value.replace(/^(\d{5})(\d{1,})/, "$1-$2");
-            $('product-shipping-postcode').value = value;
-        });
-
-        jQuery('#product-shipping-button').click(function () {
-
-            if (!jQuery("#product_addtocart_form").validation('isValid')) return;
-
-            var postcode = $('product-shipping-postcode').value.replace(/[-]/g, '');
-
-            if (!postcode.length || postcode.length != 8) {
-                $('product-shipping-result').textContent = "<?php echo __('Please fill the zipcode field!'); ?>";
-                $('product-shipping-postcode').focus();
-            } else {
-                jQuery.ajax({
-                    url: '<?php echo $this->getAjaxShippingUrl() ?>',
-                    data: jQuery('#product_addtocart_form, #product-shipping-form').serialize(),
-
-                    success: function (data) {
-                        $('product-shipping-result').update(data);
-                        enableProductShippingButton();
-                    },
-
-                    error: function () {
-                        $('product-shipping-result').textContent = "<?php echo __('Failure'); ?>";
-                        enableProductShippingButton();
-                    }
-                });
-
-                $('product-shipping-result').textContent = "<?php echo __('Calculating ...'); ?>";
-                disableProductShippingButton();
-            }
-        });
-
-        jQuery('#product-shipping-postcode').keypress(function (e) {
-            if (e.which == 13) {
-                jQuery('#product-shipping-button').click();
-
-                return false;
-            }
-        });
+    jQuery('#product-shipping-postcode').on('keyup', function () {
+        var value = $('product-shipping-postcode').value.replace(/^(\d{5})(\d{1,})/, "$1-$2");
+        $('product-shipping-postcode').value = value;
     });
 
+    jQuery('#product-shipping-button').click(function () {
+
+        if (!jQuery("#product_addtocart_form").validation('isValid')) return;
+
+        var postcode = $('product-shipping-postcode').value.replace(/[-]/g, '');
+
+        if (!postcode.length || postcode.length != 8) {
+            $('product-shipping-result').textContent = "<?php echo __('Please fill the zipcode field!'); ?>";
+            $('product-shipping-postcode').focus();
+        } else {
+            jQuery.ajax({
+                url: '<?php echo $this->getAjaxShippingUrl() ?>',
+                data: jQuery('#product_addtocart_form, #intelipost-product-shipping-form').serialize(),
+
+                success: function (data) {
+                    $('product-shipping-result').update(data);
+                    enableProductShippingButton();
+                },
+
+                error: function () {
+                    $('product-shipping-result').textContent = "<?php echo __('Failure'); ?>";
+                    enableProductShippingButton();
+                }
+            });
+
+            $('product-shipping-result').textContent = "<?php echo __('Calculating ...'); ?>";
+            disableProductShippingButton();
+        }
+    });
+
+    jQuery('#product-shipping-postcode').keypress(function (e) {
+        if (e.which == 13) {
+            jQuery('#product-shipping-button').click();
+
+            return false;
+        }
+    });
+});
 </script>
 
-<form id="product-shipping-form">
+<form id="intelipost-product-shipping-form" class="intelipost-product-shipping-form">
     <!-- <input name="form_key" value="<?php echo $this->getFormKey(); ?>" type="hidden" /> -->
     <!-- <input name="product" value="<?php echo $this->getProduct()->getId(); ?>" type="hidden" /> -->
     <input name="sku" value="<?php echo $this->getProduct()->getSku(); ?>" type="hidden"/>

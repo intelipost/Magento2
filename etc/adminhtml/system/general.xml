@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-/*
- * @package     Intelipost_Shipping
- * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
- * @author      Intelipost Team
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 -->
 
@@ -27,7 +27,7 @@
             <config_path>carriers/intelipost/use_default_source</config_path>
         </field>
         <field id="source" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Source Zip</label>
+            <label>Source</label>
             <config_path>carriers/intelipost/source</config_path>
             <source_model>Intelipost\Shipping\Model\Config\Source\Stock\Sources</source_model>
             <depends>

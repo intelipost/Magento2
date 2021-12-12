@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
+<!--
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
+ */
+ -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <preference for="Intelipost\Shipping\Api\Data\InvoiceInterface" type="Intelipost\Shipping\Model\Invoice"/>
@@ -19,15 +25,19 @@
     <preference for="Intelipost\Shipping\Api\Data\WebhookSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
 
     <type name="Magento\Quote\Model\Quote\Address">
-        <plugin name="IntelipostQuoteAddress" type="Intelipost\Shipping\Plugin\Quote\Address" sortOrder="2" />
+        <plugin name="intelipost_quote_address" type="Intelipost\Shipping\Plugin\Quote\Address" sortOrder="2" />
     </type>
 
     <type name="Magento\Quote\Model\Quote\Address\Rate">
-        <plugin name="IntelipostQuoteAddressRate" type="Intelipost\Shipping\Plugin\Quote\Address\Rate" sortOrder="2" />
+        <plugin name="intelipost_quote_address_rate" type="Intelipost\Shipping\Plugin\Quote\Address\Rate" sortOrder="2" />
     </type>
 
     <type name="Magento\Quote\Model\Cart\ShippingMethodConverter">
-        <plugin name="IntelipostQuoteAddressCartShippingMethodConverter" type="Intelipost\Shipping\Plugin\Quote\Cart\ShippingMethodConverter" sortOrder="2" />
+        <plugin name="intelipost_quote_address_cart_shipping_method_converter" type="Intelipost\Shipping\Plugin\Quote\Cart\ShippingMethodConverter" sortOrder="2" />
+    </type>
+
+    <type name="Magento\Shipping\Controller\Tracking\Popup">
+        <plugin name="intelipost_tracking_popup" type="Intelipost\Shipping\Plugin\Tracking\Popup" sortOrder="2" />
     </type>
 
     <virtualType name="Intelipost\Shipping\Logger\IntelipostLogger" type="Magento\Framework\Logger\Monolog">

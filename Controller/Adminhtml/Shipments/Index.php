@@ -1,8 +1,8 @@
 <?php
-/*
- * @package     Intelipost_Pickup
- * @copyright   Copyright (c) 2016 Gamuza Technologies (http://www.gamuza.com.br/)
- * @author      Eneias Ramos de Melo <eneias@gamuza.com.br>
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
 namespace Intelipost\Shipping\Controller\Adminhtml\Shipments;

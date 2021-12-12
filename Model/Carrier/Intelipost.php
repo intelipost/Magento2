@@ -1,89 +1,88 @@
 <?php
-/*
- * @package     Intelipost_Shipping
- * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
- * @author      Intelipost Team
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
 namespace Intelipost\Shipping\Model\Carrier;
 
+use Intelipost\Shipping\Helper\Api;
+use Intelipost\Shipping\Helper\Data;
+use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\InventoryApi\Api\SourceRepositoryInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
+use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
+use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
+use Magento\Shipping\Model\Carrier\AbstractCarrier;
+use Magento\Shipping\Model\Carrier\CarrierInterface;
+use Magento\Shipping\Model\Rate\ResultFactory;
 
-class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements \Magento\Shipping\Model\Carrier\CarrierInterface
+class Intelipost extends AbstractCarrier implements CarrierInterface
 {
     const LOG = 'intelipost.log';
 
-    protected $logger;
     protected $_code = 'intelipost';
 
-    /** @var \Magento\Shipping\Model\Rate\ResultFactory */
-    protected $_rateResultFactory;
+    /** @var \Psr\Log\LoggerInterface  */
+    protected $logger;
 
-    /** @var \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory */
-    protected $_rateMethodFactory;
+    /** @var ResultFactory */
+    protected $rateResultFactory;
 
-    /** @var \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory */
-    protected $rateErrorFactory;
+    /** @var MethodFactory */
+    protected $rateMethodFactory;
 
-    /** @var \Magento\Framework\App\Config\ScopeConfigInterface */
+    /** @var ScopeConfigInterface */
     protected $scopeConfig;
+
+    /** @var Data  */
     protected $helper;
+
+    /** @var Api  */
     protected $api;
 
-    protected $_shippingFactory;
+    /** @var SourceRepositoryInterface  */
+    protected $sourceRepository;
 
-    /** @var */
-    protected $_pdtMinDate;
-
-    /** @var */
-    protected $_origin_zipcode;
-
-    /** @var */
-    protected $_productFactory;
-
-    /** @var \Magento\Catalog\Model\ProductRepository */
-    protected $_productRepository;
+    /** @var ProductRepository */
+    protected $productRepository;
 
     /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory
+     * @param ScopeConfigInterface $scopeConfig
+     * @param ErrorFactory $rateErrorFactory
      * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory
-     * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
-     * @param \Intelipost\Shipping\Helper\Data $helper
-     * @param \Intelipost\Shipping\Helper\Api $api
-     * @param \Intelipost\Shipping\Model\QuoteFactory $quoteFactory
-     * @param \Magento\Catalog\Model\ProductFactory $_productFactory
-     * @param \Magento\Catalog\Model\ProductRepository $productRespository
+     * @param ResultFactory $rateResultFactory
+     * @param MethodFactory $rateMethodFactory
+     * @param Data $helper
+     * @param Api $api
+     * @param ProductRepository $productRespository
+     * @param SourceRepositoryInterface $sourceRepository
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface          $scopeConfig,
-        \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory  $rateErrorFactory,
-        \Psr\Log\LoggerInterface                                    $logger,
-        \Magento\Shipping\Model\Rate\ResultFactory                  $rateResultFactory,
-        \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
-        \Intelipost\Shipping\Helper\Data                            $helper,
-        \Intelipost\Shipping\Helper\Api                             $api,
-        \Intelipost\Shipping\Model\QuoteFactory                     $quoteFactory,
-        \Magento\Catalog\Model\ProductFactory                       $_productFactory,
-        \Magento\Catalog\Model\ProductRepository                    $productRespository,
-        array                                                       $data = []
+        ScopeConfigInterface $scopeConfig,
+        ErrorFactory $rateErrorFactory,
+        \Psr\Log\LoggerInterface $logger,
+        ResultFactory $rateResultFactory,
+        MethodFactory $rateMethodFactory,
+        ProductRepository $productRespository,
+        SourceRepositoryInterface $sourceRepository,
+        Api $api,
+        Data $helper,
+        array $data = []
     )
     {
-        $this->_rateResultFactory = $rateResultFactory;
-        $this->_rateMethodFactory = $rateMethodFactory;
-        $this->rateErrorFactory = $rateErrorFactory;
-
-        $this->_productRepository = $productRespository;
+        $this->rateResultFactory = $rateResultFactory;
+        $this->rateMethodFactory = $rateMethodFactory;
+        $this->productRepository = $productRespository;
         $this->scopeConfig = $scopeConfig;
         $this->helper = $helper;
         $this->api = $api;
-
+        $this->sourceRepository = $sourceRepository;
         $this->logger = $logger;
-        $this->_shippingFactory = $quoteFactory;
 
-        $this->productFactory = $_productFactory;
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
     }
 
@@ -114,10 +113,19 @@ class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
         }
 
         // Zipcodes
-        //@TODO Get Default Source depennding on config
         $originZipcode = $request->getOriginZipcode() ? $request->getOriginZipcode() : $this->getConfigData('source_zip');
-        $destPostcode = $request->getDestPostcode();
+        if ($this->getConfigData('use_default_source')) {
+            $source = $this->getConfigData('source');
+            if ($source) {
+                /** @var \Magento\InventoryApi\Api\Data\SourceInterface $sourceModel */
+                $sourceModel = $this->sourceRepository->get($source);
+                if ($sourceModel && $sourceModel->getPostcode()) {
+                    $originZipcode = $sourceModel->getPostcode();
+                }
+            }
+        }
 
+        $destPostcode = $request->getDestPostcode();
         $postData = [
             'carrier' => $this->_code,
             'origin_zip_code' => preg_replace('#[^0-9]#', "", $originZipcode),
@@ -159,7 +167,7 @@ class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
 
         foreach ($request->getAllItems() as $item) {
             try {
-                $product = $this->_productRepository->getById($item->getProductId());
+                $product = $this->productRepository->getById($item->getProductId());
             } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
                 continue;
             }
@@ -236,7 +244,7 @@ class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
         $postData['seller_id'] = $request->getSellerId() ? $request->getSellerId() : '';
 
         // Result
-        $result = $this->_rateResultFactory->create();
+        $result = $this->rateResultFactory->create();
 
         $resultQuotes = [];
 
@@ -246,7 +254,7 @@ class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
 
             $response = $this->api->quoteRequest(
                 \Intelipost\Shipping\Client\Intelipost::POST,
-                \Intelipost\Shipping\Helper\Api::QUOTE_BY_PRODUCT,
+                Api::QUOTE_BY_PRODUCT,
                 $postData
             );
 
@@ -254,7 +262,7 @@ class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
 
             $this->logger->debug('Resposta recebida da API');
         } catch (\Exception $e) {
-            $error = $this->rateErrorFactory->create();
+            $error = $this->_rateErrorFactory->create();
             $specificerrmsg = $this->getConfigData('specificerrmsg');
 
             $error->setCarrier($this->_code);
@@ -298,12 +306,12 @@ class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
 
         // Methods
         foreach ($response ['content']['delivery_options'] as $child) {
-            $method = $this->_rateMethodFactory->create();
+            $method = $this->rateMethodFactory->create();
 
             // Risk Area
             $deliveryNote = isset($child['delivery_note']) ? $child['delivery_note'] : null;
             if (!empty($deliveryNote)) {
-                $error = $this->rateErrorFactory->create();
+                $error = $this->_rateErrorFactory->create();
 
                 $riskareamsg = $this->getConfigData('riskareamsg');
 
@@ -347,7 +355,7 @@ class Intelipost extends \Magento\Shipping\Model\Carrier\AbstractCarrier impleme
             $deliveryMethodId = $child['delivery_method_id'];
             $child['delivery_method_id'] = $this->_code . '_' . $deliveryMethodId;
 
-            // $method = $this->_rateMethodFactory->create();
+            // $method = $this->rateMethodFactory->create();
 
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($this->getConfigData('title'));

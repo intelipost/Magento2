@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
+ */
 
 namespace Intelipost\Shipping\Model\Config\Source\Order;
-/**
- * Class Status
- * @api
- * @since 100.0.2
- */
+
+
 class ProcessingComplete extends \Magento\Sales\Model\Config\Source\Order\Status
 {
     /**

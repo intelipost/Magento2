@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
+ */
 
 namespace Intelipost\Shipping\Client;
 
@@ -97,7 +102,7 @@ class Shipped
             /** @var \Intelipost\Shipping\Model\Shipment $shipment */
             $shipment = $this->shipmentRepository->getById($shipment->getId());
             $shipment->setIntelipostStatus(\Intelipost\Shipping\Model\Shipment::STATUS_SHIPPED);
-            $shipment->setIntelipostMessage('Ok.');
+            $shipment->setIntelipostMessage($result->status);
             $this->shipmentRepository->save($shipment);
         }
     }

@@ -1,8 +1,8 @@
 <?php
-/*
- * @package     Intelipost_Shipping
- * @copyright   Copyright (c) Intelipost
- * @author      Alex Restani <alex.restani@intelipost.com.br>
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
 namespace Intelipost\Shipping\Controller\Adminhtml\Shipments;
@@ -30,10 +30,13 @@ class MassShip extends \Intelipost\Shipping\Controller\Adminhtml\Shipments
         $errorCount = 0;
         $totalCount = 0;
         foreach ($collection as $shipment) {
-            $col = $this->shipped->shippedRequestBody($shipment);
-            if ($col->getErrorMessages()) {
-                $incrementId = $shipment->getData('order_increment_id');
-                $this->messageManager->addErrorMessage(__('Delivery %1 : %2', $incrementId, $col->getErrorMessages()));
+            /** @var \Intelipost\Shipping\Client\Shipped $shipped */
+            $shipped = $this->shipped->shippedRequestBody($shipment);
+            $incrementId = $shipment->getData('order_increment_id');
+            if (!$shipped->getErrorMessages()) {
+                $this->helper->createOrderShipment($incrementId, $shipment->getData('tracking_url'));
+            } else {
+                $this->messageManager->addErrorMessage(__('Delivery %1 : %2', $incrementId, $shipped->getErrorMessages()));
                 $errorCount++;
             }
             $totalCount++;

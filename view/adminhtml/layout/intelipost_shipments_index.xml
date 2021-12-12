@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-/*
- * @package     Intelipost_Push
- * @copyright   Copyright (c) 2016 Gamuza Technologies (http://www.gamuza.com.br/)
- * @author      Eneias Ramos de Melo <eneias@gamuza.com.br>
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 -->
-
-<page>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
             <uiComponent name="intelipost_shipping_shipments_listing" />

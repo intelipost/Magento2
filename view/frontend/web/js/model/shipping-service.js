@@ -1,7 +1,7 @@
-/*
- * @package     Intelipost_Basic
- * @copyright   Copyright (c) 2021 - Intelipost (https://intelipost.com.br)
- * @author      Intelipost Team
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
 /*global define*/

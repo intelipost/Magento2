@@ -1,8 +1,8 @@
 <?php
-/*
- * @package     Intelipost_Push
- * @copyright   Copyright (c) Intelipost
- * @author      Alex Restani <alex.restani@intelipost.com.br>
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
 namespace Intelipost\Shipping\Controller\Webhook;
@@ -17,21 +17,11 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Sales\Model\Convert\Order as ConvertOrder;
-use Magento\Sales\Model\OrderRepository;
-use Magento\Sales\Model\Order\ShipmentRepository as OrderShipmentRepository;
-use Magento\Sales\Model\Order\Shipment\TrackFactory;
 
 class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
     /** @var Data  */
     protected $helper;
-
-    /** @var ConvertOrder  */
-    protected $convertOrder;
-
-    /** @var TrackFactory  */
-    protected $track;
 
     /** @var Json  */
     protected $json;
@@ -48,12 +38,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     /** @var \Intelipost\Shipping\Model\Webhook  */
     private $webhook;
 
-    /** @var OrderShipmentRepository  */
-    private $orderShipmentRepository;
-
-    /** @var OrderRepository  */
-    private $orderRepository;
-
     public function __construct
     (
         Context $context,
@@ -61,11 +45,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         ShipmentRepository $shipmentRepository,
         WebhookRepository $webhookRepository,
         WebhookFactory $webhookFactory,
-        OrderShipmentRepository $orderShipmentRepository,
-        OrderRepository $orderRepository,
-        ConvertOrder $convertOrder,
-        Json $json,
-        TrackFactory $track
+        Json $json
     )
     {
         parent::__construct($context);
@@ -74,10 +54,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         $this->shipmentRepository = $shipmentRepository;
         $this->webhookRepository = $webhookRepository;
         $this->webhookFactory = $webhookFactory;
-        $this->orderShipmentRepository = $orderShipmentRepository;
-        $this->orderRepository = $orderRepository;
-        $this->convertOrder = $convertOrder;
-        $this->track = $track;
     }
 
     /**
@@ -266,46 +242,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
      */
     public function createShipment($orderIncrementId, $trackingUrl)
     {
-        $message = '';
-        /** @var \Magento\Sales\Model\Order $order */
-        $order = $this->helper->loadOrder($orderIncrementId);
-
-        if (!$order->canShip()) {
-            $message = __('It\'s not possible to create a shipment on this order.');
-        } else {
-            /** @var \Magento\Sales\Model\Order\Shipment $shipment */
-            $shipment = $this->convertOrder->toShipment($order);
-            foreach ($order->getAllItems() as $orderItem) {
-                if (!$orderItem->getQtyToShip() || $orderItem->getIsVirtual()) {
-                    continue;
-                }
-
-                $qtyShipped = $orderItem->getQtyToShip();
-                $shipmentItem = $this->convertOrder->itemToShipmentItem($orderItem)->setQty($qtyShipped);
-                $shipment->addItem($shipmentItem);
-            }
-
-            $shipment->register();
-            $shipment->getOrder()->setIsInProcess(true);
-
-            $track = $this->track->create();
-            $track->setNumber($order->getIncrementId());
-            $track->setCarrierCode('intelipost_shipping');
-            $track->setTitle(__('Tracking Status'));
-            $track->setDescription(__('Intelipost Tracking Status'));
-            $track->setUrl($trackingUrl);
-            $shipment->addTrack($track);
-
-            try {
-                $this->orderShipmentRepository->save($shipment);
-                $this->orderRepository->save($shipment->getOrder());
-
-            } catch (\Exception $e) {
-                $this->helper->getLogger()->error($e->getMessage());
-                $message = __($e->getMessage());
-            }
-        }
-
+        $message = $this->helper->createOrderShipment($orderIncrementId, $trackingUrl);
         $this->saveWebhookMessage($message);
     }
 }
