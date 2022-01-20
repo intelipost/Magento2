@@ -143,3 +143,4 @@ Description,Description
 "Are you sure you want to send selected items to Intelipost?","Are you sure you want to send selected items to Intelipost?"
 "Are you sure you want to ship selected items to Intelipost?","Are you sure you want to ship selected items to Intelipost?"
 "Intelipost Invoices","Intelipost Invoices"
+"If empty it'll get the store name","If empty it'll get the store name"

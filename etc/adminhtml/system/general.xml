@@ -41,6 +41,11 @@
                 <field id="use_default_source">0</field>
             </depends>
         </field>
+        <field id="sales_channel" translate="label" type="text" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Sales Channel</label>
+            <config_path>carriers/intelipost/sales_channel</config_path>
+            <comment>If empty it'll get the store name</comment>
+        </field>
         <field id="federal_tax_payer_id" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
             <source_model>Intelipost\Shipping\Model\Config\Source\Customer\Attributes</source_model>
             <label>Federal tax payer id</label>

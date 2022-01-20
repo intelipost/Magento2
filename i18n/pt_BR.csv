@@ -142,3 +142,4 @@ Description,Descrição
 "Are you sure you want to send selected items to Intelipost?","Tem certeza que deseja enviar esse pedidos para a Intelipost?"
 "Are you sure you want to ship selected items to Intelipost?","Tem certeza que deseja enviar esse pedidos para a Intelipost?"
 "Intelipost Invoices","Faturas"
+"If empty it'll get the store name","Se vazio, enviará o nome da loja"
