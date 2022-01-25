@@ -78,6 +78,16 @@ class ShipmentOrder
     {
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->helper->loadOrder($shipment->getData('order_increment_id'));
+
+        $customerTaxvat = $order->getCustomerTaxvat();
+        $customerAttribute = $this->helper->getConfig('federal_tax_payer_id', 'attributes', 'intelipost_push');
+        if ($customerAttribute) {
+            $customer = $order->getCustomer();
+            if ($customer->getData($customerAttribute)) {
+                $customerTaxvat = $customer->getData($customerAttribute);
+            }
+        }
+
         $shipment->addData([
             'order_entity_id' => $order->getId(),
             'order_created_at' => $order->getCreatedAt(),
@@ -86,7 +96,7 @@ class ShipmentOrder
             'customer_firstname' => $order->getCustomerFirstname(),
             'customer_lastname' => $order->getCustomerLastname(),
             'customer_email' => $order->getCustomerEmail(),
-            'customer_taxvat' => $order->getCustomerTaxvat(),
+            'customer_taxvat' => $customerTaxvat,
             'base_grand_total' =>  $order->getBaseGrandTotal(),
             'increment_id' => $order->getIncrementId()
         ]);

@@ -144,7 +144,7 @@
             <field id="create_shipment_automatically" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Create Shipment Automatically when an order is picked up</label>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <comment>With webhook enabled it'l create a shipment when there's an shipping event on Intelipost.</comment>
+                <comment>With webhook enabled it'll create a shipment when there's an shipping event on Intelipost.</comment>
                 <config_path>carriers/intelipost/create_shipment_automatically</config_path>
                 <depends>
                     <field id="webhook_enabled">1</field>
@@ -168,7 +168,6 @@
             <field id="status_created" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                 <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
                 <label>Status for Order Created on Intelipost</label>
-                <comment>When an order is created in Intelipost, the status can be changed</comment>
                 <config_path>carriers/intelipost/status_created</config_path>
                 <depends>
                     <field id="track_pre_ship">1</field>
@@ -198,13 +197,11 @@
             <field id="status_delivery_failed" translate="label" type="select" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
                 <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
                 <label>Status for Delivery Failed</label>
-                <comment>Status for orders with "Delivery Failed" event</comment>
                 <config_path>carriers/intelipost/status_delivery_failed</config_path>
             </field>
             <field id="status_clarify_delivery_failed" translate="label" type="select" sortOrder="1010" showInDefault="1" showInWebsite="1" showInStore="1">
                 <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
                 <label>Status for Clarify Delivery Failed</label>
-                <comment>Status for orders with "Clarify Delivery Failed" event</comment>
                 <config_path>carriers/intelipost/status_clarify_delivery_failed</config_path>
             </field>
         </group>

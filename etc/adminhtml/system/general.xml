@@ -51,6 +51,7 @@
             <label>Federal tax payer id</label>
             <comment>Select CPF attribute</comment>
             <config_path>intelipost_push/attributes/federal_tax_payer_id</config_path>
+            <comment>If not selected it'll use taxvat attribute</comment>
         </field>
         <field id="product_page_shipping" translate="label" sortOrder="100"  type="select" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Add Product Page Shipping</label>

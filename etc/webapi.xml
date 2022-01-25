@@ -8,13 +8,13 @@
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
-    <route url="/V1/push/save" method="POST">
+    <route url="/V1/intelipost/invoices" method="POST">
         <service class="Intelipost\Shipping\Api\InvoiceRepositoryInterface" method="saveInvoices" />
         <resources>
             <resource ref="Intelipost_Shipping::invoice" />
         </resources>
     </route>
-    <route url="/V1/push/list" method="GET">
+    <route url="/V1/intelipost/invoices" method="GET">
         <service class="Intelipost\Shipping\Api\InvoiceRepositoryInterface" method="getList" />
         <resources>
             <resource ref="Intelipost_Shipping::invoice" />

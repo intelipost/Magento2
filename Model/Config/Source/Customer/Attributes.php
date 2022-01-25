@@ -58,7 +58,7 @@ class Attributes implements \Magento\Framework\Data\OptionSourceInterface
 
         $collection = $this->collectionFactory->create();
         $collection->addFieldToFilter('entity_type_id', $entityType->getId());
-        $collection->addFieldToFilter('backend_type', ['nin' => ['static', 'decimal', 'text', 'boolean']]);
+        $collection->addFieldToFilter('backend_type', ['nin' => ['decimal', 'text', 'boolean']]);
         $collection->addOrder('attribute_code', 'asc');
 
         $options = ['' => __('-- Empty --')];
