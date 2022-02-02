@@ -83,8 +83,14 @@ class ShipmentOrder
         $customerAttribute = $this->helper->getConfig('federal_tax_payer_id', 'attributes', 'intelipost_push');
         if ($customerAttribute) {
             $customer = $order->getCustomer();
-            if ($customer->getData($customerAttribute)) {
-                $customerTaxvat = $customer->getData($customerAttribute);
+            if ($customer) {
+                if ($customer->getData($customerAttribute)) {
+                    $customerTaxvat = $customer->getData($customerAttribute);
+                }
+            } else {
+                if ($order->getData('customer_' . $customerAttribute)) {
+                    $customerTaxvat = $order->getData('customer_' . $customerAttribute);
+                }
             }
         }
 
