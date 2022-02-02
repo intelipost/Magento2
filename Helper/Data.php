@@ -511,8 +511,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $result = [
             'client_type' => $this->getCustomerGroup(),
-            'sales_channel' => $this->getStoreName(),
-            'shipped_date' => $this->getShippedDate(),
+            'sales_channel' => $this->getStoreName()
         ];
 
         $additionalData = (is_array($additional) ? $additional : []);
@@ -550,32 +549,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $defaultStoreName = $this->storeManager->getStore()->getName();
         return $this->getConfig('sales_channel') ?: $defaultStoreName;
-    }
-
-    /**
-     * @param bool $convert
-     * @return false|float|int|string
-     */
-    public function getShippedDate($convert = true)
-    {
-        $aditionalDeliveryDate = (int) $this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date');
-        $moreDays = '+' . intval($aditionalDeliveryDate) . ' days';
-
-        $timestamp = time();
-        $timestamp = strtotime($moreDays, $timestamp);
-
-        $wday = date('N', $timestamp);
-        if ($wday >= 6) {
-            $timestamp += (2 * 3600 * 24);
-        }
-
-        if (!$convert) {
-            return $timestamp;
-        }
-
-        $result = date('Y-m-d', $timestamp);
-
-        return $result;
     }
 
     /**
