@@ -21,11 +21,13 @@
             <field id="custom_title" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                 <label>Custom Title</label>
                 <config_path>carriers/intelipost/custom_title</config_path>
+                <comment>e.g. {method} - Em média {days} dias para entrega</comment>
             </field>
 
             <field id="same_day_title" translate="label" type="text" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                 <label>Same Day Title</label>
                 <config_path>carriers/intelipost/same_day_title</config_path>
+                <comment>e.g. {method}} - entrega hoje</comment>
             </field>
 
             <field id="scheduled_title" translate="label" type="text" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">

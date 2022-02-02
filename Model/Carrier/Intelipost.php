@@ -380,7 +380,9 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
                 }
             }
 
-            $child['delivery_estimate_business_days'] = $estimateDeliveryDate && $deliveryEstimateDateExactISO ? $child ['delivery_estimate_business_days'] : $deliveryEstimateBusinessDays;
+            $child['delivery_estimate_business_days'] = ($estimateDeliveryDate && $deliveryEstimateDateExactISO)
+                ? $child ['delivery_estimate_business_days']
+                : $deliveryEstimateBusinessDays;
 
             $methodTitle = $this->helper->getCustomCarrierTitle(
                 $this->_code,

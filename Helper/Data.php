@@ -195,14 +195,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCustomCarrierTitle($carrier, $description, $estimatedDelivery, $scheduled = false, $riskMessage = '')
     {
+        $estimatedDelivery = (int) $estimatedDelivery;
         if ($scheduled) {
             $text = $this->getConfig('scheduled_title');
         } else {
+            $aditionalDeliveryDate = (int) $this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date');
+            $estimatedDelivery = $estimatedDelivery + $aditionalDeliveryDate;
+
+            $methodCustomTitle = $this->getConfig('custom_title', $carrier);
             if (!$estimatedDelivery) {
-                $text = sprintf($this->getConfig('same_day_title', $carrier), $description);
-            } else {
-                $text = sprintf($this->getConfig('custom_title', $carrier), $description, $estimatedDelivery);
+                $methodCustomTitle = sprintf($this->getConfig('same_day_title', $carrier), $description);
             }
+            $text = str_replace(['{method}', '{days}'], [$description, $estimatedDelivery], $methodCustomTitle);
         }
 
         return $text;
@@ -530,7 +534,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ($this->isAdmin()) {
             $currentGroupId = $this->backendSession->getQuote()->getCustomerGroupId();
         } else {
-            $currentGroupId = $this->customerSession->getCustomerGroupId();
+            $currentGroupId = $this->customerSession->getCustomer()->getGroupId();
         }
 
         /** @var \Magento\Customer\Model\Group $customerGroup */
@@ -554,7 +558,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getShippedDate($convert = true)
     {
-        $aditionalDeliveryDate = intval($this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date'));
+        $aditionalDeliveryDate = (int) $this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date');
         $moreDays = '+' . intval($aditionalDeliveryDate) . ' days';
 
         $timestamp = time();
