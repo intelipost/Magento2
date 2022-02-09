@@ -5,11 +5,9 @@
  * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
-namespace Intelipost\Shipping\Api;
+declare(strict_types=1);
 
-use Intelipost\Shipping\Api\Data\InvoiceInterface;
-use Intelipost\Shipping\Api\Data\InvoiceSearchResultsInterface;
-use Magento\Framework\Api\SearchCriteriaInterface;
+namespace Intelipost\Shipping\Api;
 
 interface InvoiceRepositoryInterface
 {
@@ -25,40 +23,40 @@ interface InvoiceRepositoryInterface
 
     /**
      * Save Queue
-     * @param InvoiceInterface $invoice
-     * @return InvoiceInterface
+     * @param \Intelipost\Shipping\Api\Data\InvoiceInterface $invoice
+     * @return \Intelipost\Shipping\Api\Data\InvoiceInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function save(
-        InvoiceInterface $invoice
+        \Intelipost\Shipping\Api\Data\InvoiceInterface $invoice
     );
 
     /**
      * Retrieve Queue
      * @param string $id
-     * @return InvoiceInterface
+     * @return \Intelipost\Shipping\Api\Data\InvoiceInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getById($id);
 
     /**
      * Retrieve Queue matching the specified criteria.
-     * @param SearchCriteriaInterface $searchCriteria
-     * @return InvoiceSearchResultsInterface
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @return \Intelipost\Shipping\Api\Data\InvoiceSearchResultsInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getList(
-        SearchCriteriaInterface $searchCriteria
+        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
     );
 
     /**
      * Delete Queue
-     * @param InvoiceInterface $invoice
+     * @param \Intelipost\Shipping\Api\Data\InvoiceInterface $invoice
      * @return bool true on success
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function delete(
-        InvoiceInterface $invoice
+        \Intelipost\Shipping\Api\Data\InvoiceInterface $invoice
     );
 
     /**

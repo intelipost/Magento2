@@ -9,49 +9,45 @@ declare(strict_types=1);
 
 namespace Intelipost\Shipping\Api;
 
-use Intelipost\Shipping\Api\Data\QuoteInterface;
-use Intelipost\Shipping\Api\Data\QuoteSearchResultsInterface;
-use Magento\Framework\Api\SearchCriteriaInterface;
-
 interface QuoteRepositoryInterface
 {
 
     /**
      * Save Queue
-     * @param QuoteInterface $quote
-     * @return QuoteInterface
+     * @param \Intelipost\Shipping\Api\Data\QuoteInterface $quote
+     * @return \Intelipost\Shipping\Api\Data\QuoteInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function save(
-        QuoteInterface $quote
+        \Intelipost\Shipping\Api\Data\QuoteInterface $quote
     );
 
     /**
      * Retrieve Queue
      * @param string $id
-     * @return QuoteInterface
+     * @return \Intelipost\Shipping\Api\Data\QuoteInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getById($id);
 
     /**
      * Retrieve Queue matching the specified criteria.
-     * @param SearchCriteriaInterface $searchCriteria
-     * @return QuoteSearchResultsInterface
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @return \Intelipost\Shipping\Api\Data\QuoteSearchResultsInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getList(
-        SearchCriteriaInterface $searchCriteria
+        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
     );
 
     /**
      * Delete Queue
-     * @param QuoteInterface $quote
+     * @param \Intelipost\Shipping\Api\Data\QuoteInterface $quote
      * @return bool true on success
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function delete(
-        QuoteInterface $quote
+        \Intelipost\Shipping\Api\Data\QuoteInterface $quote
     );
 
     /**

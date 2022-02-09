@@ -2,7 +2,7 @@
     "name": "intelipost/magento2",
     "description": "Intelipost Shipping",
     "type": "magento2-module",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "authors": [
         {
             "name": "Thiago Contardi",

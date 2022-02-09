@@ -5,50 +5,48 @@
  * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
-namespace Intelipost\Shipping\Api;
+declare(strict_types=1);
 
-use Intelipost\Shipping\Api\Data\WebhookInterface;
-use Intelipost\Shipping\Api\Data\WebhookSearchResultsInterface;
-use Magento\Framework\Api\SearchCriteriaInterface;
+namespace Intelipost\Shipping\Api;
 
 interface WebhookRepositoryInterface
 {
     /**
      * Save Queue
-     * @param WebhookInterface $invoice
-     * @return WebhookInterface
+     * @param \Intelipost\Shipping\Api\Data\WebhookInterface $invoice
+     * @return \Intelipost\Shipping\Api\Data\WebhookInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function save(
-        WebhookInterface $invoice
+        \Intelipost\Shipping\Api\Data\WebhookInterface $invoice
     );
 
     /**
      * Retrieve Queue
      * @param string $id
-     * @return WebhookInterface
+     * @return \Intelipost\Shipping\Api\Data\WebhookInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getById($id);
 
     /**
      * Retrieve Queue matching the specified criteria.
-     * @param SearchCriteriaInterface $searchCriteria
-     * @return WebhookSearchResultsInterface
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @return \Intelipost\Shipping\Api\Data\WebhookSearchResultsInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getList(
-        SearchCriteriaInterface $searchCriteria
+        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
     );
 
     /**
      * Delete Queue
-     * @param WebhookInterface $invoice
+     * @param \Intelipost\Shipping\Api\Data\WebhookInterface $invoice
      * @return bool true on success
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function delete(
-        WebhookInterface $invoice
+        \Intelipost\Shipping\Api\Data\WebhookInterface $invoice
     );
 
     /**
