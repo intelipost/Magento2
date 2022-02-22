@@ -131,10 +131,10 @@
     </table>
 
     <table name="sales_order">
-        <column xsi:type="text" name="intelipost_quotes" nullable="true" comment="intelipost Quote"/>
+        <column xsi:type="text" name="intelipost_quotes" nullable="true" comment="Intelipost Quote"/>
     </table>
 
     <table name="sales_order_grid">
-        <column xsi:type="text" name="intelipost_quotes" nullable="true" comment="intelipost Quote"/>
+        <column xsi:type="text" name="intelipost_quotes" nullable="true" comment="Intelipost Quote"/>
     </table>
 </schema>

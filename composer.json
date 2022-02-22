@@ -2,20 +2,17 @@
     "name": "intelipost/magento2",
     "description": "Intelipost Shipping",
     "type": "magento2-module",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "authors": [
         {
-            "name": "Thiago Contardi",
+            "name": "Intelipost DEV",
             "email": "integracoes@intelipost.com.br",
-            "homepage": "http://www.intelipost.com.br/"
+            "homepage": "https://www.intelipost.com.br/"
         }
     ],
     "license": [
         "OSL-3.0"
     ],
-    "require": {
-        "php": "~7.1.0||~7.2||~7.3||~7.4"
-    },
     "autoload": {
         "files": [
             "registration.php"

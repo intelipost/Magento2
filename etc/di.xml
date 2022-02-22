@@ -91,5 +91,9 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="intelipost_data_to_sales_order" type="Intelipost\Shipping\Plugin\AddDataToSaleOrder" />
+    </type>
 </config>
 

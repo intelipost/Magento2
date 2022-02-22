@@ -245,7 +245,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $intelipostQuote->setSessionId($this->getSessionId());
         $intelipostQuote->setCarrier($carrier);
         $intelipostQuote->setQuoteId($id);
-        $intelipostQuote->setProducts($this->json->serialize($postData['products']));
+        $intelipostQuote->setProducts($this->serializeData($postData['products']));
         $intelipostQuote->setOriginZipCode($postData['origin_zip_code']);
 
         $intelipostQuote->setLogisticProviderName($method['logistic_provider_name']);
@@ -269,8 +269,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $intelipostQuote->setProviderShippingCost($method['provider_shipping_cost']);
         $intelipostQuote->setFinalShippingCost($method['final_shipping_cost']);
 
-        $intelipostQuote->setApiRequest($postData ['api_request']);
-        $intelipostQuote->setApiResponse($postData ['api_response']);
+        $apiRequest = $this->serializeData($postData['api_request']);
+        $intelipostQuote->setApiRequest($apiRequest);
+
+        $apiResponse = $this->serializeData($postData['api_response']);
+        $intelipostQuote->setApiResponse($apiResponse);
 
         if (!empty($this->selectedSchedulingMethod)) {
             if ($method['delivery_method_id'] == $this->selectedSchedulingMethod['delivery_method_id']) {
@@ -279,13 +282,31 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
 
-        $intelipostQuote->setQuoteVolume($volumes);
+        $intelipostQuote->setQuoteVolume($this->serializeData($volumes));
 
-        if ($this->getConfig('save_quote_database', 'intelipost_basic')) {
+        if ($this->getConfig('save_quote_database', 'settings', 'intelipost_basic')) {
             $this->quoteRepository->save($intelipostQuote);
         }
 
         return $intelipostQuote;
+    }
+
+    /**
+     * @param $data
+     * @return bool|string
+     */
+    public function serializeData($data)
+    {
+        return is_string($data) ? $data : $this->json->serialize($data);
+    }
+
+    /**
+     * @param $data
+     * @return array|object
+     */
+    public function unserializeData($data)
+    {
+        return $this->json->unserialize($data);
     }
 
     /**

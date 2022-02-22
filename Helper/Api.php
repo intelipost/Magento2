@@ -41,7 +41,7 @@ class Api
      */
     public function quoteRequest($httpMethod, $apiMethod, &$postData = false)
     {
-        $postData ['api_request'] = $postData;
+        $postData['api_request'] = $postData;
 
         $response = $this->client->apiRequest($httpMethod, $apiMethod, $postData);
         $result = json_decode($response, true);
@@ -50,7 +50,7 @@ class Api
             throw new \Exception("Erro ao consultar API");
         }
 
-        $postData ['api_response'] = $response;
+        $postData['api_response'] = $response;
 
         return $result;
     }
