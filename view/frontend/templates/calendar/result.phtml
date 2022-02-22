@@ -9,17 +9,17 @@
 <div id="intelipost-quote-calendar">
 
     <div id="intelipost-quote-calendar-seldate">
-        <strong><?php echo __('Select the Day in the Calendar below for Scheduled Delivery:'); ?></strong>
+        <strong><?= __('Select the Day in the Calendar below for Scheduled Delivery:'); ?></strong>
     </div>
     <br/>
     <div>
         <input type="radio" id="intelipost-quote-calendar-period-morning" name="intelipost-quote-calendar-period"
                value="morning" checked="checked">
-        <label for="intelipost-quote-calendar-period-morning"><?php echo __('Morning'); ?></label>
+        <label for="intelipost-quote-calendar-period-morning"><?= __('Morning'); ?></label>
         &nbsp;
         <input type="radio" id="intelipost-quote-calendar-period-afternoon" name="intelipost-quote-calendar-period"
                value="afternoon">
-        <label for="intelipost-quote-calendar-period-afternoon"><?php echo __('Afternoon'); ?></label>
+        <label for="intelipost-quote-calendar-period-afternoon"><?= __('Afternoon'); ?></label>
     </div>
 
     <br/>
@@ -42,8 +42,8 @@
             }
 
             function onSelect(dateText, instance) {
-                var quoteId = "<?php echo $this->getQuoteItem()->getQuoteId(); ?>";
-                var methodId = "<?php echo $this->getQuoteItem()->getDeliveryMethodId(); ?>";
+                var quoteId = "<?= $this->getQuoteItem()->getQuoteId(); ?>";
+                var methodId = "<?= $this->getQuoteItem()->getDeliveryMethodId(); ?>";
                 var period = jQuery('input[name="intelipost-quote-calendar-period"]:checked').val();
 
                 jQuery.ajax({
@@ -60,8 +60,8 @@
                 beforeShowDay: noWeekends,
                 dateFormat: "yy/mm/dd",
                 hideIfNoPrevNext: true,
-                minDate: new Date("<?php echo $minDate; ?>"),
-                maxDate: new Date("<?php echo $maxDate; ?>"),
+                minDate: new Date("<?= $minDate; ?>"),
+                maxDate: new Date("<?= $maxDate; ?>"),
                 onSelect: onSelect,
                 noWeekends: true
             });

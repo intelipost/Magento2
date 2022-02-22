@@ -7,21 +7,30 @@
 
 namespace Intelipost\Shipping\Cron;
 
+use Intelipost\Shipping\Client\ShipmentOrder;
+use Intelipost\Shipping\Helper\Data;
+use Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory;
+
 class CreateOrder
 {
-    /** @var \Intelipost\Shipping\Helper\Data  */
+    /** @var Data  */
     protected $helper;
 
-    /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory  */
+    /** @var CollectionFactory  */
     protected $collectionFactory;
 
-    /** @var \Intelipost\Shipping\Client\ShipmentOrder  */
+    /** @var ShipmentOrder  */
     protected $shipmentOrder;
 
+    /**
+     * @param CollectionFactory $collectionFactory
+     * @param ShipmentOrder $shipmentOrder
+     * @param Data $helper
+     */
     public function __construct(
-        \Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory $collectionFactory,
-        \Intelipost\Shipping\Client\ShipmentOrder $shipmentOrder,
-        \Intelipost\Shipping\Helper\Data $helper
+        CollectionFactory $collectionFactory,
+        ShipmentOrder $shipmentOrder,
+        Data $helper
     )
     {
         $this->collectionFactory = $collectionFactory;

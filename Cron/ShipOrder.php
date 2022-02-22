@@ -7,19 +7,37 @@
 
 namespace Intelipost\Shipping\Cron;
 
+use Intelipost\Shipping\Client\Shipped;
+use Intelipost\Shipping\Helper\Data;
+use Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory;
+use Intelipost\Shipping\Model\Shipment;
+
 class ShipOrder
 {
+    /** @var Data  */
     protected $helper;
+
+    /** @var CollectionFactory  */
     protected $collectionFactory;
+
+    /** @var Shipment  */
     protected $_shipment;
+
+    /** @var Shipped  */
     protected $shipped;
 
+    /**
+     * @param CollectionFactory $collectionFactory
+     * @param Shipped $shipped
+     * @param Shipment $shipment
+     * @param Data $helper
+     */
     public function __construct
     (
-        \Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory $collectionFactory,
-        \Intelipost\Shipping\Client\Shipped $shipped,
-        \Intelipost\Shipping\Model\Shipment $shipment,
-        \Intelipost\Shipping\Helper\Data $helper
+        CollectionFactory $collectionFactory,
+        Shipped $shipped,
+        Shipment $shipment,
+        Data $helper
     )
     {
         $this->helper = $helper;
@@ -40,11 +58,11 @@ class ShipOrder
             $collection->addFieldToFilter('status', ['eq' => $status])
                 ->addFieldToFilter(
                     'main_table.intelipost_status',
-                    ['neq' => \Intelipost\Shipping\Model\Shipment::STATUS_SHIPPED]
+                    ['neq' => Shipment::STATUS_SHIPPED]
                 );
 
             foreach ($collection as $shipment) {
-                /** @var \Intelipost\Shipping\Client\Shipped $col */
+                /** @var Shipped $col */
                 $this->shipped->shippedRequestBody($shipment);
             }
         }

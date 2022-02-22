@@ -62,6 +62,7 @@
             <label>Save Quote Database</label>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>intelipost_basic/settings/save_quote_database</config_path>
+            <tooltip>Quotes older than 3 months will be deleted automattically</tooltip>
             <comment>If enabled, it can use a huge amount of disk space because it'll save all quotes in a database table, it's only recommended for testing purposes</comment>
         </field>
     </group>

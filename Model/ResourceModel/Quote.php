@@ -15,4 +15,16 @@ class Quote extends AbstractDb
     {
         $this->_init('intelipost_quotes', 'entity_id');
     }
+
+    public function deleteOldRecords()
+    {
+        $date = new \DateTime();
+        $date->modify('-3 months');
+        $dateLimit = $date->format('Y-m-d 00:00:00');
+
+        $this->getConnection()->delete(
+            $this->getMainTable(),
+            'created_at < "' . $dateLimit . '"'
+        );
+    }
 }

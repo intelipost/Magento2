@@ -50,7 +50,7 @@ class Shipped
     public function shippedRequestBody($shipment)
     {
         $requestBody = $this->prepareShippedRequestBody($shipment);
-        $this->sendShippedRequest(json_encode($requestBody), $shipment);
+        $this->sendShippedRequest($this->helper->serializeData($requestBody), $shipment);
         return $this;
     }
 
@@ -78,14 +78,15 @@ class Shipped
     public function sendShippedRequest($requestBody, $shipment)
     {
         $response = $this->helperApi->apiRequest('POST', 'shipment_order/multi/shipped/with_date', $requestBody);
-        $result = json_decode($response);
+        $result = $this->helper->unserializeData($response);
+        $responseStatus = $result['status'];
 
-        if($result->status == 'ERROR') {
+        if($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_ERROR) {
             $messages = null;
             $errorCount = 1;
 
-            foreach ($result->messages as $_message) {
-                $messages .= __('Erro (%1): %2', $errorCount, $_message->text);
+            foreach ($result['messages'] as $msg) {
+                $messages .= __('Erro (%1): %2', $errorCount, $msg['text']);
                 $errorCount++;
             }
             $this->message = $messages;
@@ -98,11 +99,11 @@ class Shipped
 
         }
 
-        if($result->status == 'OK') {
+        if($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_OK) {
             /** @var \Intelipost\Shipping\Model\Shipment $shipment */
             $shipment = $this->shipmentRepository->getById($shipment->getId());
             $shipment->setIntelipostStatus(\Intelipost\Shipping\Model\Shipment::STATUS_SHIPPED);
-            $shipment->setIntelipostMessage($result->status);
+            $shipment->setIntelipostMessage($responseStatus);
             $this->shipmentRepository->save($shipment);
         }
     }

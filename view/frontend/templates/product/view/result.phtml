@@ -11,13 +11,13 @@
         <?php foreach ($rates as $_rate): ?>
             <?php if ($_rate->getErrorMessage()): ?>
                 <tr>
-                    <td class="message error"><?php echo $_rate->getErrorMessage(); ?></td>
+                    <td class="message error"><?= $_rate->getErrorMessage(); ?></td>
                     <td> </td>
                 </tr>
             <?php else: ?>
                 <tr>
-                    <td><?php echo $_rate->getMethodTitle(); ?></td>
-                    <td><?php echo $pricingHelper->currency($_rate->getPrice()); ?></td>
+                    <td><?= $_rate->getMethodTitle(); ?></td>
+                    <td><?= $pricingHelper->currency($_rate->getPrice()); ?></td>
                 </tr>
             <?php endif; ?>
         <?php endforeach; ?>

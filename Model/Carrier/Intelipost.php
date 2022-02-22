@@ -348,14 +348,12 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
                     $child['delivery_method_id']
                 );
 
-                $child['available_scheduling_dates'] = json_encode($response['content']['available_business_days']);
+                $child['available_scheduling_dates'] = $this->helper->serializeData($response['content']['available_business_days']);
             }
 
             // Data
             $deliveryMethodId = $child['delivery_method_id'];
             $child['delivery_method_id'] = $this->_code . '_' . $deliveryMethodId;
-
-            // $method = $this->rateMethodFactory->create();
 
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($this->getConfigData('title'));

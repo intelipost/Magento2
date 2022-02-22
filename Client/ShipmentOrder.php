@@ -108,7 +108,7 @@ class ShipmentOrder
         ]);
 
         $requestBody = $this->getShipment($shipment);
-        $this->sendShipmentRequest(json_encode($requestBody), $shipment);
+        $this->sendShipmentRequest($this->helper->serializeData($requestBody), $shipment);
         return $this;
     }
 
@@ -173,16 +173,18 @@ class ShipmentOrder
     public function sendShipmentRequest($requestBody, $shipment)
     {
         $response = $this->helperApi->apiRequest('POST', 'shipment_order', $requestBody);
-        $result = json_decode($response);
-        $shipmentStatus = \Intelipost\Shipping\Model\Shipment::STATUS_CREATED;
-        $shipmentMessage = $result->status;
+        $result = $this->helper->unserializeData($response);
 
-        if ($result->status == 'ERROR') {
+        $shipmentStatus = \Intelipost\Shipping\Model\Shipment::STATUS_CREATED;
+        $responseStatus = $result['status'];
+        $shipmentMessage = $responseStatus;
+
+        if ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_ERROR) {
             $messages = null;
             $errorCount = 1;
 
-            foreach ($result->messages as $_message) {
-                $messages .= __('Error (%1): %2', $errorCount, $_message->text) . " \n";
+            foreach ($result['messages'] as $msg) {
+                $messages .= __('Error (%1): %2', $errorCount, $msg['text']) . " \n";
                 $errorCount++;
             }
             $this->message = $messages;
@@ -190,14 +192,14 @@ class ShipmentOrder
             $shipmentStatus = \Intelipost\Shipping\Model\Shipment::STATUS_ERROR;
             $shipmentMessage = $messages;
 
-        } else if ($result->status == 'OK') {
+        } else if ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_OK) {
             $trackingCode = '';
-            $trackingUrl = $result->content->tracking_url;
-            if (isset($result->content->shipment_order_volume_array)) {
+            $trackingUrl = $result['content']['tracking_url'];
+            if (isset($result['content']['shipment_order_volume_array'])) {
                 $trackingCodes = [];
-                foreach ($result->content->shipment_order_volume_array as $volume) {
-                    if (isset($volume->tracking_code)) {
-                        $trackingCodes[] = $volume->tracking_code;
+                foreach ($result['content']['shipment_order_volume_array'] as $volume) {
+                    if (isset($volume['tracking_code'])) {
+                        $trackingCodes[] = $volume['tracking_code'];
                     }
                 }
                 if (!empty($trackingCodes)) {

@@ -35,11 +35,11 @@ require([
         var postcode = $('product-shipping-postcode').value.replace(/[-]/g, '');
 
         if (!postcode.length || postcode.length != 8) {
-            $('product-shipping-result').textContent = "<?php echo __('Please fill the zipcode field!'); ?>";
+            $('product-shipping-result').textContent = "<?= __('Please fill the zipcode field!'); ?>";
             $('product-shipping-postcode').focus();
         } else {
             jQuery.ajax({
-                url: '<?php echo $this->getAjaxShippingUrl() ?>',
+                url: '<?= $this->getAjaxShippingUrl() ?>',
                 data: jQuery('#product_addtocart_form, #intelipost-product-shipping-form').serialize(),
 
                 success: function (data) {
@@ -48,12 +48,12 @@ require([
                 },
 
                 error: function () {
-                    $('product-shipping-result').textContent = "<?php echo __('Failure'); ?>";
+                    $('product-shipping-result').textContent = "<?= __('Failure'); ?>";
                     enableProductShippingButton();
                 }
             });
 
-            $('product-shipping-result').textContent = "<?php echo __('Calculating ...'); ?>";
+            $('product-shipping-result').textContent = "<?= __('Calculating ...'); ?>";
             disableProductShippingButton();
         }
     });
@@ -69,23 +69,23 @@ require([
 </script>
 
 <form id="intelipost-product-shipping-form" class="intelipost-product-shipping-form">
-    <!-- <input name="form_key" value="<?php echo $this->getFormKey(); ?>" type="hidden" /> -->
-    <!-- <input name="product" value="<?php echo $this->getProduct()->getId(); ?>" type="hidden" /> -->
-    <input name="sku" value="<?php echo $this->getProduct()->getSku(); ?>" type="hidden"/>
-    <input name="url" value="<?php echo $this->getCurrentProductUrl(); ?>" type="hidden"/>
+    <!-- <input name="form_key" value="<?= $this->getFormKey(); ?>" type="hidden" /> -->
+    <!-- <input name="product" value="<?= $this->getProduct()->getId(); ?>" type="hidden" /> -->
+    <input name="sku" value="<?= $this->getProduct()->getSku(); ?>" type="hidden"/>
+    <input name="url" value="<?= $this->getCurrentProductUrl(); ?>" type="hidden"/>
     <input name="country" value="BR" type="hidden"/>
     <div class="fieldset">
         <div class="field">
             <label class="label" for="product-shipping-postcode">
-                <span><?php echo __('Calculate the freight and delivery time:'); ?></span>
+                <span><?= __('Calculate the freight and delivery time:'); ?></span>
             </label>
         </div>
         <div class="field">
-            <input name="postcode" id="product-shipping-postcode" maxlength="9" title="<?php echo __('Postcode'); ?>"
+            <input name="postcode" id="product-shipping-postcode" maxlength="9" title="<?= __('Postcode'); ?>"
                    class="input-text" type="text">
-            <button type="button" title="<?php echo __('Calculate'); ?>" class="action primary"
+            <button type="button" title="<?= __('Calculate'); ?>" class="action primary"
                     id="product-shipping-button">
-                <span><?php echo __('Calculate'); ?></span>
+                <span><?= __('Calculate'); ?></span>
             </button>
         </div>
         <div class="field">

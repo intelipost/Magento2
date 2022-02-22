@@ -153,3 +153,4 @@ Description,Description
 "If enabled, Intelipost can change Magento orders status automatically. You'll need to add a new webhook on Intelipost","If enabled, Intelipost can change Magento orders status automatically. You'll need to add a new webhook on Intelipost"
 "With webhook enabled it'll create a shipment when there's an shipping event on Intelipost.","With webhook enabled it'll create a shipment when there's an shipping event on Intelipost."
 "When an order is created in Intelipost, it's possible to change the order status and notify the customer","When an order is created in Intelipost, it's possible to change the order status and notify the customer"
+"Quotes older than 3 months will be deleted automattically","Quotes older than 3 months will be deleted automattically"

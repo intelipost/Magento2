@@ -7,6 +7,10 @@
 
 namespace Intelipost\Shipping\Helper;
 
+use Intelipost\Shipping\Client\Intelipost;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Serialize\Serializer\Json;
+
 class Api
 {
     const POST = 'POST';
@@ -16,20 +20,29 @@ class Api
     const QUOTE_BUSINESS_DAYS = 'quote/business_days/';
     const QUOTE_AVAILABLE_SCHEDULING_DATES = 'quote/available_scheduling_dates/';
 
+    /** @var ScopeConfigInterface  */
     protected $scopeConfig;
+
+    /** @var Intelipost  */
     protected $client;
 
+    /** @var Json */
+    protected $json;
+
     /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Intelipost\Shipping\Client\Intelipost $client
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Intelipost $client
+     * @param Json $json
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Intelipost\Shipping\Client\Intelipost             $client
+        ScopeConfigInterface $scopeConfig,
+        Intelipost $client,
+        Json $json
     )
     {
         $this->scopeConfig = $scopeConfig;
         $this->client = $client;
+        $this->json = $json;
     }
 
     /**
@@ -44,7 +57,7 @@ class Api
         $postData['api_request'] = $postData;
 
         $response = $this->client->apiRequest($httpMethod, $apiMethod, $postData);
-        $result = json_decode($response, true);
+        $result = $this->json->unserialize($response);
 
         if (!strcmp($result ['status'], 'ERROR')) {
             throw new \Exception("Erro ao consultar API");
@@ -79,11 +92,11 @@ class Api
     public function getEstimateDeliveryDate($originZipcode, $destPostcode, $businessDays)
     {
         $response = $this->apiRequest(
-            \Intelipost\Shipping\Client\Intelipost::GET,
+            Intelipost::GET,
             self::QUOTE_BUSINESS_DAYS . "{$originZipcode}/{$destPostcode}/{$businessDays}"
         );
 
-        return json_decode($response, true);
+        return $this->json->unserialize($response);
     }
 
     /**
@@ -95,11 +108,11 @@ class Api
     public function getAvailableSchedulingDates($originZipcode, $destPostcode, $deliveryMethodId)
     {
         $response = $this->apiRequest(
-            \Intelipost\Shipping\Client\Intelipost::GET,
+            Intelipost::GET,
             self::QUOTE_AVAILABLE_SCHEDULING_DATES . "{$deliveryMethodId}/{$originZipcode}/{$destPostcode}"
         );
 
-        return json_decode($response, true);
+        return $this->json->unserialize($response);
     }
 
     /**

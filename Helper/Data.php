@@ -675,6 +675,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @param string
+     */
+    public function log($message)
+    {
+        if ($this->getConfig('debug')) {
+            $this->getLogger()->info($message);
+        }
+    }
+
+    /**
      * @param $incrementId
      * @return OrderInterface
      */
