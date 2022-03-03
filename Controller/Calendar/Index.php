@@ -7,28 +7,33 @@
 
 namespace Intelipost\Shipping\Controller\Calendar;
 
+use Intelipost\Shipping\Helper\Data;
+use Intelipost\Shipping\Model\QuoteFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\View\Result\PageFactory;
+
 class Index extends \Magento\Framework\App\Action\Action
 {
-    /** @var \Intelipost\Shipping\Helper\Data */
+    /** @var Data */
     protected $helper;
 
-    /** @var \Intelipost\Shipping\Model\QuoteFactory */
+    /** @var QuoteFactory */
     protected $shippingFactory;
 
-    /** @var \Magento\Framework\View\Result\PageFactory */
+    /** @var PageFactory */
     protected $resultPageFactory;
 
     /**
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Intelipost\Shipping\Helper\Data $helper
-     * @param \Intelipost\Shipping\Model\QuoteFactory $quoteFactory
+     * @param Context $context
+     * @param PageFactory $resultPageFactory
+     * @param Data $helper
+     * @param QuoteFactory $quoteFactory
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context      $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Intelipost\Shipping\Helper\Data           $helper,
-        \Intelipost\Shipping\Model\QuoteFactory    $quoteFactory
+        Context      $context,
+        PageFactory $resultPageFactory,
+        Data           $helper,
+        QuoteFactory    $quoteFactory
     )
     {
         $this->helper = $helper;

@@ -153,3 +153,4 @@ Description,Descrição
 "With webhook enabled it'll create a shipment when there's an shipping event on Intelipost.","Com webhook  habilitado, irá criar o envio assim que o evento for disparado pela Intelipost."
 "When an order is created in Intelipost, it's possible to change the order status and notify the customer","Quando um pedido for criado na Inteipost, poderá alterar o status do pedido automaticamente"
 "Quotes older than 3 months will be deleted automattically","Quotes com mais de 3 meses serão removidas automaticamente"
+"There was an error with the shipping quote, please contact us","Houve um erro com a cotação de frete, contate-nos para mais detalhes"

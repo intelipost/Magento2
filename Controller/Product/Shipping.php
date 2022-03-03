@@ -7,40 +7,55 @@
 
 namespace Intelipost\Shipping\Controller\Product;
 
+use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Quote\Model\Quote;
+use Psr\Log\LoggerInterface;
+
 class Shipping extends \Magento\Framework\App\Action\Action
 {
-    /** @var \Magento\Quote\Model\Quote */
+    /** @var Quote */
     protected $quote;
 
-    /** @var \Magento\Framework\View\Result\PageFactory */
+    /** @var PageFactory */
     protected $resultPageFactory;
 
-    /** @var \Magento\Catalog\Model\ProductRepository */
+    /** @var ProductRepository */
     protected $productRepository;
 
+    /** @var LoggerInterface  */
+    protected $logger;
+
     /**
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Quote\Model\Quote $quote
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Catalog\Model\ProductRepository $productRepository
+     * @param Context $context
+     * @param LoggerInterface $logger
+     * @param Quote $quote
+     * @param PageFactory $resultPageFactory
+     * @param ProductRepository $productRepository
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context      $context,
-        \Magento\Quote\Model\Quote                 $quote,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Catalog\Model\ProductRepository   $productRepository
+        Context $context,
+        LoggerInterface $logger,
+        Quote $quote,
+        PageFactory $resultPageFactory,
+        ProductRepository $productRepository
     )
     {
         $this->quote = $quote;
+        $this->logger = $logger;
         $this->resultPageFactory = $resultPageFactory;
         $this->productRepository = $productRepository;
 
         parent::__construct($context);
     }
 
-    //@TOTO improve it
+    //@TODO improve it
     public function execute()
     {
+        $rates = false;
+        $template = 'Intelipost_Shipping::product/view/error.phtml';
+
         try {
             $country = $this->getRequest()->getParam('country');
             $postcode = $this->getRequest()->getParam('postcode');
@@ -73,23 +88,23 @@ class Shipping extends \Magento\Framework\App\Action\Action
             $this->quote->addProduct($product, $options);
 
             $this->quote->collectTotals();
-            $result = $this->quote->getShippingAddress()->getGroupedAllShippingRates();
-            if (is_string($result)) {
-                var_dump($result);
-                die();
+            $rates = $this->quote->getShippingAddress()->getGroupedAllShippingRates();
+            if (!is_string($rates)) {
+                $template = 'Intelipost_Shipping::product/view/result.phtml';
             }
 
-            $resultPage = $this->resultPageFactory->create();
-            $this->getResponse()->setBody(
-                $resultPage->getLayout()
-                    ->createBlock(\Magento\Framework\View\Element\Template::class)
-                    ->setRates($result)
-                    ->setTemplate('Intelipost_Shipping::product/view/result.phtml')
-                    ->toHtml()
-            );
         } catch (\Exception $e) {
-
+            $this->logger->error($e->getMessage());
         }
+
+        $resultPage = $this->resultPageFactory->create();
+        $this->getResponse()->setBody(
+            $resultPage->getLayout()
+                ->createBlock(\Magento\Framework\View\Element\Template::class)
+                ->setRates($rates)
+                ->setTemplate($template)
+                ->toHtml()
+        );
 
 
     }

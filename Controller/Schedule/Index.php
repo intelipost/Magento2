@@ -120,7 +120,6 @@ class Index extends \Magento\Framework\App\Action\Action
             $metadata
         );
 
-        $resultPage = $this->resultPageFactory->create();
         $this->getResponse()->setBody(
             __('Delivery Scheduled for: %1 period: %2', $selDate, __(ucfirst($period)))
         );
