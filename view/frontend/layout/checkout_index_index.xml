@@ -24,14 +24,12 @@
                                 <item name="sidebar" xsi:type="array">
                                     <item name="children" xsi:type="array">
                                         <item name="shipping-information" xsi:type="array">
-                                            <item name="component" xsi:type="string">
-                                                Intelipost_Shipping/js/view/checkout/shipping-information
+                                            <item name="config" xsi:type="array">
+                                                <item name="template" xsi:type="string">Intelipost_Shipping/checkout/shipping-information</item>
                                             </item>
                                             <item name="children" xsi:type="array">
                                                 <item name="ship-add" xsi:type="array">
-                                                    <item name="component" xsi:type="string">
-                                                        Intelipost_Shipping/js/view/checkout/shipping-information/additional
-                                                    </item>
+                                                    <item name="component" xsi:type="string">Intelipost_Shipping/js/view/checkout/shipping-information/additional</item>
                                                     <item name="displayArea" xsi:type="string">ship-add</item>
                                                 </item>
                                             </item>
@@ -47,9 +45,7 @@
                                                         <item name="shipping-rates-validation" xsi:type="array">
                                                             <item name="children" xsi:type="array">
                                                                 <item name="intelipost-rates-validation" xsi:type="array">
-                                                                    <item name="component" xsi:type="string">
-                                                                        Intelipost_Shipping/js/view/shipping-rates-validation
-                                                                    </item>
+                                                                    <item name="component" xsi:type="string">Intelipost_Shipping/js/view/shipping-rates-validation</item>
                                                                 </item>
                                                             </item>
                                                         </item>

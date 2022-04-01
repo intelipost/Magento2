@@ -7,7 +7,7 @@
 define([
     'jquery',
     'mageUtils',
-    '../shipping-rates-validation-rules/intelipost',
+    'Intelipost_Shipping/js/model/shipping-rates-validation-rules/intelipost',
     'mage/translate'
 ], function ($, utils, validationRules, $t) {
     'use strict';

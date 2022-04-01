@@ -2,9 +2,9 @@
     "name": "intelipost/magento2",
     "description": "Intelipost Shipping",
     "type": "magento2-module",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "require": {
-        "guzzlehttp/guzzle": "^6.3.3"
+        "guzzlehttp/guzzle": ">=6.3.3"
     },
     "authors": [
         {

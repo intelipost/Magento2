@@ -77,7 +77,7 @@ class Intelipost
             $responseBody = $response->getBody()->getContents();
 
             if (!$response) {
-                $this->logger->error(__('Error reqest data to Intelipost'));
+                $this->logger->error(__('Error sending data to Intelipost'));
                 $responseBody = false;
             }
 
@@ -111,7 +111,7 @@ class Intelipost
                 return false;
             }
 
-            if ($objResponse['status'] != self::RESPONSE_STATUS) {
+            if ($objResponse['status'] != self::RESPONSE_STATUS_OK) {
                 $this->logger->error(__('ERROR - (%1) %2', $objResponse['messages'][0]['key'], $objResponse['messages'][0]['text']));
                 return false;
             }
