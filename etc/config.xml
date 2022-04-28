@@ -44,7 +44,7 @@ Você receberá a notificação de quando sua encomenda estará disponível para
                 <length_attribute>length</length_attribute>
                 <default_length>11</default_length>
                 <custom_title><![CDATA[{method} - Em média {days} dias para entrega]]></custom_title>
-                <same_day_title><![CDATA[{method}} - entrega hoje]]></same_day_title>
+                <same_day_title><![CDATA[{method} - entrega hoje]]></same_day_title>
                 <value_on_zero><![CDATA[0.01]]></value_on_zero>
                 <showmethod>1</showmethod>
             </intelipost>
