@@ -38,16 +38,14 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     /** @var \Intelipost\Shipping\Model\Webhook  */
     private $webhook;
 
-    public function __construct
-    (
+    public function __construct(
         Context $context,
         Data $helper,
         ShipmentRepository $shipmentRepository,
         WebhookRepository $webhookRepository,
         WebhookFactory $webhookFactory,
         Json $json
-    )
-    {
+    ) {
         parent::__construct($context);
         $this->json = $json;
         $this->helper = $helper;
@@ -103,7 +101,6 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                 $this->helper->getLogger()->error($e->getMessage());
                 $this->saveWebhookMessage($e->getMessage());
             }
-
         }
     }
 
@@ -168,7 +165,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                     break;
 
                 case 'IN_TRANSIT':
-                    $status = $this->helper->getConfig('status_in_transit');;
+                    $status = $this->helper->getConfig('status_in_transit');
                     break;
 
                 case 'TO_BE_DELIVERED':
@@ -229,10 +226,14 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     public function updateTrackingCode($incrementId, $trackingCode, $trackingUrl)
     {
         if ($trackingCode || $trackingUrl) {
-            $shipment = $this->shipmentRepository->getByOrderIncrementId($incrementId);
-            $shipment->setTrackingCode($trackingCode);
-            $shipment->setTrackingUrl($trackingUrl);
-            $this->shipmentRepository->save($shipment);
+            try {
+                $shipment = $this->shipmentRepository->getByOrderIncrementId($incrementId);
+                $shipment->setTrackingCode($trackingCode);
+                $shipment->setTrackingUrl($trackingUrl);
+                $this->shipmentRepository->save($shipment);
+            } catch (\Exception $e) {
+                $this->helper->log($e->getMessage());
+            }
         }
     }
 
