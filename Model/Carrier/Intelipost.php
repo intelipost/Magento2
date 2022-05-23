@@ -191,17 +191,23 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $qtyConfigurable = 1;
 
             if (!empty($cartItems[$parentSku])) {
-                $heightConfigurable = $cartItems[$parentSku]['product']->getData($heightAttribute);
-                $widthConfigurable = $cartItems[$parentSku]['product']->getData($widthAttribute);
-                $lengthConfigurable = $cartItems[$parentSku]['product']->getData($lengthAttribute);
+                if ($heightAttribute) {
+                    $heightConfigurable = $cartItems[$parentSku]['product']->getData($heightAttribute);
+                }
+                if ($widthAttribute) {
+                    $widthConfigurable = $cartItems[$parentSku]['product']->getData($widthAttribute);
+                }
+                if ($lengthAttribute) {
+                    $lengthConfigurable = $cartItems[$parentSku]['product']->getData($lengthAttribute);
+                }
                 $weightConfigurable = $cartItems[$parentSku]->getWeight() / $weightUnit;
                 $qtyConfigurable = $cartItems[$parentSku]->getQty();
             }
 
             // Simple
-            $height = $product->getData($heightAttribute);
-            $width = $product->getData($widthAttribute);
-            $length = $product->getData($lengthAttribute);
+            $height = ($heightAttribute) ? $product->getData($heightAttribute) : null;
+            $width = ($widthAttribute) ? $product->getData($widthAttribute) : null;
+            $length = ($lengthAttribute) ? $product->getData($lengthAttribute) : null;
             $weight = $item->getWeight() / $weightUnit; // always kg
 
             // Price
