@@ -81,7 +81,7 @@ class Intelipost
                 $responseBody = false;
             }
 
-            $this->handleResponse($response);
+            $this->handleResponse($responseBody);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }

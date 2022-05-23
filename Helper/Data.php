@@ -352,7 +352,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         foreach ($response ['content']['delivery_options'] as $id => $child) {
             $deliveryMethodId = $child ['delivery_method_id'];
-            if (!strcmp($deliveryMethodId, $lowerMethod)) {
+            if ($deliveryMethodId == $lowerMethod) {
                 $response ['content']['delivery_options'][$id]['final_shipping_cost'] = 0;
                 $response ['content']['delivery_options'][$id]['description'] = $freeshippingText;
                 break;
