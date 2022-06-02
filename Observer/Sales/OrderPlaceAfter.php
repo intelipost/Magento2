@@ -250,16 +250,17 @@ class OrderPlaceAfter implements ObserverInterface
     }
 
     /**
-     * @param $products
+     * @param array $products
      * @return array
      */
     public function setProductsArray($products)
     {
-        $productsObj = $this->helper->unserializeData($products);
         $productsArray = [];
 
-        foreach ($productsObj as $prod) {
-            $productsArray[] = $prod['id'];
+        if (is_array($products) && !empty($products)) {
+            foreach ($products as $prod) {
+                $productsArray[] = $prod['id'];
+            }
         }
         return $productsArray;
     }
