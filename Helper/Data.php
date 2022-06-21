@@ -149,8 +149,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         GroupRepository $customerGroupRepository,
         OrderInterface $order,
         State $state
-    )
-    {
+    ) {
         $this->quoteFactory = $quoteFactory;
         $this->quoteRepository = $quoteRepository;
         $this->json = $json;
@@ -193,7 +192,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param false $scheduled
      * @return mixed|string
      */
-    public function getCustomCarrierTitle($carrier, $description, $estimatedDelivery, $scheduled = false, $riskMessage = '')
+    public function getCustomCarrierTitle($carrier, $description, $estimatedDelivery, $scheduled = false)
     {
         $estimatedDelivery = (int) $estimatedDelivery;
         if ($scheduled) {
@@ -277,8 +276,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         if (!empty($this->selectedSchedulingMethod)) {
             if ($method['delivery_method_id'] == $this->selectedSchedulingMethod['delivery_method_id']) {
-                $intelipostQuote->setSelectedSchedulingDates($this->selectedSchedulingMethod['selected_scheduling_dates']);
-                $intelipostQuote->setSelectedSchedulingPeriod($this->selectedSchedulingMethod['selected_scheduling_period']);
+                $intelipostQuote->setSelectedSchedulingDates(
+                    $this->selectedSchedulingMethod['selected_scheduling_dates']
+                );
+                $intelipostQuote->setSelectedSchedulingPeriod(
+                    $this->selectedSchedulingMethod['selected_scheduling_period']
+                );
             }
         }
 
@@ -455,7 +458,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             try {
                 $this->orderShipmentRepository->save($shipment);
                 $this->orderRepository->save($shipment->getOrder());
-
             } catch (\Exception $e) {
                 $this->getLogger()->error($e->getMessage());
                 $message = __($e->getMessage());

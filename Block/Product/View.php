@@ -50,8 +50,7 @@ class View extends \Magento\Catalog\Block\Product\View
         PriceCurrencyInterface                   $priceCurrency,
         Data                                     $helper,
         array                                    $data = []
-    )
-    {
+    ) {
         $this->helper = $helper;
         parent::__construct(
             $context,

@@ -11,8 +11,7 @@ class Calendar extends \Magento\Framework\View\Element\Template
 {
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context
-    )
-    {
+    ) {
         $this->setTemplate('calendar.phtml');
         parent::__construct($context);
     }

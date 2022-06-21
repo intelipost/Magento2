@@ -38,8 +38,7 @@ class Api
         ScopeConfigInterface $scopeConfig,
         Intelipost $client,
         Json $json
-    )
-    {
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->client = $client;
         $this->json = $json;

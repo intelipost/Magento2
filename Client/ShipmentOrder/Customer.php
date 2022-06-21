@@ -11,6 +11,9 @@ use Magento\Sales\Model\ResourceModel\Order\Address\CollectionFactory;
 
 class Customer
 {
+    /** @var CollectionFactory  */
+    protected $addressCollectionFactory;
+
     public function __construct(CollectionFactory $addressCollectionFactory)
     {
         $this->addressCollectionFactory = $addressCollectionFactory;

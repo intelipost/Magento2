@@ -35,8 +35,7 @@ class Shipped
         \Intelipost\Shipping\Helper\Data $helper,
         \Intelipost\Shipping\Api\ShipmentRepositoryInterface $shipmentRepository,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
-    )
-    {
+    ) {
         $this->helper = $helper;
         $this->helperApi = $helperApi;
         $this->timezone = $timezone;
@@ -81,7 +80,7 @@ class Shipped
         $result = $this->helper->unserializeData($response);
         $responseStatus = $result['status'];
 
-        if($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_ERROR) {
+        if ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_ERROR) {
             $messages = null;
             $errorCount = 1;
 
@@ -99,7 +98,7 @@ class Shipped
 
         }
 
-        if($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_OK) {
+        if ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_OK) {
             /** @var \Intelipost\Shipping\Model\Shipment $shipment */
             $shipment = $this->shipmentRepository->getById($shipment->getId());
             $shipment->setIntelipostStatus(\Intelipost\Shipping\Model\Shipment::STATUS_SHIPPED);

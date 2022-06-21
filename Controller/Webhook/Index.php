@@ -157,8 +157,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
                 case 'SHIPPED':
                     $status = $this->helper->getConfig('status_shipped');
-                    $statusShipmentAfterIpShipped = $this->helper->getConfig('create_shipment_after_ip_shipped');
-                    if ($statusShipmentAfterIpShipped) {
+                    if ($status) {
                         $trackingUrl = $requestBody['tracking_url'] ?? null;
                         $this->createShipment($orderIncrementId, $trackingUrl);
                     }

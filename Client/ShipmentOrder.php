@@ -59,8 +59,7 @@ class ShipmentOrder
         ShipmentRepositoryInterface $shipmentRepository,
         OrderRepositoryInterface $orderRepository,
         Data $helper
-    )
-    {
+    ) {
         $this->shipmentCustomer = $customer;
         $this->shipmentVolume = $volume;
         $this->shipmentInvoice = $shipmentInvoice;

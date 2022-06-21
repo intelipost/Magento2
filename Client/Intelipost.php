@@ -34,8 +34,7 @@ class Intelipost
     public function __construct(
         Data $helper,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->helper = $helper;
         $this->logger = $logger;
     }
@@ -112,7 +111,9 @@ class Intelipost
             }
 
             if ($objResponse['status'] != self::RESPONSE_STATUS_OK) {
-                $this->logger->error(__('ERROR - (%1) %2', $objResponse['messages'][0]['key'], $objResponse['messages'][0]['text']));
+                $this->logger->error(
+                    __('ERROR - (%1) %2', $objResponse['messages'][0]['key'], $objResponse['messages'][0]['text'])
+                );
                 return false;
             }
         } catch (\Exception $e) {

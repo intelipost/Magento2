@@ -21,8 +21,7 @@ class Address
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Psr\Log\LoggerInterface                           $logger
-    )
-    {
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->logger = $logger;
     }
