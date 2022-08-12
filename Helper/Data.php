@@ -44,7 +44,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /** @var QuoteRepositoryInterface */
     protected $quoteRepository;
 
-    /** @var OrderRepositoryInterface  */
+    /** @var OrderRepositoryInterface */
     protected $orderRepository;
 
     /** @var SessionManager */
@@ -62,7 +62,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /** @var StoreManagerInterface */
     protected $storeManager;
 
-    /** @var GroupRepository  */
+    /** @var GroupRepository */
     protected $customerGroupRepository;
 
     /** @var State */
@@ -71,22 +71,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /** @var Json */
     protected $json;
 
-    /** @var OrderInterface  */
+    /** @var OrderInterface */
     protected $order;
 
-    /** @var OrderShipmentRepository  */
+    /** @var OrderShipmentRepository */
     protected $orderShipmentRepository;
 
-    /** @var OrderShipmentFactory  */
+    /** @var OrderShipmentFactory */
     protected $orderShipmentFactory;
 
-    /** @var ShipmentNotifier  */
+    /** @var ShipmentNotifier */
     protected $shipmentNotifier;
 
-    /** @var ConvertOrder  */
+    /** @var ConvertOrder */
     protected $convertOrder;
 
-    /** @var TrackFactory  */
+    /** @var TrackFactory */
     protected $trackFactory;
 
     /** @var array */
@@ -198,7 +198,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ($scheduled) {
             $text = $this->getConfig('scheduled_title');
         } else {
-            $aditionalDeliveryDate = (int) $this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date');
+            $aditionalDeliveryDate = (int)$this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date');
             $estimatedDelivery = $estimatedDelivery + $aditionalDeliveryDate;
 
             $methodCustomTitle = $this->getConfig('custom_title', $carrier);
@@ -300,7 +300,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function serializeData($data)
     {
-        return is_string($data) ? $data : $this->json->serialize($data);
+        try {
+            $serializedData = is_string($data) ? $data : $this->json->serialize($data);
+        } catch (\Exception $e) {
+            $serializedData = '{}';
+        }
+        return $serializedData;
     }
 
     /**
@@ -309,7 +314,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function unserializeData($data)
     {
-        return $this->json->unserialize($data);
+        try {
+            $unserializedData = $this->json->unserialize($data);
+        } catch (\Exception $e) {
+            $unserializedData = [];
+        }
+        return $unserializedData;
     }
 
     /**
@@ -323,7 +333,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param $response
      */
-    public function checkFreeShipping(&$response)
+    public function checkFreeShipping($response)
     {
         $freeshippingMethod = $this->getConfig('freeshipping_method');
         $freeshippingText = $this->getConfig('freeshipping_text');
@@ -332,10 +342,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $lowerDeliveryDate = PHP_INT_MAX;
         $lowerMethod = null;
 
-        foreach ($response ['content']['delivery_options'] as $child) {
-            $deliveryMethodId = $child ['delivery_method_id'];
-            $finalShippingCost = $child ['final_shipping_cost'];
-            $deliveryEstimateDays = $child ['delivery_estimate_business_days'];
+        foreach ($response['content']['delivery_options'] as $child) {
+            $deliveryMethodId = $child['delivery_method_id'];
+            $finalShippingCost = $child['final_shipping_cost'];
+            $deliveryEstimateDays = $child['delivery_estimate_business_days'];
 
             switch ($freeshippingMethod) {
                 case 'lower_price':
@@ -353,14 +363,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
 
-        foreach ($response ['content']['delivery_options'] as $id => $child) {
-            $deliveryMethodId = $child ['delivery_method_id'];
+        foreach ($response['content']['delivery_options'] as $id => $child) {
+            $deliveryMethodId = $child['delivery_method_id'];
             if ($deliveryMethodId == $lowerMethod) {
-                $response ['content']['delivery_options'][$id]['final_shipping_cost'] = 0;
-                $response ['content']['delivery_options'][$id]['description'] = $freeshippingText;
+                $response['content']['delivery_options'][$id]['final_shipping_cost'] = 0;
+                $response['content']['delivery_options'][$id]['description'] = $freeshippingText;
                 break;
             }
         }
+
+        return $response;
     }
 
     /**
@@ -581,7 +593,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function updateOrder($orderId, $status, $comment)
     {
-        $notifyCustomer = (bool) $this->getConfig('notify_customer');
+        $notifyCustomer = (bool)$this->getConfig('notify_customer');
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderRepository->get($orderId);
         $order->addCommentToStatusHistory($comment, $status, $notifyCustomer);

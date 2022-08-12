@@ -21,11 +21,11 @@ use Magento\Shipping\Model\Rate\ResultFactory;
 
 class Intelipost extends AbstractCarrier implements CarrierInterface
 {
-    const LOG = 'intelipost.log';
+    public const LOG = 'intelipost.log';
 
     protected $_code = 'intelipost';
 
-    /** @var \Psr\Log\LoggerInterface  */
+    /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
     /** @var ResultFactory */
@@ -37,13 +37,13 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     /** @var ScopeConfigInterface */
     protected $scopeConfig;
 
-    /** @var Data  */
+    /** @var Data */
     protected $helper;
 
-    /** @var Api  */
+    /** @var Api */
     protected $api;
 
-    /** @var SourceRepositoryInterface  */
+    /** @var SourceRepositoryInterface */
     protected $sourceRepository;
 
     /** @var ProductRepository */
@@ -72,8 +72,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         Api $api,
         Data $helper,
         array $data = []
-    )
-    {
+    ) {
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
         $this->productRepository = $productRespository;
@@ -112,19 +111,9 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             return false;
         }
 
-        // Zipcodes
-        $originZipcode = $request->getOriginZipcode() ? $request->getOriginZipcode() : $this->getConfigData('source_zip');
-        if ($this->getConfigData('use_default_source')) {
-            $source = $this->getConfigData('source');
-            if ($source) {
-                /** @var \Magento\InventoryApi\Api\Data\SourceInterface $sourceModel */
-                $sourceModel = $this->sourceRepository->get($source);
-                if ($sourceModel && $sourceModel->getPostcode()) {
-                    $originZipcode = $sourceModel->getPostcode();
-                }
-            }
-        }
+        $originZipcode = $this->getOriginZipcode($request);
 
+        $breakOnError = $this->getConfigData('break_on_error');
         $destPostcode = $request->getDestPostcode();
         $postData = [
             'carrier' => $this->_code,
@@ -136,35 +125,183 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             return false;
         }
 
+        $calendarOnlyCheckout = $this->getConfigData('calendar_only_checkout');
+        $pageName = $this->helper->getPageName();
+
+        $postData = $this->getProductData($request, $postData);
+
+        // Additional
+        $postData['additional_information'] = $this->helper->getAdditionalInformation(
+            $request->getAdditionalInformation()
+        );
+        $postData['identification'] = $this->helper->getPageIdentification();
+        $postData['seller_id'] = $request->getSellerId() ? $request->getSellerId() : '';
+
+        // Result
+        $result = $this->rateResultFactory->create();
+
+        $resultQuotes = [];
+        try {
+            $this->logger->debug('Enviando solicitação para a API');
+            $response = $this->api->quoteRequest(
+                \Intelipost\Shipping\Client\Intelipost::POST,
+                Api::QUOTE_BY_PRODUCT,
+                $postData
+            );
+            $intelipostQuoteId = $response['content']['id'];
+            $this->logger->debug('Resposta recebida da API');
+        } catch (\Exception $e) {
+            $error = $this->_rateErrorFactory->create();
+            $specificerrmsg = $this->getConfigData('specificerrmsg');
+
+            $error->setCarrier($this->_code);
+            $error->setCarrierTitle($this->getConfigData('title'));
+            $error->setErrorMessage($specificerrmsg ?: $e->getMessage());
+
+            if ($breakOnError) {
+                return $error;
+            }
+            $result->append($error);
+            return $result;
+        }
+
+        // Free Shipping
+        if ($request->getFreeShipping() === true) {
+            $response = $this->helper->checkFreeShipping($response);
+        }
+
+        // Volumes
+        $volumes = $this->getVolumes($response, $postData['cart_qty']);
+
+        // Methods
+        foreach ($response['content']['delivery_options'] as $child) {
+            $method = $this->rateMethodFactory->create();
+
+            // Risk Area
+            $deliveryNote = $child['delivery_note'] ?? null;
+            if (!empty($deliveryNote)) {
+                $error = $this->_rateErrorFactory->create();
+
+                $riskareamsg = $this->getConfigData('riskareamsg');
+
+                $error->setCarrier($this->_code);
+                $error->setCarrierTitle($this->getConfigData('title'));
+                $error->setErrorMessage($riskareamsg ?: $deliveryNote);
+
+                $method->setWarnMessage($riskareamsg ?: $deliveryNote);
+
+                if ($breakOnError) {
+                    return $error;
+                }
+
+                $result->setError(true);
+                $result->append($error);
+            }
+
+            $method->setScheduled(false);
+
+            // Scheduling
+            $child['available_scheduling_dates'] = null;
+
+            $schedulingEnabled = (array_key_exists('scheduling_enabled', $child))
+                ? $child['scheduling_enabled'] : false;
+
+            if ($schedulingEnabled) {
+                if ($calendarOnlyCheckout && strcmp($pageName, 'checkout')) {
+                    continue;
+                }
+
+                $response = $this->api->getAvailableSchedulingDates(
+                    $originZipcode,
+                    $destPostcode,
+                    $child['delivery_method_id']
+                );
+
+                $availableBusinessDays = $response['content']['available_business_days'];
+                $child['available_scheduling_dates'] = $this->helper->serializeData($availableBusinessDays);
+            }
+
+            // Data
+            $deliveryMethodId = $child['delivery_method_id'];
+            $child['delivery_method_id'] = $this->_code . '_' . $deliveryMethodId;
+
+            $method->setCarrier($this->_code);
+            $method->setCarrierTitle($this->getConfigData('title'));
+
+            $method->setMethod($child['delivery_method_id']);
+
+            $deliveryEstimateBusinessDays = $child['delivery_estimate_business_days'] ?? null;
+            $deliveryEstimateDateExactISO = $child['delivery_estimate_date_exact_iso'] ?? null;
+
+            if ($deliveryEstimateDateExactISO) {
+                $child['delivery_estimate_business_days'] = date('d/m/Y', strtotime($deliveryEstimateDateExactISO));
+                $method->setDeliveryEstimateDateExactIso($deliveryEstimateDateExactISO);
+            }
+
+            $child['delivery_estimate_business_days'] = ($deliveryEstimateDateExactISO)
+                ? $child['delivery_estimate_business_days']
+                : $deliveryEstimateBusinessDays;
+
+            $methodTitle = $this->helper->getCustomCarrierTitle(
+                $this->_code,
+                $child['description'],
+                $child['delivery_estimate_business_days'],
+                $schedulingEnabled
+            );
+            $methodDescription = $this->helper->getCustomCarrierTitle(
+                $this->_code,
+                $child['delivery_method_name'],
+                $child['delivery_estimate_business_days'],
+                $schedulingEnabled
+            );
+
+            $method->setMethodTitle($methodTitle);
+            $method->setMethodDescription($methodDescription);
+            $method->setDeliveryMethodType($child['delivery_method_type']);
+
+            $child['delivery_estimate_business_days'] = $deliveryEstimateBusinessDays; // preserve
+            $amount = $child['final_shipping_cost'];
+            $cost = $child['provider_shipping_cost'];
+
+            $method->setPrice($amount);
+            $method->setCost($cost);
+
+            // Save
+            $resultQuotes[] = $this->helper->saveQuote($this->_code, $intelipostQuoteId, $child, $postData, $volumes);
+
+            $result->append($method);
+        }
+
+        $this->helper->saveResultQuotes($resultQuotes);
+
+        return $result;
+    }
+
+    /**
+     * @param $request
+     * @param $postData
+     * @return array
+     */
+    public function getProductData($request, $postData)
+    {
         // Default Config
         $heightAttribute = $this->getConfigData('height_attribute');
         $widthAttribute = $this->scopeConfig->getValue('width_attribute');
         $lengthAttribute = $this->getConfigData('length_attribute');
-
         $weightUnit = $this->getConfigData('weight_unit') == 'gr' ? 1000 : 1;
         $defaultWeight = intval($this->getConfigData('default_weight')) / $weightUnit;
-
         $defaultHeight = $this->getConfigData('default_height');
         $defaultWidth = $this->getConfigData('default_width');
         $defaultLength = $this->getConfigData('default_length');
-
-        $estimateDeliveryDate = $this->getConfigData('estimate_delivery_date');
-
-        $calendarOnlyCheckout = $this->getConfigData('calendar_only_checkout');
-        $pageName = $this->helper->getPageName();
-
-        $breakOnError = $this->getConfigData('break_on_error');
         $valueOnZero = $this->getConfigData('value_on_zero');
 
         $cartWeight = 0;
         $cartAmount = 0;
-        $cartQtys = 0;
+        $cartQty = 0;
         $cartItems = null;
 
         // Cart Sort Order: simple, bundle, configurable
         $parentSku = null;
-        $totalQuoteItems = 0;
-
         foreach ($request->getAllItems() as $item) {
             try {
                 $product = $this->productRepository->getById($item->getProductId());
@@ -210,23 +347,20 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $length = ($lengthAttribute) ? $product->getData($lengthAttribute) : null;
             $weight = $item->getWeight() / $weightUnit; // always kg
 
-            // Price
             $productPrice = $product->getFinalPrice();
             if (!$productPrice) {
                 $productPrice = floatval($valueOnZero);
             }
 
-            // Data
             $productFinalHeight = $this->helper->haveData($height, $heightConfigurable, $defaultHeight);
             $productFinalWidth = $this->helper->haveData($width, $widthConfigurable, $defaultWidth);
             $productFinalLength = $this->helper->haveData($length, $lengthConfigurable, $defaultLength);
             $productFinalWeight = $this->helper->haveData($weight, $weightConfigurable, $defaultWeight);
 
             $productFinalQty = $item->getQty() * $qtyConfigurable;
-            $totalQuoteItems += $productFinalQty;
             $cartWeight += $productFinalWeight * $productFinalQty;
             $cartAmount += $productPrice * $productFinalQty;
-            $cartQtys += $productFinalQty;
+            $cartQty += $productFinalQty;
 
             $postData['products'][] = [
                 'weight' => $productFinalWeight,
@@ -241,193 +375,23 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             ];
         }
 
-        // Additional
-        $postData['additional_information'] = $this->helper->getAdditionalInformation($request->getAdditionalInformation());
-        $postData['identification'] = $this->helper->getPageIdentification();
         $postData['cart_weight'] = $cartWeight;
         $postData['cart_amount'] = $cartAmount;
-        $postData['cart_qtys'] = $cartQtys;
-        $postData['seller_id'] = $request->getSellerId() ? $request->getSellerId() : '';
+        $postData['cart_qty'] = $cartQty;
 
-        // Result
-        $result = $this->rateResultFactory->create();
-
-        $resultQuotes = [];
-
-        // API
-        try {
-            $this->logger->debug('Enviando solicitação para a API');
-
-            $response = $this->api->quoteRequest(
-                \Intelipost\Shipping\Client\Intelipost::POST,
-                Api::QUOTE_BY_PRODUCT,
-                $postData
-            );
-
-            $intelipostQuoteId = $response['content']['id'];
-
-            $this->logger->debug('Resposta recebida da API');
-        } catch (\Exception $e) {
-            $error = $this->_rateErrorFactory->create();
-            $specificerrmsg = $this->getConfigData('specificerrmsg');
-
-            $error->setCarrier($this->_code);
-            $error->setCarrierTitle($this->getConfigData('title'));
-            $error->setErrorMessage($specificerrmsg ? $specificerrmsg : $e->getMessage());
-
-            if ($breakOnError) {
-                return $error;
-            }
-
-            $result->append($error);
-
-            return $result;
-        }
-
-        // Free Shipping
-        $this->helper->checkFreeShipping($response);
-
-        // Volumes
-        $volumes = [];
-        $volCount = count($response['content']['volumes']);
-        $arrayVol = $this->setProductsQuantity($totalQuoteItems, $volCount);
-        $count = 0;
-        foreach ($response['content']['volumes'] as $volume) {
-            $vWeight = $volume['weight'];
-            $vWidth = $volume['width'];
-            $vHeight = $volume['height'];
-            $vLength = $volume['length'];
-            $vProductsQuantity = $arrayVol[$count];
-
-            $aux = [
-                'weight' => $vWeight,
-                'width' => $vWidth,
-                'length' => $vLength,
-                'height' => $vHeight,
-                'products_quantity' => $vProductsQuantity
-            ];
-            $volumes[] = $aux;
-            $count++;
-        }
-
-        // Methods
-        foreach ($response ['content']['delivery_options'] as $child) {
-            $method = $this->rateMethodFactory->create();
-
-            // Risk Area
-            $deliveryNote = isset($child['delivery_note']) ? $child['delivery_note'] : null;
-            if (!empty($deliveryNote)) {
-                $error = $this->_rateErrorFactory->create();
-
-                $riskareamsg = $this->getConfigData('riskareamsg');
-
-                $error->setCarrier($this->_code);
-                $error->setCarrierTitle($this->getConfigData('title'));
-                $error->setErrorMessage($riskareamsg ?: $deliveryNote);
-
-                $method->setWarnMessage($riskareamsg ?: $deliveryNote);
-
-                if ($breakOnError) {
-                    return $error;
-                }
-
-                $result->setError(true);
-                $result->append($error);
-
-                // continue;
-            }
-
-            $method->setScheduled(false);
-
-            // Scheduling
-            $child['available_scheduling_dates'] = null; // new \Zend_Db_Expr('NULL');
-            // $schedulingEnabled = @ $child ['scheduling_enabled'];
-            $schedulingEnabled = (array_key_exists('scheduling_enabled', $child)) ? $child ['scheduling_enabled'] : false;
-            if ($schedulingEnabled) {
-                if ($calendarOnlyCheckout && strcmp($pageName, 'checkout')) {
-                    continue;
-                }
-
-                $response = $this->api->getAvailableSchedulingDates(
-                    $originZipcode,
-                    $destPostcode,
-                    $child['delivery_method_id']
-                );
-
-                $child['available_scheduling_dates'] = $this->helper->serializeData($response['content']['available_business_days']);
-            }
-
-            // Data
-            $deliveryMethodId = $child['delivery_method_id'];
-            $child['delivery_method_id'] = $this->_code . '_' . $deliveryMethodId;
-
-            $method->setCarrier($this->_code);
-            $method->setCarrierTitle($this->getConfigData('title'));
-
-            $method->setMethod($child['delivery_method_id']);
-
-            $deliveryEstimateBusinessDays = isset($child['delivery_estimate_business_days']) ? $child['delivery_estimate_business_days'] : null;
-            $deliveryEstimateDateExactISO = isset($child['delivery_estimate_date_exact_iso']) ? $child['delivery_estimate_date_exact_iso'] : null;
-            if ($estimateDeliveryDate && false /* Disabled */) {
-                $response = $this->api->getEstimateDeliveryDate(
-                    $originZipcode,
-                    $destPostcode,
-                    $child ['delivery_estimate_business_days']
-                );
-
-                $child['delivery_estimate_business_days'] = date('d/m/Y', strtotime($response ['content']['result_iso']));
-            } else {
-                if ($deliveryEstimateDateExactISO) {
-                    $child['delivery_estimate_business_days'] = date('d/m/Y', strtotime($deliveryEstimateDateExactISO));
-
-                    $method->setDeliveryEstimateDateExactIso($deliveryEstimateDateExactISO);
-                }
-            }
-
-            $child['delivery_estimate_business_days'] = ($estimateDeliveryDate && $deliveryEstimateDateExactISO)
-                ? $child ['delivery_estimate_business_days']
-                : $deliveryEstimateBusinessDays;
-
-            $methodTitle = $this->helper->getCustomCarrierTitle(
-                $this->_code,
-                $child['description'],
-                $child['delivery_estimate_business_days'],
-                $schedulingEnabled
-            );
-            $methodDescription = $this->helper->getCustomCarrierTitle(
-                $this->_code,
-                $child['delivery_method_name'],
-                $child['delivery_estimate_business_days'],
-                $schedulingEnabled
-            );
-
-            $method->setMethodTitle($methodTitle);
-            $method->setMethodDescription($methodDescription);
-            $method->setDeliveryMethodType($child['delivery_method_type']);
-
-            $child['delivery_estimate_business_days'] = $deliveryEstimateBusinessDays; // preserve
-            $amount = $child['final_shipping_cost'];
-            $cost = $child['provider_shipping_cost'];
-
-            $method->setPrice($amount);
-            $method->setCost($cost);
-
-            // Save
-            $resultQuotes[] = $this->helper->saveQuote($this->_code, $intelipostQuoteId, $child, $postData, $volumes);
-
-            $result->append($method);
-        }
-
-        $this->helper->saveResultQuotes($resultQuotes);
-
-        return $result;
+        return $postData;
     }
 
+    /**
+     * @param $qtdProducts
+     * @param $qtdVolumes
+     * @return array
+     */
     public function setProductsQuantity($qtdProducts, $qtdVolumes)
     {
         $arrayVol = [];
-        $result = (int)($qtdProducts / $qtdVolumes);
-        $remainder = (int)($qtdProducts % $qtdVolumes);
+        $result = (int) ($qtdProducts / $qtdVolumes);
+        $remainder = ($qtdProducts % $qtdVolumes);
 
         for ($n = 0; $n < $qtdVolumes; $n++) {
             $arrayVol[$n] = $result;
@@ -439,8 +403,52 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         return $arrayVol;
     }
 
-    public function setOriginZipcode($zipcode)
+    /**
+     * @param $request
+     * @return false|string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getOriginZipcode($request)
     {
-        $this->_origin_zipcode = $zipcode;
+        // Zipcodes
+        $originZipcode = $request->getOriginZipcode() ?: $this->getConfigData('source_zip');
+        if ($this->getConfigData('use_default_source')) {
+            $source = $this->getConfigData('source');
+            if ($source) {
+                /** @var \Magento\InventoryApi\Api\Data\SourceInterface $sourceModel */
+                $sourceModel = $this->sourceRepository->get($source);
+                if ($sourceModel && $sourceModel->getPostcode()) {
+                    $originZipcode = $sourceModel->getPostcode();
+                }
+            }
+        }
+        return $originZipcode;
+    }
+
+    public function getVolumes($response, $cartQty)
+    {
+        $volumes = [];
+        $volCount = count($response['content']['volumes']);
+        $arrayVol = $this->setProductsQuantity($cartQty, $volCount);
+
+        $count = 0;
+        foreach ($response['content']['volumes'] as $volume) {
+            $vWeight = $volume['weight'];
+            $vWidth = $volume['width'];
+            $vHeight = $volume['height'];
+            $vLength = $volume['length'];
+            $vProductsQuantity = $arrayVol[$count];
+            $aux = [
+                'weight' => $vWeight,
+                'width' => $vWidth,
+                'length' => $vLength,
+                'height' => $vHeight,
+                'products_quantity' => $vProductsQuantity
+            ];
+            $volumes[] = $aux;
+            $count++;
+        }
+
+        return $volumes;
     }
 }

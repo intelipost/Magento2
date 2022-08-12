@@ -41,23 +41,11 @@
                 <config_path>carriers/intelipost/scheduled_last</config_path>
             </field>
 
-            <field id="estimate_delivery_date" translate="label" type="select" sortOrder="201" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                <label>Estimate Delivery Date</label>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <config_path>carriers/intelipost/estimate_delivery_date</config_path>
-            </field>
-
             <field id="additional_delivery_date" translate="label" type="text" sortOrder="202" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Add Days to Quote</label>
                 <tooltip>It's also called as Handling Time</tooltip>
                 <comment>Quantity of Days to add to Delivery Time</comment>
                 <config_path>carriers/intelipost/additional_delivery_date</config_path>
-            </field>
-
-            <field id="calendar_only_checkout" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                <label>Display Scheduled Delivery Only at Checkout</label>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <config_path>carriers/intelipost/calendar_only_checkout</config_path>
             </field>
         </group>
 
