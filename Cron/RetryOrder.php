@@ -47,6 +47,11 @@ class RetryOrder
             $statuses = explode(',', $status);
 
             $collection = $this->collectionFactory->create();
+            $collection->getSelect()->joinLeft(
+                ['so' => $collection->getConnection()->getTableName('sales_order')],
+                'main_table.order_increment_id = so.increment_id',
+                ['increment_id']
+            );
             $collection
                 ->addFieldToFilter('status', ['in' => $statuses])
                 ->addFieldToFilter('main_table.intelipost_status', 'error');
