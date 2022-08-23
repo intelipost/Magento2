@@ -38,8 +38,7 @@ class ShipOrder
         Shipped $shipped,
         Shipment $shipment,
         Data $helper
-    )
-    {
+    ) {
         $this->helper = $helper;
         $this->collectionFactory = $collectionFactory;
         $this->_shipment = $shipment;
@@ -54,6 +53,11 @@ class ShipOrder
         if ($enable) {
             /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\Collection $collection */
             $collection = $this->collectionFactory->create();
+            $collection->getSelect()->joinLeft(
+                ['so' => $collection->getConnection()->getTableName('sales_order')],
+                'main_table.order_increment_id = so.increment_id',
+                ['increment_id']
+            );
 
             $collection->addFieldToFilter('status', ['eq' => $status])
                 ->addFieldToFilter(
