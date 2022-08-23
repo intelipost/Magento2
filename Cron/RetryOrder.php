@@ -31,8 +31,7 @@ class RetryOrder
         CollectionFactory $collectionFactory,
         ShipmentOrder $shipmentOrder,
         Data $helper
-    )
-    {
+    ) {
         $this->collectionFactory = $collectionFactory;
         $this->shipmentOrder = $shipmentOrder;
         $this->helper = $helper;
