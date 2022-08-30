@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -7,7 +8,12 @@
 
 namespace Intelipost\Shipping\Controller\Adminhtml\Shipments;
 
-class Index extends \Intelipost\Shipping\Controller\Adminhtml\Shipments
+use Intelipost\Shipping\Controller\Adminhtml\Shipments;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\View\Result\Page;
+
+class Index extends Shipments
 {
     /**
      * @return bool
@@ -17,6 +23,9 @@ class Index extends \Intelipost\Shipping\Controller\Adminhtml\Shipments
         return $this->_authorization->isAllowed('Intelipost_Shipping::shipments');
     }
 
+    /**
+     * @return ResponseInterface|ResultInterface|Page
+     */
     public function execute()
     {
         $resultPage = $this->resultPageFactory->create();
@@ -27,5 +36,4 @@ class Index extends \Intelipost\Shipping\Controller\Adminhtml\Shipments
 
         return $resultPage;
     }
-
 }

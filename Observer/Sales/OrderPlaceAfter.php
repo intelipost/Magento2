@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -183,7 +184,6 @@ class OrderPlaceAfter implements ObserverInterface
                 $order->setData('intelipost_quotes', $this->helper->serializeData($resultJson));
                 $this->setShipmentOrder($resultJson);
             }
-
         } catch (\Exception $e) {
             $this->helper->getLogger()->error($e->getMessage());
         }

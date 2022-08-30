@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -7,7 +8,9 @@
 
 namespace Intelipost\Shipping\Model\Config\Source\Attribute;
 
-class Select extends \Intelipost\Shipping\Model\Config\Source\Attributes
+use Intelipost\Shipping\Model\Config\Source\Attributes;
+
+class Select extends Attributes
 {
     public function toOptionArray()
     {

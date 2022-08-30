@@ -9,7 +9,7 @@
 
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
     <group id="intelipost_quotes" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>Quotes</label>
+        <label>Quotes Intepolist</label>
         <group id="intelipost_quotes_settings" translate="label" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Display Settings</label>
             <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
@@ -176,6 +176,18 @@
                 <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
                 <label>Status Shipped</label>
                 <config_path>carriers/intelipost/status_shipped</config_path>
+            </field>
+
+            <field id="status_to_be_delivered" translate="label" type="select" sortOrder="410" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status To Be Delivered</label>
+                <config_path>carriers/intelipost/status_shipped</config_path>
+            </field>
+
+            <field id="status_in_transit" translate="label" type="select" sortOrder="420" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status In Transit</label>
+                <config_path>carriers/intelipost/status_in_transit</config_path>
             </field>
 
             <field id="status_delivered" translate="label" type="select" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1">

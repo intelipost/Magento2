@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -44,6 +45,9 @@ class Attributes implements OptionSourceInterface
         return $this->getOptions();
     }
 
+    /**
+     * @return array
+     */
     protected function getOptions()
     {
         $collection = $this->collectionFactory->create();

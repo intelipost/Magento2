@@ -28,7 +28,6 @@
                 <model>Intelipost\Shipping\Model\Carrier\Intelipost</model>
                 <title>Intelipost</title>
                 <type>I</type>
-                <use_default_source>0</use_default_source>
                 <specificerrmsg>Esse método de envio não está disponível no momento.</specificerrmsg>
                 <riskareamsg>Esse cep faz parte de uma área de risco. Alguns serviços de entrega não oferecem entrega em áreas de risco.
 Nesses casos, é necessário monitorar a entrega e o processo de pedido para verificar a unidade de entrega mais próxima para retirada.

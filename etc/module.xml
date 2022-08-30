@@ -6,9 +6,8 @@
  * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 -->
-
 <config>
-    <module name="Intelipost_Shipping" setup_version="2.1.11">
+    <module name="Intelipost_Shipping" setup_version="2.2.0">
         <sequence>
             <module name="Magento_Quote"/>
         </sequence>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -7,7 +8,9 @@
 
 namespace Intelipost\Shipping\Model\Config\Source;
 
-class DimensionType implements \Magento\Framework\Data\OptionSourceInterface
+use Magento\Framework\Data\OptionSourceInterface;
+
+class DimensionType implements OptionSourceInterface
 {
     /**
      * @return array

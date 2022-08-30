@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -10,6 +11,7 @@ namespace Intelipost\Shipping\Cron;
 use Intelipost\Shipping\Client\ShipmentOrder;
 use Intelipost\Shipping\Helper\Data;
 use Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory;
+use Intelipost\Shipping\Model\Shipment;
 
 class RetryOrder
 {
@@ -53,7 +55,7 @@ class RetryOrder
             );
             $collection
                 ->addFieldToFilter('status', ['in' => $statuses])
-                ->addFieldToFilter('main_table.intelipost_status', 'error');
+                ->addFieldToFilter('main_table.intelipost_status', Shipment::STATUS_ERROR);
 
             foreach ($collection as $shipment) {
                 $this->shipmentOrder->execute($shipment);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -11,7 +12,6 @@ use Intelipost\Shipping\Helper\Api;
 use Intelipost\Shipping\Helper\Data;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\InventoryApi\Api\SourceRepositoryInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
@@ -43,9 +43,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     /** @var Api */
     protected $api;
 
-    /** @var SourceRepositoryInterface */
-    protected $sourceRepository;
-
     /** @var ProductRepository */
     protected $productRepository;
 
@@ -58,7 +55,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
      * @param Data $helper
      * @param Api $api
      * @param ProductRepository $productRespository
-     * @param SourceRepositoryInterface $sourceRepository
      * @param array $data
      */
     public function __construct(
@@ -68,7 +64,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         ResultFactory $rateResultFactory,
         MethodFactory $rateMethodFactory,
         ProductRepository $productRespository,
-        SourceRepositoryInterface $sourceRepository,
         Api $api,
         Data $helper,
         array $data = []
@@ -79,7 +74,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         $this->scopeConfig = $scopeConfig;
         $this->helper = $helper;
         $this->api = $api;
-        $this->sourceRepository = $sourceRepository;
         $this->logger = $logger;
 
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
@@ -202,9 +196,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
             // Scheduling
             $child['available_scheduling_dates'] = null;
-
-            $schedulingEnabled = (array_key_exists('scheduling_enabled', $child))
-                ? $child['scheduling_enabled'] : false;
+            $schedulingEnabled = $child['scheduling_enabled'] ?? false;
 
             if ($schedulingEnabled) {
                 if ($calendarOnlyCheckout && strcmp($pageName, 'checkout')) {
@@ -227,7 +219,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($this->getConfigData('title'));
-
             $method->setMethod($child['delivery_method_id']);
 
             $deliveryEstimateBusinessDays = $child['delivery_estimate_business_days'] ?? null;
@@ -259,7 +250,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $method->setMethodDescription($methodDescription);
             $method->setDeliveryMethodType($child['delivery_method_type']);
 
-            $child['delivery_estimate_business_days'] = $deliveryEstimateBusinessDays; // preserve
+            $child['delivery_estimate_business_days'] = $deliveryEstimateBusinessDays;
             $amount = $child['final_shipping_cost'];
             $cost = $child['provider_shipping_cost'];
 
@@ -411,20 +402,14 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     public function getOriginZipcode($request)
     {
         // Zipcodes
-        $originZipcode = $request->getOriginZipcode() ?: $this->getConfigData('source_zip');
-        if ($this->getConfigData('use_default_source')) {
-            $source = $this->getConfigData('source');
-            if ($source) {
-                /** @var \Magento\InventoryApi\Api\Data\SourceInterface $sourceModel */
-                $sourceModel = $this->sourceRepository->get($source);
-                if ($sourceModel && $sourceModel->getPostcode()) {
-                    $originZipcode = $sourceModel->getPostcode();
-                }
-            }
-        }
-        return $originZipcode;
+        return $request->getOriginZipcode() ?: $this->getConfigData('source_zip');
     }
 
+    /**
+     * @param $response
+     * @param $cartQty
+     * @return array
+     */
     public function getVolumes($response, $cartQty)
     {
         $volumes = [];

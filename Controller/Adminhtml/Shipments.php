@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -7,60 +8,77 @@
 
 namespace Intelipost\Shipping\Controller\Adminhtml;
 
-abstract class Shipments extends \Magento\Backend\App\Action
+use Intelipost\Shipping\Client\ReadyForShipment;
+use Intelipost\Shipping\Client\ShipmentOrder;
+use Intelipost\Shipping\Client\Shipped;
+use Intelipost\Shipping\Helper\Data;
+use Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory;
+use Intelipost\Shipping\Model\Shipment;
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\View\Result\ForwardFactory;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Ui\Component\MassAction\Filter;
+
+abstract class Shipments extends Action
 {
-    /** @var \Magento\Framework\Registry */
+    /** @var Registry */
     protected $coreRegistry;
 
-    /** @var \Magento\Ui\Component\MassAction\Filter */
+    /** @var Filter */
     protected $filter;
 
-    /** @var \Magento\Backend\Model\View\Result\ForwardFactory */
+    /** @var ForwardFactory */
     protected $resultForwardFactory;
 
-    /** @var \Magento\Framework\View\Result\PageFactory */
+    /** @var PageFactory */
     protected $resultPageFactory;
 
-    /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory */
+    /** @var CollectionFactory */
     protected $collectionFactory;
 
-    /** @var \Intelipost\Shipping\Helper\Data */
+    /** @var Data */
     protected $helper;
 
-    /** @var \Intelipost\Shipping\Model\Shipment */
+    /** @var Shipment */
     protected $shipment;
 
-    /** @var \Intelipost\Shipping\Client\ShipmentOrder */
+    /** @var ShipmentOrder */
     protected $shipmentOrder;
 
-    /** @var \Intelipost\Shipping\Client\Shipped */
+    /** @var Shipped */
     protected $shipped;
 
+    /** @var ReadyForShipment */
+    protected $readyForShipment;
+
     /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Magento\Ui\Component\MassAction\Filter $filter
-     * @param \Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory $collectionFactory
-     * @param \Intelipost\Shipping\Model\Shipment $shipment
-     * @param \Intelipost\Shipping\Client\ShipmentOrder $shipmentOrder
-     * @param \Intelipost\Shipping\Client\Shipped $shipped
-     * @param \Intelipost\Shipping\Helper\Data $helper
+     * @param Context $context
+     * @param ForwardFactory $resultForwardFactory
+     * @param PageFactory $resultPageFactory
+     * @param Registry $coreRegistry
+     * @param Filter $filter
+     * @param CollectionFactory $collectionFactory
+     * @param Shipment $shipment
+     * @param ShipmentOrder $shipmentOrder
+     * @param Shipped $shipped
+     * @param ReadyForShipment $readyForShipment
+     * @param Data $helper
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Ui\Component\MassAction\Filter $filter,
-        \Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory $collectionFactory,
-        \Intelipost\Shipping\Model\Shipment $shipment,
-        \Intelipost\Shipping\Client\ShipmentOrder $shipmentOrder,
-        \Intelipost\Shipping\Client\Shipped $shipped,
-        \Intelipost\Shipping\Helper\Data $helper
-    )
-    {
+        Context $context,
+        ForwardFactory $resultForwardFactory,
+        PageFactory $resultPageFactory,
+        Registry $coreRegistry,
+        Filter $filter,
+        CollectionFactory $collectionFactory,
+        Shipment $shipment,
+        ShipmentOrder $shipmentOrder,
+        Shipped $shipped,
+        ReadyForShipment $readyForShipment,
+        Data $helper
+    ) {
         $this->coreRegistry = $coreRegistry;
         $this->filter = $filter;
         $this->resultForwardFactory = $resultForwardFactory;
@@ -70,7 +88,20 @@ abstract class Shipments extends \Magento\Backend\App\Action
         $this->shipmentOrder = $shipmentOrder;
         $this->helper = $helper;
         $this->shipped = $shipped;
+        $this->readyForShipment = $readyForShipment;
         parent::__construct($context);
+    }
+
+    /**
+     * @param $shipment
+     * @param $errorMessages
+     * @return void
+     */
+    public function setError($shipment, $errorMessages)
+    {
+        $incrementId = $shipment->getData('order_increment_id');
+        $message = __('Delivery %1 : %2', $incrementId, $errorMessages);
+        $this->messageManager->addErrorMessage($message);
     }
 
     /**

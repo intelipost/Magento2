@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -17,7 +18,6 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Locale\FormatInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Url\EncoderInterface;
-
 
 class View extends \Magento\Catalog\Block\Product\View
 {
@@ -38,18 +38,18 @@ class View extends \Magento\Catalog\Block\Product\View
      * @param array $data
      */
     public function __construct(
-        Context                                  $context,
-        EncoderInterface                         $urlEncoder,
+        Context $context,
+        EncoderInterface $urlEncoder,
         \Magento\Framework\Json\EncoderInterface $jsonEncoder,
-        StringUtils                              $string,
-        Product                                  $productHelper,
-        ConfigInterface                          $productTypeConfig,
-        FormatInterface                          $localeFormat,
-        Session                                  $customerSession,
-        ProductRepositoryInterface               $productRepository,
-        PriceCurrencyInterface                   $priceCurrency,
-        Data                                     $helper,
-        array                                    $data = []
+        StringUtils $string,
+        Product $productHelper,
+        ConfigInterface $productTypeConfig,
+        FormatInterface $localeFormat,
+        Session $customerSession,
+        ProductRepositoryInterface $productRepository,
+        PriceCurrencyInterface $priceCurrency,
+        Data $helper,
+        array $data = []
     ) {
         $this->helper = $helper;
         parent::__construct(
@@ -80,8 +80,7 @@ class View extends \Magento\Catalog\Block\Product\View
      */
     public function getProduct()
     {
-        $product = $this->_coreRegistry->registry('current_product');
-        return $product;
+        return $this->_coreRegistry->registry('current_product');
     }
 
     /**

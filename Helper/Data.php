@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -17,12 +18,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\State;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\Session\SessionManager;
-use Magento\InventoryCatalogApi\Api\DefaultStockProviderInterface;
-use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
-use Magento\InventorySalesApi\Api\StockResolverInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\InventoryApi\Api\GetStockSourceLinksInterface;
-use Magento\InventoryApi\Api\Data\StockSourceLinkInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Convert\Order as ConvertOrder;
@@ -92,17 +88,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /** @var array */
     protected $selectedSchedulingMethod = [];
 
-    /** @var DefaultStockProviderInterface */
-    protected $defaultStockProvider;
-
-    /** @var StockResolverInterface */
-    protected $stockResolver;
-
     /** @var SearchCriteriaBuilder */
     protected $searchCriteriaBuilder;
-
-    /** @var GetStockSourceLinksInterface */
-    protected $getStockSourceLinks;
 
     /**
      * @param Context $context
@@ -114,8 +101,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param ShipmentNotifier $shipmentNotifier
      * @param ConvertOrder $convertOrder
      * @param TrackFactory $trackFactory
-     * @param DefaultStockProviderInterface $defaultStockProvider
-     * @param StockResolverInterface $stockResolver
      * @param SessionManager $sessionManager
      * @param Quote $backendSession
      * @param Json $json
@@ -136,10 +121,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         ShipmentNotifier $shipmentNotifier,
         ConvertOrder $convertOrder,
         TrackFactory $trackFactory,
-        DefaultStockProviderInterface $defaultStockProvider,
-        StockResolverInterface $stockResolver,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        GetStockSourceLinksInterface $getStockSourceLinks,
         SessionManager $sessionManager,
         Quote $backendSession,
         Json $json,
@@ -163,10 +145,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->shipmentNotifier = $shipmentNotifier;
         $this->convertOrder = $convertOrder;
         $this->trackFactory = $trackFactory;
-        $this->defaultStockProvider = $defaultStockProvider;
-        $this->stockResolver = $stockResolver;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->getStockSourceLinks = $getStockSourceLinks;
         $this->storeManager = $storeManager;
         $this->state = $state;
         $this->order = $order;
@@ -175,11 +154,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
     }
 
+    /**
+     * @return string[]
+     */
     public function getPreDispatchEvents()
     {
         return ['NEW', 'READY_FOR_SHIPPING', 'SHIPPED'];
     }
 
+    /**
+     * @return string[]
+     */
     public function getPostDispatchEvents()
     {
         return ['TO_BE_DELIVERED', 'IN_TRANSIT', 'DELIVERED', 'CLARIFY_DELIVERY_FAIL', 'DELIVERY_FAILED'];
@@ -458,12 +443,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $shipment->register();
             $shipment->getOrder()->setIsInProcess(true);
 
-            /** @var StockSourceLinkInterface $source */
-            $source = $this->getDefaultSource($order->getStore()->getWebsite());
-            if ($source) {
-                $shipment->getExtensionAttributes()->setSourceCode($source->getSourceCode());
-            }
-
             $track = $this->getTrack($trackingUrl);
             $shipment->addTrack($track);
 
@@ -494,47 +473,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $track->setDescription(__('Intelipost Tracking Status'));
 
         return $track;
-    }
-
-    /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @return StockSourceLinkInterface|false
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getDefaultSource($website)
-    {
-        $defaultSouce = false;
-
-        /** @var \Magento\InventoryApi\Api\Data\StockInterface $stock */
-        $stock = $this->stockResolver->execute(SalesChannelInterface::TYPE_WEBSITE, $website->getCode());
-
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter(StockSourceLinkInterface::STOCK_ID, $stock->getStockId())
-            ->create();
-        foreach ($this->getStockSourceLinks->execute($searchCriteria)->getItems() as $link) {
-            $defaultSouce = $link;
-        }
-
-        return $defaultSouce;
-    }
-
-    /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @return StockSourceLinkInterface|false
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getSourceByCode($sourceCode)
-    {
-        $defaultSouce = false;
-
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter('source_code', $sourceCode)
-            ->create();
-        foreach ($this->getStockSourceLinks->execute($searchCriteria)->getItems() as $link) {
-            $defaultSouce = $link;
-        }
-
-        return $defaultSouce;
     }
 
     /**
@@ -593,6 +531,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function updateOrder($orderId, $status, $comment)
     {
+        if (!$status) {
+            $status = false;
+        }
         $notifyCustomer = (bool)$this->getConfig('notify_customer');
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderRepository->get($orderId);

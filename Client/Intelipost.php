@@ -9,6 +9,7 @@ namespace Intelipost\Shipping\Client;
 
 use Intelipost\Shipping\Helper\Data;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 
 class Intelipost
@@ -81,10 +82,18 @@ class Intelipost
             }
 
             $this->handleResponse($responseBody);
+        } catch (RequestException $requestException) {
+            $this->logger->error($requestException->getMessage());
+            // To catch exactly error 400 use
+            if ($requestException->hasResponse()) {
+                $responseBody = $requestException->getResponse()->getBody()->getContents();
+            }
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
+            $responseBody = ['status' => 'ERROR', 'messages' => ['type' => 'ERROR', 'text' => $e->getMessage()]];
         }
 
+        $this->handleResponse($responseBody);
         return $responseBody;
     }
 
@@ -104,7 +113,11 @@ class Intelipost
     protected function handleResponse($response)
     {
         try {
-            $objResponse = $this->helper->unserializeData($response);
+            $objResponse = $response;
+            if (is_string($objResponse)) {
+                $objResponse = $this->helper->unserializeData($response);
+            }
+
             if (!$objResponse) {
                 $this->logger->error(__('ERROR - API didn\'t worked'));
                 return false;
