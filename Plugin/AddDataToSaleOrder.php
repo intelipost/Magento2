@@ -1,14 +1,9 @@
 <?php
+
 /**
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade this extension to newer
- * version in the future.
- *
- * @category    Koin
- * @package     Koin_Payment
- *
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2022 Intelipost
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
 declare(strict_types=1);
@@ -67,7 +62,6 @@ class AddDataToSaleOrder
         foreach ($result->getItems() as $order) {
             $this->afterGet($subject, $order);
         }
-
         return $result;
     }
 }

@@ -8,56 +8,68 @@
 
 namespace Intelipost\Shipping\Controller\Adminhtml\Shipments;
 
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-class MassCreate extends \Intelipost\Shipping\Controller\Adminhtml\Shipments
+class MassReadyToShip extends \Intelipost\Shipping\Controller\Adminhtml\Shipments
 {
     protected $redirectUrl = 'intelipost/shipments/index';
 
+    /**
+     * @return ResponseInterface|Redirect|Redirect&ResultInterface|ResultInterface|ResultInterface&Redirect
+     */
     public function execute()
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
         $resultRedirect->setPath($this->getComponentRefererUrl());
         try {
-            /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\Collection $collection */
-            $shipmentCollection = $this->collectionFactory->create();
-            $collection = $this->filter->getCollection($shipmentCollection);
+            $collection = $this->filter->getCollection($this->collectionFactory->create());
             $this->massAction($collection);
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
             $resultRedirect->setPath($this->redirectUrl);
         }
+
         return $resultRedirect;
     }
 
     /**
      * @param AbstractCollection $collection
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     protected function massAction(AbstractCollection $collection)
     {
         $errorCount = 0;
         $totalCount = 0;
-
         foreach ($collection as $shipment) {
-            $item = $this->shipmentOrder->execute($shipment);
-            if ($item->getErrorMessages()) {
-                $orderId = $shipment->getData('order_increment_id');
-                $errorMessage = $item->getErrorMessages();
-                $this->messageManager->addErrorMessage(__('Shipment %1 - %2', $orderId, $errorMessage));
+            try {
+                /** @var \Intelipost\Shipping\Client\ReadyForShipment $response */
+                $response = $this->readyForShipment->readyForShipmentRequestBody($shipment);
+                if ($response->getErrorMessages()) {
+                    $this->setError($shipment, $response->getErrorMessages());
+                    $errorCount++;
+                }
+                $totalCount++;
+            } catch (\Exception $e) {
                 $errorCount++;
+                $this->helper->log($e->getMessage());
             }
-            $totalCount++;
         }
-
         $successCount = $totalCount - $errorCount;
+
         if ($successCount > 0) {
-            $this->messageManager->addSuccessMessage(__('Shipments successfully created'));
+            $this->messageManager->addSuccessMessage(__('%1 shipments sent', $successCount));
         }
     }
 
     /**
-     * @return string
+     * @return mixed|string
      */
     protected function getComponentRefererUrl()
     {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -7,8 +8,13 @@
 
 namespace Intelipost\Shipping\Model\Config\Source;
 
-class Allmethods implements \Magento\Framework\Option\ArrayInterface
+use Magento\Framework\Data\OptionSourceInterface;
+
+class Allmethods implements OptionSourceInterface
 {
+    /**
+     * @return array[]
+     */
     public function toOptionArray()
     {
         return [

@@ -17,6 +17,9 @@
         <job name="intelipost_ship_order" instance="Intelipost\Shipping\Cron\ShipOrder" method="execute">
             <schedule>45 */2 * * *</schedule>
         </job>
+        <job name="intelipost_ready_for_shipment_order" instance="Intelipost\Shipping\Cron\ReadyForShipmentOrder" method="execute">
+            <schedule>30 */2 * * *</schedule>
+        </job>
         <job name="intelipost_delete_old_quotes" instance="Intelipost\Shipping\Cron\ClearQuotes" method="execute">
             <schedule>15 5 * * *</schedule>
         </job>

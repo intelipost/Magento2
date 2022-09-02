@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -10,8 +11,8 @@ namespace Intelipost\Shipping\Client;
 use Intelipost\Shipping\Helper\Api;
 use Intelipost\Shipping\Helper\Data;
 use Intelipost\Shipping\Api\ShipmentRepositoryInterface;
+use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 
 class ShipmentOrder
 {
@@ -38,9 +39,6 @@ class ShipmentOrder
     /** @var TimezoneInterface */
     protected $timezone;
 
-    /** @var OrderRepositoryInterface $orderRepository */
-    protected $orderRepository;
-
     /**
      * @param ShipmentOrder\Customer $customer
      * @param ShipmentOrder\Volume $volume
@@ -57,7 +55,6 @@ class ShipmentOrder
         TimezoneInterface $timezone,
         Api $helperApi,
         ShipmentRepositoryInterface $shipmentRepository,
-        OrderRepositoryInterface $orderRepository,
         Data $helper
     ) {
         $this->shipmentCustomer = $customer;
@@ -66,7 +63,6 @@ class ShipmentOrder
         $this->helper = $helper;
         $this->helperApi = $helperApi;
         $this->shipmentRepository = $shipmentRepository;
-        $this->orderRepository = $orderRepository;
         $this->timezone = $timezone;
     }
 
@@ -123,18 +119,16 @@ class ShipmentOrder
             $shipment->getCustomerTaxvat()
         );
 
-        $shippedDate = null;
-        if ($this->helper->getConfig('create_and_ship','order_status','intelipost_push')) {
-            $shippedDate = $this->getNowDateTime();
-        }
         $created = $this->getNowDateTime();
+
+        $estimateDate = (string) $shipment->getData('delivery_estimate_date_exact_iso');
 
         $body = new \stdClass();
         $body->order_number = $shipment->getData('order_increment_id');
         $body->sales_order_number = $shipment->getData('increment_id');
         $body->quote_id = $shipment->getData('quote_id');
         $body->delivery_method_id = $shipment->getData('delivery_method_id');
-        $body->estimated_delivery_date = str_replace(' ', 'T', $shipment->getData('delivery_estimate_date_exact_iso'));
+        $body->estimated_delivery_date = str_replace(' ', 'T', $estimateDate);
         $body->customer_shipping_costs = $shipment->getData('customer_shipping_costs');
         $body->provider_shipping_costs = $shipment->getData('provider_shipping_costs');
         $body->sales_channel = $shipment->getData('sales_channel');
@@ -145,7 +139,6 @@ class ShipmentOrder
         $body->shipment_order_sub_type = $shipment->getData('shipment_order_sub_type');
         $body->end_customer = $customerData;
         $body->shipment_order_volume_array = $this->getVolumes($shipment);
-        $body->shipped_date = $shippedDate;
         $body->created = $created;
 
         return $body;
@@ -171,6 +164,9 @@ class ShipmentOrder
      */
     public function sendShipmentRequest($requestBody, $shipment)
     {
+        $trackingCode = null;
+        $trackingUrl = null;
+
         $response = $this->helperApi->apiRequest('POST', 'shipment_order', $requestBody);
         $result = $this->helper->unserializeData($response);
 
@@ -190,8 +186,7 @@ class ShipmentOrder
 
             $shipmentStatus = \Intelipost\Shipping\Model\Shipment::STATUS_ERROR;
             $shipmentMessage = $messages;
-
-        } else if ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_OK) {
+        } elseif ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_OK) {
             $trackingCode = '';
             $trackingUrl = $result['content']['tracking_url'];
             if (isset($result['content']['shipment_order_volume_array'])) {
@@ -206,9 +201,10 @@ class ShipmentOrder
                 }
             }
 
-            $orderId = $shipment->getId();
-            $status = $this->helper->getConfig('magento_status_after_create','order_status', 'intelipost_push');
-            $this->updateOrderStatus($orderId, $status);
+            $incrementId = $shipment->getData('order_increment_id');
+            $status = $this->helper->getConfig('created_status', 'order_status', 'intelipost_push');
+            $order = $this->helper->loadOrder($incrementId);
+            $this->updateOrderStatus($order->getId(), $status);
         }
 
         $this->updateShipment($shipment->getId(), $shipmentStatus, $shipmentMessage, $trackingCode, $trackingUrl);
@@ -254,12 +250,8 @@ class ShipmentOrder
     public function updateOrderStatus($orderId, $status)
     {
         /** @var \Magento\Sales\Model\Order $order */
-        $order = $this->orderRepository->get($orderId);
-        $order->addCommentToStatusHistory(
-            __('Order status updated to %1 by Intelipost Module', __($status)),
-            $status
-        );
-        $this->orderRepository->save($order);
+        $comment = __('Order created on Intelipost');
+        $this->helper->updateOrder($orderId, $status, $comment);
     }
 
     /**
@@ -268,8 +260,9 @@ class ShipmentOrder
      */
     public function getNowDateTime()
     {
-        $currentDateTimeUTC = (new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT);
-        $localizedDateTimeISO = $this->timezone->date(new \DateTime($currentDateTimeUTC))->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT);
+        $currentDateTimeUTC = (new \DateTime())->format(DateTime::DATETIME_PHP_FORMAT);
+        $newDate = new \DateTime($currentDateTimeUTC);
+        $localizedDateTimeISO = $this->timezone->date($newDate)->format(DateTime::DATETIME_PHP_FORMAT);
         $now = str_replace(' ', 'T', $localizedDateTimeISO);
         return $now;
     }

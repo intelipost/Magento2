@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -20,35 +21,28 @@ class ShipOrder
     /** @var CollectionFactory  */
     protected $collectionFactory;
 
-    /** @var Shipment  */
-    protected $_shipment;
-
     /** @var Shipped  */
     protected $shipped;
 
     /**
      * @param CollectionFactory $collectionFactory
      * @param Shipped $shipped
-     * @param Shipment $shipment
      * @param Data $helper
      */
-    public function __construct
-    (
+    public function __construct(
         CollectionFactory $collectionFactory,
         Shipped $shipped,
-        Shipment $shipment,
         Data $helper
     ) {
         $this->helper = $helper;
         $this->collectionFactory = $collectionFactory;
-        $this->_shipment = $shipment;
         $this->shipped = $shipped;
     }
 
     public function execute()
     {
         $enable = $this->helper->getConfig('enable_cron', 'order_status', 'intelipost_push');
-        $status = $this->helper->getConfig('status_to_ship', 'order_status', 'intelipost_push');
+        $status = $this->helper->getConfig('status_to_shipped', 'order_status', 'intelipost_push');
 
         if ($enable) {
             /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\Collection $collection */
@@ -66,8 +60,11 @@ class ShipOrder
                 );
 
             foreach ($collection as $shipment) {
-                /** @var Shipped $col */
-                $this->shipped->shippedRequestBody($shipment);
+                try {
+                    $this->shipped->shippedRequestBody($shipment);
+                } catch (\Exception $e) {
+                    $this->helper->log($e->getMessage());
+                }
             }
         }
     }

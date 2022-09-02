@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -11,7 +12,6 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 class Unit implements OptionSourceInterface
 {
-
     /**
      * @return array[]
      */

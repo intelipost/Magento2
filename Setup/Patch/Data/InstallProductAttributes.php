@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -69,7 +70,6 @@ class InstallProductAttributes implements DataPatchInterface
                 $sortOrder++;
             }
         }
-
     }
 
     /**

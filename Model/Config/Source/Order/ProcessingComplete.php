@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -7,8 +8,9 @@
 
 namespace Intelipost\Shipping\Model\Config\Source\Order;
 
+use Magento\Sales\Model\Config\Source\Order\Status;
 
-class ProcessingComplete extends \Magento\Sales\Model\Config\Source\Order\Status
+class ProcessingComplete extends Status
 {
     /**
      * @var string[]
@@ -18,5 +20,4 @@ class ProcessingComplete extends \Magento\Sales\Model\Config\Source\Order\Status
         \Magento\Sales\Model\Order::STATE_PROCESSING,
         \Magento\Sales\Model\Order::STATE_COMPLETE
     ];
-
 }

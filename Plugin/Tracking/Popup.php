@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -12,7 +13,6 @@ use Magento\Shipping\Model\InfoFactory;
 
 class Popup
 {
-
     /**
      * @var InfoFactory
      */
@@ -42,7 +42,8 @@ class Popup
     public function aroundExecute(\Magento\Shipping\Controller\Tracking\Popup $subject, \Closure $proceed)
     {
         try {
-            $shippingInfoModel = $this->shippingInfoFactory->create()->loadByHash($subject->getRequest()->getParam('hash'));
+            $hash = $subject->getRequest()->getParam('hash');
+            $shippingInfoModel = $this->shippingInfoFactory->create()->loadByHash($hash);
             $trackingInfo = $shippingInfoModel->getTrackingInfo();
             if (count($trackingInfo) == 1) {
                 $tracking = array_first($trackingInfo);

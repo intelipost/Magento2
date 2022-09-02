@@ -20,26 +20,9 @@
             <comment>Key for API</comment>
             <config_path>intelipost_basic/settings/api_key</config_path>
         </field>
-        <field id="use_default_source" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-            <label>Use Default Source</label>
-            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-            <comment>If Enabled, it'll use the Magento Default Source Postcode</comment>
-            <config_path>carriers/intelipost/use_default_source</config_path>
-        </field>
-        <field id="source" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Source</label>
-            <config_path>carriers/intelipost/source</config_path>
-            <source_model>Intelipost\Shipping\Model\Config\Source\Stock\Sources</source_model>
-            <depends>
-                <field id="use_default_source">1</field>
-            </depends>
-        </field>
         <field id="source_zip" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Source Zip</label>
             <config_path>carriers/intelipost/source_zip</config_path>
-            <depends>
-                <field id="use_default_source">0</field>
-            </depends>
         </field>
         <field id="sales_channel" translate="label" type="text" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Sales Channel</label>

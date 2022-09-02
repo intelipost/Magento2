@@ -7,7 +7,6 @@
  */
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
     <preference for="Intelipost\Shipping\Api\Data\InvoiceInterface" type="Intelipost\Shipping\Model\Invoice"/>
     <preference for="Intelipost\Shipping\Api\InvoiceRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\InvoiceRepository"/>
     <preference for="Intelipost\Shipping\Api\Data\InvoiceSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>

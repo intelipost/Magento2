@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -10,8 +11,9 @@ namespace Intelipost\Shipping\Model\Config\Source\Customer;
 use Magento\Customer\Model\Attribute;
 use Magento\Eav\Model\ResourceModel\Entity\Attribute\CollectionFactory;
 use Magento\Eav\Model\Entity\TypeFactory;
+use Magento\Framework\Data\OptionSourceInterface;
 
-class Attributes implements \Magento\Framework\Data\OptionSourceInterface
+class Attributes implements OptionSourceInterface
 {
     /** @var
      * CollectionFactory
@@ -25,9 +27,8 @@ class Attributes implements \Magento\Framework\Data\OptionSourceInterface
 
     public function __construct(
         CollectionFactory $collectionFactory,
-        TypeFactory       $eavTypeFactory
-    )
-    {
+        TypeFactory $eavTypeFactory
+    ) {
         $this->collectionFactory = $collectionFactory;
         $this->eavTypeFactory = $eavTypeFactory;
     }

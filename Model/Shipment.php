@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -16,6 +17,7 @@ class Shipment extends AbstractModel implements ShipmentInterface
     CONST STATUS_PENDING = 'pending';
     CONST STATUS_ERROR = 'error';
     CONST STATUS_SHIPPED = 'shipped';
+    CONST STATUS_READY_FOR_SHIPMENT = 'ready_for_shipment';
     CONST STATUS_CREATED = 'created';
 
     /**

@@ -6,7 +6,6 @@
  * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 -->
-
 <config>
     <event name="sales_order_place_after">
         <observer name="intelipost_shipping_sales_order_place_after" instance="Intelipost\Shipping\Observer\Sales\OrderPlaceAfter"/>

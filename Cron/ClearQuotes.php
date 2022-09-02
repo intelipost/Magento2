@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -25,8 +26,7 @@ class ClearQuotes
     public function __construct(
         ResourceQuote $resourceQuote,
         Data $helper
-    )
-    {
+    ) {
         $this->resourceQuote = $resourceQuote;
         $this->helper = $helper;
     }

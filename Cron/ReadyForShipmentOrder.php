@@ -8,12 +8,12 @@
 
 namespace Intelipost\Shipping\Cron;
 
-use Intelipost\Shipping\Client\ShipmentOrder;
+use Intelipost\Shipping\Client\ReadyForShipment;
 use Intelipost\Shipping\Helper\Data;
 use Intelipost\Shipping\Model\ResourceModel\Shipment\CollectionFactory;
 use Intelipost\Shipping\Model\Shipment;
 
-class CreateOrder
+class ReadyForShipmentOrder
 {
     /** @var Data  */
     protected $helper;
@@ -21,45 +21,54 @@ class CreateOrder
     /** @var CollectionFactory  */
     protected $collectionFactory;
 
-    /** @var ShipmentOrder  */
-    protected $shipmentOrder;
+    /** @var Shipment  */
+    protected $shipment;
+
+    /** @var ReadyForShipment  */
+    protected $readyForShipment;
 
     /**
      * @param CollectionFactory $collectionFactory
-     * @param ShipmentOrder $shipmentOrder
+     * @param ReadyForShipment $readyForShipment
+     * @param Shipment $shipment
      * @param Data $helper
      */
     public function __construct(
         CollectionFactory $collectionFactory,
-        ShipmentOrder $shipmentOrder,
+        ReadyForShipment $readyForShipment,
+        Shipment $shipment,
         Data $helper
     ) {
-        $this->collectionFactory = $collectionFactory;
-        $this->shipmentOrder = $shipmentOrder;
         $this->helper = $helper;
+        $this->collectionFactory = $collectionFactory;
+        $this->shipment = $shipment;
+        $this->readyForShipment = $readyForShipment;
     }
 
     public function execute()
     {
         $enable = $this->helper->getConfig('enable_cron', 'order_status', 'intelipost_push');
-        $status = $this->helper->getConfig('status_to_create', 'order_status', 'intelipost_push');
+        $status = $this->helper->getConfig('status_to_ready_to_ship', 'order_status', 'intelipost_push');
 
         if ($enable) {
-            $statuses = explode(',', $status);
-
+            /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\Collection $collection */
             $collection = $this->collectionFactory->create();
             $collection->getSelect()->joinLeft(
                 ['so' => $collection->getConnection()->getTableName('sales_order')],
                 'main_table.order_increment_id = so.increment_id',
                 ['increment_id']
             );
-            $collection
-                ->addFieldToFilter('status', ['in' => $statuses])
-                ->addFieldToFilter('main_table.intelipost_status', Shipment::STATUS_PENDING);
+
+            $collection->addFieldToFilter('status', ['eq' => $status])
+                ->addFieldToFilter(
+                    'main_table.intelipost_status',
+                    ['neq' => Shipment::STATUS_READY_FOR_SHIPMENT]
+                );
 
             foreach ($collection as $shipment) {
                 try {
-                    $this->shipmentOrder->execute($shipment);
+                    /** @var ReadyForShipment $shipment */
+                    $this->readyForShipment->readyForShipmentRequestBody($shipment);
                 } catch (\Exception $e) {
                     $this->helper->log($e->getMessage());
                 }

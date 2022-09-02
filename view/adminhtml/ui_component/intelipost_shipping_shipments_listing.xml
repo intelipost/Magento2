@@ -55,6 +55,17 @@
                     <label translate="true">Create Orders</label>
                 </settings>
             </action>
+            <action name="ready_to_ship_order">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to set those order to Ready To Ship on Intelipost?</message>
+                        <title translate="true">Ready to Ship Orders</title>
+                    </confirm>
+                    <url path="*/*/massReadyToShip"/>
+                    <type>ready_to_ship_order</type>
+                    <label translate="true">Ready to Ship Orders</label>
+                </settings>
+            </action>
             <action name="ship_order">
                 <settings>
                     <confirm>

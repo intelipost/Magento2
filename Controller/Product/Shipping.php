@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -40,8 +41,7 @@ class Shipping extends \Magento\Framework\App\Action\Action
         Quote $quote,
         PageFactory $resultPageFactory,
         ProductRepository $productRepository
-    )
-    {
+    ) {
         $this->quote = $quote;
         $this->logger = $logger;
         $this->resultPageFactory = $resultPageFactory;
@@ -92,7 +92,6 @@ class Shipping extends \Magento\Framework\App\Action\Action
             if (!is_string($rates)) {
                 $template = 'Intelipost_Shipping::product/view/result.phtml';
             }
-
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
         }
@@ -105,7 +104,5 @@ class Shipping extends \Magento\Framework\App\Action\Action
                 ->setTemplate($template)
                 ->toHtml()
         );
-
-
     }
 }
