@@ -54,8 +54,6 @@ class Api
      */
     public function quoteRequest($httpMethod, $apiMethod, &$postData = false)
     {
-        $postData['api_request'] = $postData;
-
         $response = $this->client->apiRequest($httpMethod, $apiMethod, $postData);
         $result = $this->json->unserialize($response);
 
