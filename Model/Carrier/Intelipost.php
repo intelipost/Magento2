@@ -130,6 +130,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         );
         $postData['identification'] = $this->helper->getPageIdentification();
         $postData['seller_id'] = $request->getSellerId() ? $request->getSellerId() : '';
+        $postData['api_request'] = $postData;
 
         // Result
         $result = $this->rateResultFactory->create();
