@@ -99,4 +99,4 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
 _https://URL_LOJA/intelipost/webhook_  
 *Autenticação Basic*  
 Usuário da Autenticação será sua chave de API  
-Senha de autenticação deverá ser vazia.  
+Senha de autenticação podera ser preenchida com 123, apenas para não ficar vazia.  
