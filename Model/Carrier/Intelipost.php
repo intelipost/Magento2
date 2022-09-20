@@ -167,6 +167,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
         // Volumes
         $volumes = $this->getVolumes($response, $postData['cart_qty']);
+        $riskWarning = false;
 
         // Methods
         foreach ($response['content']['delivery_options'] as $child) {
@@ -174,20 +175,16 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
             // Risk Area
             $deliveryNote = $child['delivery_note'] ?? null;
-            if (!empty($deliveryNote)) {
+            if (!empty($deliveryNote) && !$riskWarning) {
+                $riskWarning = true;
+
+                /** @var \Magento\Quote\Model\Quote\Address\RateResult\Error $error */
                 $error = $this->_rateErrorFactory->create();
 
                 $riskareamsg = $this->getConfigData('riskareamsg');
-
                 $error->setCarrier($this->_code);
                 $error->setCarrierTitle($this->getConfigData('title'));
                 $error->setErrorMessage($riskareamsg ?: $deliveryNote);
-
-                $method->setWarnMessage($riskareamsg ?: $deliveryNote);
-
-                if ($breakOnError) {
-                    return $error;
-                }
 
                 $result->setError(true);
                 $result->append($error);
