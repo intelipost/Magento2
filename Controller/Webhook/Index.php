@@ -90,12 +90,10 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                 $trackingCode = $body['tracking_code'] ?? null;
                 $trackingUrl = $body['tracking_url'] ?? null;
                 $incrementId = $body['order_number'] ?? null;
-                $status = isset($body['history']) ? $body['history']['shipment_order_volume_state'] : null;
+                $intelipostStatus = isset($body['history']) ? $body['history']['shipment_order_volume_state'] : null;
 
-                $this->saveWebhook($request->getContent(), $incrementId, $status);
-
-                $this->updateTrackingCode($incrementId, $trackingCode, $trackingUrl);
-
+                $this->saveWebhook($request->getContent(), $incrementId, $intelipostStatus);
+                $this->updateTrackingCode($incrementId, $trackingCode, $trackingUrl, $intelipostStatus);
                 $this->updateOrderStatus($incrementId, $body);
             } catch (\Exception $e) {
                 $this->helper->getLogger()->error($e->getMessage());
@@ -219,14 +217,16 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     /**
      * @param $incrementId
      * @param $trackingCode
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @param $trackingUrl
+     * @param $intelipostStatus
+     * @return void
      */
-    public function updateTrackingCode($incrementId, $trackingCode, $trackingUrl)
+    public function updateTrackingCode($incrementId, $trackingCode, $trackingUrl, $intelipostStatus)
     {
         if ($trackingCode || $trackingUrl) {
             try {
                 $shipment = $this->shipmentRepository->getByOrderIncrementId($incrementId);
+                $shipment->setIntelipostStatus($intelipostStatus);
                 $shipment->setTrackingCode($trackingCode);
                 $shipment->setTrackingUrl($trackingUrl);
                 $this->shipmentRepository->save($shipment);
