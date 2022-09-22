@@ -63,9 +63,10 @@ class Customer
      */
     public function getAddressNumber($addressModel)
     {
-        $number = explode(',', $addressModel->getStreetLine(1));
+        $number = trim((string) $addressModel->getStreetLine(1));
         $shippingNumber = "s/n";
         if ($number) {
+            $number = explode(',', $number);
             if (is_numeric(trim($number[1]))) {
                 $shippingNumber = trim($number[1]);
             }
