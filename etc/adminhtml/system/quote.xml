@@ -222,8 +222,9 @@
                 <config_path>carriers/intelipost/specificerrmsg</config_path>
             </field>
 
-            <field id="delivery_risk_areas" translate="label" type="textarea" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+            <field id="delivery_risk_areas" translate="label" type="select" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                 <label>Delivery for Risk Areas</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>carriers/intelipost/delivery_risk_areas</config_path>
             </field>
 
