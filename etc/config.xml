@@ -29,6 +29,7 @@
                 <title>Intelipost</title>
                 <type>I</type>
                 <specificerrmsg>Esse método de envio não está disponível no momento.</specificerrmsg>
+                <delivery_risk_areas>1</delivery_risk_areas>
                 <riskareamsg>Esse cep faz parte de uma área de risco. Alguns serviços de entrega não oferecem entrega em áreas de risco.
 Nesses casos, é necessário monitorar a entrega e o processo de pedido para verificar a unidade de entrega mais próxima para retirada.
 Você receberá a notificação de quando sua encomenda estará disponível para retirada.
