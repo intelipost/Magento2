@@ -46,7 +46,7 @@ class Popup
             $shippingInfoModel = $this->shippingInfoFactory->create()->loadByHash($hash);
             $trackingInfo = $shippingInfoModel->getTrackingInfo();
             if (count($trackingInfo) == 1) {
-                $tracking = array_first($trackingInfo);
+                $tracking = reset($trackingInfo);
                 if (isset($tracking[0]) && count($tracking) == 1) {
                     if (filter_var($tracking[0]['number'], FILTER_VALIDATE_URL) !== false) {
                         return $subject->getResponse()->setRedirect($tracking[0]['number']);
