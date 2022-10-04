@@ -281,7 +281,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     {
         // Default Config
         $heightAttribute = $this->getConfigData('height_attribute');
-        $widthAttribute = $this->scopeConfig->getValue('width_attribute');
+        $widthAttribute = $this->getConfigData('width_attribute');
         $lengthAttribute = $this->getConfigData('length_attribute');
         $weightUnit = $this->getConfigData('weight_unit') == 'gr' ? 1000 : 1;
         $defaultWeight = intval($this->getConfigData('default_weight')) / $weightUnit;
