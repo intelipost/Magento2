@@ -83,6 +83,22 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
 
 *VIA API*
 - "POST" - /V1/intelipost/invoices (Criar nova Invoice)
+- "BODY" 
+"{
+  "invoice": [
+    {
+      "entity_id": 0,
+      "number": 0,
+      "order_increment_id": "string",
+      "series": "string",
+      "key": "string",
+      "date": "string",
+      "total_value": "string",
+      "products_value": "string",
+      "cfop": "string"
+    }
+  ]
+}"
 - "GET" - /V1/intelipost/invoices (Listar Invoices)
 
 
