@@ -520,8 +520,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getStoreName()
     {
-        $defaultStoreName = $this->storeManager->getStore()->getName();
-        return $this->getConfig('sales_channel') ?: $defaultStoreName;
+        $salesChannel = $this->getConfig('sales_channel');
+        if (!$salesChannel) {
+            $salesChannel = $this->storeManager->getStore()->getName();
+        }
+        return $salesChannel;
     }
 
     /**
