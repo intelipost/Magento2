@@ -93,6 +93,7 @@ class ShipmentOrder
             'order_entity_id' => $order->getId(),
             'order_created_at' => $order->getCreatedAt(),
             'shipping_amount' => $order->getShippingAmount(),
+            'sales_channel' => $this->helper->getStoreName(),
             'status' => $order->getStatus(),
             'customer_firstname' => $order->getCustomerFirstname(),
             'customer_lastname' => $order->getCustomerLastname(),
