@@ -55,9 +55,9 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         InvoiceSearchResultsInterfaceFactory $searchResultsFactory,
         CollectionProcessorInterface $collectionProcessor,
         JoinProcessorInterface $extensionAttributesJoinProcessor
-    )
-    {
+    ) {
         $this->resource = $resource;
+        $this->invoiceFactory = $invoiceFactory;
         $this->quoteFactory = $invoiceFactory;
         $this->invoiceCollectionFactory = $invoiceCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
@@ -101,7 +101,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             $invoice->setDate($nfe->getDate());
             $invoice->setTotalValue($nfe->getTotalValue());
             $invoice->setProductsValue($nfe->getProductsValue());
-            $invoice->setCfop($nfe->getInvoiceCfop());
+            $invoice->setCfop($nfe->getCfop());
 
             $this->resource->save($invoice);
         }

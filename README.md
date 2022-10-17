@@ -87,7 +87,6 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
 "{
   "invoice": [
     {
-      "entity_id": 0,
       "number": 0,
       "order_increment_id": "string",
       "series": "string",
@@ -96,8 +95,8 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
       "total_value": "string",
       "products_value": "string",
       "cfop": "string"
-    }
-  ]
+    }
+  ]
 }"
 - "GET" - /V1/intelipost/invoices (Listar Invoices)
 
