@@ -55,9 +55,9 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         InvoiceSearchResultsInterfaceFactory $searchResultsFactory,
         CollectionProcessorInterface $collectionProcessor,
         JoinProcessorInterface $extensionAttributesJoinProcessor
-    )
-    {
+    ) {
         $this->resource = $resource;
+        $this->invoiceFactory = $invoiceFactory;
         $this->quoteFactory = $invoiceFactory;
         $this->invoiceCollectionFactory = $invoiceCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
