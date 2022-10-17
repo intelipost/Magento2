@@ -35,6 +35,7 @@ interface InvoiceInterface
      * Set item id
      *
      * @param int $id
+     * @return void
      * @api
      */
     public function setEntityId($id);
@@ -51,6 +52,7 @@ interface InvoiceInterface
      * Set invoice number
      *
      * @param int $id
+     * @return void
      * @api
      */
     public function setNumber($number);
@@ -67,6 +69,7 @@ interface InvoiceInterface
      * Set order number
      *
      * @param string $orderNumber
+     * @return void
      * @api
      */
     public function setOrderIncrementId($orderNumber);
@@ -83,6 +86,7 @@ interface InvoiceInterface
      * Set invoice series
      *
      * @param string $series
+     * @return void
      * @api
      */
     public function setSeries($series);
@@ -99,6 +103,7 @@ interface InvoiceInterface
      * Set invoice key
      *
      * @param string $key
+     * @return void
      * @api
      */
     public function setKey($key);
@@ -115,6 +120,7 @@ interface InvoiceInterface
      * Set operation time
      *
      * @param string $date
+     * @return void
      * @api
      */
     public function setDate($date);
@@ -131,6 +137,7 @@ interface InvoiceInterface
      * Set invoice total value
      *
      * @param string $totalValue
+     * @return void
      * @api
      */
     public function setTotalValue($totalValue);
@@ -147,6 +154,7 @@ interface InvoiceInterface
      * Set invoice products value
      *
      * @param string $productsValue
+     * @return void
      * @api
      */
     public function setProductsValue($productsValue);
@@ -163,6 +171,7 @@ interface InvoiceInterface
      * Set invoice cfop
      *
      * @param string $cfop
+     * @return void
      * @api
      */
     public function setCfop($cfop);
