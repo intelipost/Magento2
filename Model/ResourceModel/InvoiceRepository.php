@@ -101,7 +101,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             $invoice->setDate($nfe->getDate());
             $invoice->setTotalValue($nfe->getTotalValue());
             $invoice->setProductsValue($nfe->getProductsValue());
-            $invoice->setCfop($nfe->getInvoiceCfop());
+            $invoice->setCfop($nfe->getCfop());
 
             $this->resource->save($invoice);
         }
