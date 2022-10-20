@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -21,7 +22,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 class InvoiceRepository implements InvoiceRepositoryInterface
 {
-
     /** @var ResourceInvoice  */
     protected $resource;
 
@@ -58,10 +58,8 @@ class InvoiceRepository implements InvoiceRepositoryInterface
     ) {
         $this->resource = $resource;
         $this->invoiceFactory = $invoiceFactory;
-        $this->quoteFactory = $invoiceFactory;
         $this->invoiceCollectionFactory = $invoiceCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
-        $this->quoteFactory = $invoiceFactory;
         $this->collectionProcessor = $collectionProcessor;
         $this->extensionAttributesJoinProcessor = $extensionAttributesJoinProcessor;
     }
@@ -115,7 +113,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
      */
     public function getById($id)
     {
-        $invoice = $this->quoteFactory->create();
+        $invoice = $this->invoiceFactory->create();
         $this->resource->load($invoice, $id);
         if (!$invoice->getId()) {
             throw new NoSuchEntityException(__('Item with id "%1" does not exist.', $id));
@@ -128,8 +126,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
      */
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-    )
-    {
+    ) {
         $collection = $this->invoiceCollectionFactory->create();
 
         $searchResults = $this->searchResultsFactory->create();
@@ -148,7 +145,6 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
-
     }
 
     /**
@@ -156,10 +152,9 @@ class InvoiceRepository implements InvoiceRepositoryInterface
      */
     public function delete(
         InvoiceInterface $invoice
-    )
-    {
+    ) {
         try {
-            $invoiceModel = $this->quoteFactory->create();
+            $invoiceModel = $this->invoiceFactory->create();
             $this->resource->load($invoiceModel, $invoice->getEntityId());
             $this->resource->delete($invoiceModel);
         } catch (\Exception $exception) {
@@ -179,5 +174,3 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         return $this->delete($this->getById($id));
     }
 }
-
-

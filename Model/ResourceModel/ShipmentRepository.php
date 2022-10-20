@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -55,10 +56,8 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         ShipmentSearchResultsInterfaceFactory $searchResultsFactory,
         CollectionProcessorInterface $collectionProcessor,
         JoinProcessorInterface $extensionAttributesJoinProcessor
-    )
-    {
+    ) {
         $this->resource = $resource;
-        $this->shipmentFactory = $shipmentFactory;
         $this->shipmentCollectionFactory = $shipmentCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
         $this->shipmentFactory = $shipmentFactory;
@@ -116,8 +115,7 @@ class ShipmentRepository implements ShipmentRepositoryInterface
      */
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-    )
-    {
+    ) {
         $collection = $this->shipmentCollectionFactory->create();
 
         $searchResults = $this->searchResultsFactory->create();
@@ -136,7 +134,6 @@ class ShipmentRepository implements ShipmentRepositoryInterface
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
-
     }
 
     /**
@@ -144,8 +141,7 @@ class ShipmentRepository implements ShipmentRepositoryInterface
      */
     public function delete(
         ShipmentInterface $shipment
-    )
-    {
+    ) {
         try {
             $shipmentModel = $this->shipmentFactory->create();
             $this->resource->load($shipmentModel, $shipment->getEntityId());

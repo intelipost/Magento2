@@ -49,16 +49,12 @@ class Index extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Session                        $checkoutSession,
         \Magento\Framework\Stdlib\CookieManagerInterface       $cookieManager,
         \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory
-    )
-    {
+    ) {
         $this->helper = $helper;
-        $this->shippingFactory = $quoteFactory;
         $this->resultPageFactory = $resultPageFactory;
         $this->checkoutSession = $checkoutSession;
-
         $this->cookieManager = $cookieManager;
         $this->cookieMetadataFactory = $cookieMetadataFactory;
-
         parent::__construct($context);
     }
 
