@@ -57,7 +57,6 @@ class WebhookRepository implements WebhookRepositoryInterface
     )
     {
         $this->resource = $resource;
-        $this->webhookFactory = $webhookFactory;
         $this->webhookCollectionFactory = $webhookCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
         $this->webhookFactory = $webhookFactory;
@@ -101,8 +100,7 @@ class WebhookRepository implements WebhookRepositoryInterface
      */
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-    )
-    {
+    ) {
         $collection = $this->webhookCollectionFactory->create();
 
         $searchResults = $this->searchResultsFactory->create();
@@ -120,17 +118,14 @@ class WebhookRepository implements WebhookRepositoryInterface
 
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
-        return $searchResults;
 
+        return $searchResults;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete(
-        WebhookInterface $webhook
-    )
-    {
+    public function delete(WebhookInterface $webhook) {
         try {
             $webhookModel = $this->webhookFactory->create();
             $this->resource->load($webhookModel, $webhook->getEntityId());
@@ -152,5 +147,3 @@ class WebhookRepository implements WebhookRepositoryInterface
         return $this->delete($this->getById($id));
     }
 }
-
-

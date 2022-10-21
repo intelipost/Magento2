@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -21,7 +22,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 class QuoteRepository implements QuoteRepositoryInterface
 {
-
     /** @var ResourceQuote  */
     protected $resource;
 
@@ -55,10 +55,8 @@ class QuoteRepository implements QuoteRepositoryInterface
         QuoteSearchResultsInterfaceFactory $searchResultsFactory,
         CollectionProcessorInterface $collectionProcessor,
         JoinProcessorInterface $extensionAttributesJoinProcessor
-    )
-    {
+    ) {
         $this->resource = $resource;
-        $this->quoteFactory = $quoteFactory;
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
         $this->quoteFactory = $quoteFactory;
@@ -102,8 +100,7 @@ class QuoteRepository implements QuoteRepositoryInterface
      */
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-    )
-    {
+    ) {
         $collection = $this->quoteCollectionFactory->create();
 
         $searchResults = $this->searchResultsFactory->create();
@@ -122,7 +119,6 @@ class QuoteRepository implements QuoteRepositoryInterface
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
-
     }
 
     /**
@@ -130,8 +126,7 @@ class QuoteRepository implements QuoteRepositoryInterface
      */
     public function delete(
         QuoteInterface $quote
-    )
-    {
+    ) {
         try {
             $quoteModel = $this->quoteFactory->create();
             $this->resource->load($quoteModel, $quote->getEntityId());
