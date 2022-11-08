@@ -82,22 +82,56 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
 ![N|Solid](view/frontend/web/images/readme/invoice-order.png)
 
 *VIA API*
-- "POST" - /V1/intelipost/invoices (Criar nova Invoice)
-- "BODY" 
-"{
-  "invoice": [
-    {
-      "number": 0,
-      "order_increment_id": "string",
-      "series": "string",
-      "key": "string",
-      "date": "string",
-      "total_value": "string",
-      "products_value": "string",
-      "cfop": "string"
-    }
-  ]
-}"
+Para criação da invoice no Magento via API é ncessário que seja obtido o token na plataforma Magento relativo a conta do cliente, conforme requisição abaixo:
+
+Cabeçalho da Requisição:
+Method: POST
+URL: {URL_LOJA}/integration/admin/token => o campo URL_LOJA é a URL da loja Magento do cliente
+header 'api-key: '  => Deve ser a API_KEY do cliente na Intelipost, contatar o time de suporte da Intelipost para obte-la
+header 'php-auth-user:  ' => Deve ser a API_KEY do cliente na Intelipost, contatar o time de suporte da Intelipost para obte-la
+header 'Content-Type: application/json' 
+
+Corpo da Requisição:
+data-raw - Json
+{
+    "username": "usuário do admin da plataforma Magento",
+    "password": "senha do usuário do admin da plataforma Magento"
+}
+
+Após a obteção do token do Magento na requisição anterior, a inclusão da invoice deverá ser executada conforme a requisição a seguir:
+
+Cabeçalho da Requisição:
+Method: POST
+URL: {URL_LOJA}/intelipost/invoices => o campo URL_LOJA é a URL da loja Magento do cliente
+header 'Authorization: Bearer TOKEN_API' => o campo TOKEN_API deverá ser substituído pelo token retornado na requisição anterior.
+header 'Content-Type: application/json' 
+
+Corpo da Requisição:
+data-raw - Json
+{
+    "invoice": [
+        {
+            "number": ,
+            "order_increment_id": "",
+            "series": "",
+            "key": "",
+            "date": "",
+            "total_value": "",
+            "products_value": "",
+            "cfop": ""
+        }
+    ]
+}
+Descrição dos Campos do Body da requisição:
+- number: é o número da nota fiscal e seu type é number
+- order_increment_id: é o número do pedido e seu type é string
+- series: é o número de série da nota fiscal e seu type é string
+- key: é o número da chave da DANFE e seu type é string
+- date: é a data de emissão da nota fiscal e seu type é date no seguinte formato AAAA-MM-DDTHH:MM:SS
+- total_value: é o valor total da nota fiscal e seu type é string no seguinte formato 00.00, com duas casas decimais separadas por ponto
+- products_value: é o valor total dos produtos da nota fiscal e seu type é string no seguinte formato 00.00, com duas casas decimais separadas por ponto
+- cfop: é o código da operação fiscal utilizado na emissão da nota fiscal e seu type é string
+
 - "GET" - /V1/intelipost/invoices (Listar Invoices)
 
 
