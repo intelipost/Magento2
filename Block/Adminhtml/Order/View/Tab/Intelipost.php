@@ -134,9 +134,11 @@ class Intelipost extends \Magento\Backend\Block\Template implements \Magento\Bac
      */
     public function canShowTab()
     {
-        if ($this->_authorization->isAllowed('Intelipost_Shipping::webhooks')) {
-            if (strpos($this->getOrder()->getShippingMethod(), 'intelipost') !== false) {
-                return true;
+        if (!$this->getOrder()->getIsVirtual() && $this->_authorization->isAllowed('Intelipost_Shipping::webhooks')) {
+            if ($this->getOrder()->getShippingMethod()) {
+                if (strpos($this->getOrder()->getShippingMethod(), 'intelipost') !== false) {
+                    return true;
+                }
             }
         }
         return false;
