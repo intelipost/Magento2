@@ -75,7 +75,7 @@ class OrderPlaceAfter implements ObserverInterface
             /** @var \Magento\Sales\Model\Order $order */
             $order = $observer->getOrder();
 
-            if ($order->getIsVirtual() && $order->getShippingMethod()) {
+            if (!$order->getIsVirtual() && $order->getShippingMethod()) {
                 $resultQuotes = [];
                 if (strpos($order->getShippingMethod(), '_') !== false) {
                     $deliveryMethodId = explode("_", $order->getShippingMethod());
