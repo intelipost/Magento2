@@ -25,6 +25,16 @@
                 <field id="enabled">1</field>
             </depends>
         </field>
+        <field id="cron_frequency" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Frequency</label>
+            <source_model>Intelipost\Shipping\Model\Config\Source\Frequency</source_model>
+            <backend_model>Intelipost\Shipping\Model\Config\CronConfig</backend_model>
+            <config_path>intelipost_push/order_status/cron_frequency</config_path>
+            <depends>
+                <field id="enabled">1</field>
+                <field id="enable_cron">1</field>
+            </depends>
+        </field>
         <field id="status_to_create" translate="label comment" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
             <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
             <label>Status to Create Orders on Intelipost</label>

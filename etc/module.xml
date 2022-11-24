@@ -7,7 +7,7 @@
  */
 -->
 <config>
-    <module name="Intelipost_Shipping" setup_version="2.3.7">
+    <module name="Intelipost_Shipping" setup_version="2.4.0">
         <sequence>
             <module name="Magento_Quote"/>
         </sequence>

@@ -16,6 +16,9 @@
             </settings>
         </intelipost_basic>
         <intelipost_push>
+            <order_status>
+                <cron_frequency>*/15 * * * *</cron_frequency>
+            </order_status>
             <attributes>
                 <enabled>1</enabled>
                 <federal_tax_payer_id>taxvat</federal_tax_payer_id>

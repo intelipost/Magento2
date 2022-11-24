@@ -75,114 +75,116 @@ class OrderPlaceAfter implements ObserverInterface
             /** @var \Magento\Sales\Model\Order $order */
             $order = $observer->getOrder();
 
-            $resultQuotes = [];
-            if (strpos($order->getShippingMethod(), '_') !== false) {
-                $deliveryMethodId = explode("_", $order->getShippingMethod());
-                if (count($deliveryMethodId) < 3) {
-                    return;
-                }
-
-                $deliveryMethodId = $deliveryMethodId[count($deliveryMethodId) - 2] .
-                    "_" .
-                    $deliveryMethodId[count($deliveryMethodId) - 1];
-
-                foreach ($this->helper->getResultQuotes() as $quote) {
-                    if ($quote->getDeliveryMethodId() == $deliveryMethodId && $quote->getOrderId() == null) {
-                        $resultQuotes[] = $quote;
+            if (!$order->getIsVirtual() && $order->getShippingMethod()) {
+                $resultQuotes = [];
+                if (strpos($order->getShippingMethod(), '_') !== false) {
+                    $deliveryMethodId = explode("_", $order->getShippingMethod());
+                    if (count($deliveryMethodId) < 3) {
+                        return;
                     }
-                }
 
-                if (empty($resultQuotes) && count($resultQuotes) == 0) {
-                    return;
-                }
-            }
+                    $deliveryMethodId = $deliveryMethodId[count($deliveryMethodId) - 2] .
+                        "_" .
+                        $deliveryMethodId[count($deliveryMethodId) - 1];
 
-            $stored = [];
-            $resultJson = [];
-
-            $cookie = $this->cookieManager->getCookie(\Intelipost\Shipping\Controller\Schedule\Index::COOKIE_NAME);
-
-            foreach ($resultQuotes as $quoteItem) {
-                if (in_array($quoteItem->getQuoteId(), $stored)) {
-                    continue;
-                }
-
-                $quotes = [];
-
-                if ($cookie) {
-                    $scheduled = explode('+', $cookie);
-
-                    if ($scheduled[0] == $quoteItem->getDeliveryMethodId()) {
-                        if (!$quoteItem->getSelectedSchedulingDates() || !$quoteItem->getSelectedSchedulingPeriod()) {
-                            $quoteItem->setSelectedSchedulingDates($scheduled[1]);
-                            $quoteItem->setSelectedSchedulingPeriod($scheduled[2]);
+                    foreach ($this->helper->getResultQuotes() as $quote) {
+                        if ($quote->getDeliveryMethodId() == $deliveryMethodId && $quote->getOrderId() == null) {
+                            $resultQuotes[] = $quote;
                         }
                     }
+
+                    if (empty($resultQuotes) && count($resultQuotes) == 0) {
+                        return;
+                    }
                 }
 
-                if (count($resultJson) == 0) {
-                    $quotes[] = [
-                        'quote_id' => $quoteItem->getQuoteId(),
-                        'final_shipping_cost' => $quoteItem->getFinalShippingCost(),
-                        'provider_shipping_cost' => $quoteItem->getProviderShippingCost(),
-                        'delivery_exact_estimated_date' => $quoteItem->getDeliveryExactEstimatedDate(),
-                        'delivery_estimated_delivery_business_day' => $quoteItem->getDeliveryEstimateBusinessDays(),
-                        'delivery_method_type' => $quoteItem->getDeliveryMethodType(),
-                        'products' => $this->helper->unserializeData($quoteItem->getProducts()),
-                        'description' => $quoteItem->getDescription(),
-                        'delivery_method_name' => $quoteItem->getDeliveryMethodName(),
-                        'quote_volume' => $this->helper->unserializeData($quoteItem->getQuoteVolume()),
-                        'origin_zip_code' => $quoteItem->getOriginZipCode(),
-                        'delivery_method_id' => $quoteItem->getDeliveryMethodId(),
-                        'selected_scheduling_dates' => $quoteItem->getSelectedSchedulingDates(),
-                        'selected_scheduling_period' => $quoteItem->getSelectedSchedulingPeriod(),
-                        'intelipost_status' => 'pending'
-                    ];
+                $stored = [];
+                $resultJson = [];
 
-                    $resultJson = [
-                        'session_id' => $quoteItem->getSessionId(),
-                        'shipping_method' => $order->getShippingMethod(),
-                        'delivery_method_id' => $quoteItem->getDeliveryMethodId(),
-                        'total_final_shipping_cost' => $quoteItem->getFinalShippingCost(),
-                        'total_provider_shipping_cost' => $quoteItem->getProviderShippingCost(),
-                        'order_id' => $order->getIncrementId(),
-                        'logistic_provider_name' => $quoteItem->getLogisticProviderName(),
-                        'delivery_method_name' => $quoteItem->getDeliveryMethodName(),
-                        'selected_scheduling_dates' => $quoteItem->getSelectedSchedulingDates(),
-                        'selected_scheduling_period' => $quoteItem->getSelectedSchedulingPeriod(),
-                        'quotes' => $quotes
-                    ];
-                } else {
-                    $quotes = [
-                        'quote_id' => $quoteItem->getQuoteId(),
-                        'final_shipping_cost' => $quoteItem->getFinalShippingCost(),
-                        'provider_shipping_cost' => $quoteItem->getProviderShippingCost(),
-                        'delivery_exact_estimated_date' => $quoteItem->getDeliveryExactEstimatedDate(),
-                        'delivery_estimated_delivery_business_day' => $quoteItem->getDeliveryEstimateBusinessDays(),
-                        'origin_zip_code' => $quoteItem->getOriginZipCode(),
-                        'delivery_method_type' => $quoteItem->getDeliveryMethodType(),
-                        'products' => $quoteItem->getProducts(),
-                        'description' => $quoteItem->getDescription(),
-                        'delivery_method_name' => $quoteItem->getDeliveryMethodName(),
-                        'quote_volume' => $quoteItem->getQuoteVolume(),
-                        'delivery_method_id' => $quoteItem->getDeliveryMethodId(),
-                        'selected_scheduling_dates' => $quoteItem->getSelectedSchedulingDates(),
-                        'selected_scheduling_period' => $quoteItem->getSelectedSchedulingPeriod(),
-                        'intelipost_status' => 'pending'
-                    ];
+                $cookie = $this->cookieManager->getCookie(\Intelipost\Shipping\Controller\Schedule\Index::COOKIE_NAME);
 
-                    $resultJson['total_final_shipping_cost'] += (float) $quoteItem->getFinalShippingCost();
-                    $resultJson['total_provider_shipping_cost'] += (float) $quoteItem->getProviderShippingCost();
+                foreach ($resultQuotes as $quoteItem) {
+                    if (in_array($quoteItem->getQuoteId(), $stored)) {
+                        continue;
+                    }
 
-                    $resultJson['quotes'][] = $quotes;
+                    $quotes = [];
+
+                    if ($cookie) {
+                        $scheduled = explode('+', $cookie);
+
+                        if ($scheduled[0] == $quoteItem->getDeliveryMethodId()) {
+                            if (!$quoteItem->getSelectedSchedulingDates() || !$quoteItem->getSelectedSchedulingPeriod()) {
+                                $quoteItem->setSelectedSchedulingDates($scheduled[1]);
+                                $quoteItem->setSelectedSchedulingPeriod($scheduled[2]);
+                            }
+                        }
+                    }
+
+                    if (count($resultJson) == 0) {
+                        $quotes[] = [
+                            'quote_id' => $quoteItem->getQuoteId(),
+                            'final_shipping_cost' => $quoteItem->getFinalShippingCost(),
+                            'provider_shipping_cost' => $quoteItem->getProviderShippingCost(),
+                            'delivery_exact_estimated_date' => $quoteItem->getDeliveryExactEstimatedDate(),
+                            'delivery_estimated_delivery_business_day' => $quoteItem->getDeliveryEstimateBusinessDays(),
+                            'delivery_method_type' => $quoteItem->getDeliveryMethodType(),
+                            'products' => $this->helper->unserializeData($quoteItem->getProducts()),
+                            'description' => $quoteItem->getDescription(),
+                            'delivery_method_name' => $quoteItem->getDeliveryMethodName(),
+                            'quote_volume' => $this->helper->unserializeData($quoteItem->getQuoteVolume()),
+                            'origin_zip_code' => $quoteItem->getOriginZipCode(),
+                            'delivery_method_id' => $quoteItem->getDeliveryMethodId(),
+                            'selected_scheduling_dates' => $quoteItem->getSelectedSchedulingDates(),
+                            'selected_scheduling_period' => $quoteItem->getSelectedSchedulingPeriod(),
+                            'intelipost_status' => 'pending'
+                        ];
+
+                        $resultJson = [
+                            'session_id' => $quoteItem->getSessionId(),
+                            'shipping_method' => $order->getShippingMethod(),
+                            'delivery_method_id' => $quoteItem->getDeliveryMethodId(),
+                            'total_final_shipping_cost' => $quoteItem->getFinalShippingCost(),
+                            'total_provider_shipping_cost' => $quoteItem->getProviderShippingCost(),
+                            'order_id' => $order->getIncrementId(),
+                            'logistic_provider_name' => $quoteItem->getLogisticProviderName(),
+                            'delivery_method_name' => $quoteItem->getDeliveryMethodName(),
+                            'selected_scheduling_dates' => $quoteItem->getSelectedSchedulingDates(),
+                            'selected_scheduling_period' => $quoteItem->getSelectedSchedulingPeriod(),
+                            'quotes' => $quotes
+                        ];
+                    } else {
+                        $quotes = [
+                            'quote_id' => $quoteItem->getQuoteId(),
+                            'final_shipping_cost' => $quoteItem->getFinalShippingCost(),
+                            'provider_shipping_cost' => $quoteItem->getProviderShippingCost(),
+                            'delivery_exact_estimated_date' => $quoteItem->getDeliveryExactEstimatedDate(),
+                            'delivery_estimated_delivery_business_day' => $quoteItem->getDeliveryEstimateBusinessDays(),
+                            'origin_zip_code' => $quoteItem->getOriginZipCode(),
+                            'delivery_method_type' => $quoteItem->getDeliveryMethodType(),
+                            'products' => $quoteItem->getProducts(),
+                            'description' => $quoteItem->getDescription(),
+                            'delivery_method_name' => $quoteItem->getDeliveryMethodName(),
+                            'quote_volume' => $quoteItem->getQuoteVolume(),
+                            'delivery_method_id' => $quoteItem->getDeliveryMethodId(),
+                            'selected_scheduling_dates' => $quoteItem->getSelectedSchedulingDates(),
+                            'selected_scheduling_period' => $quoteItem->getSelectedSchedulingPeriod(),
+                            'intelipost_status' => 'pending'
+                        ];
+
+                        $resultJson['total_final_shipping_cost'] += (float)$quoteItem->getFinalShippingCost();
+                        $resultJson['total_provider_shipping_cost'] += (float)$quoteItem->getProviderShippingCost();
+
+                        $resultJson['quotes'][] = $quotes;
+                    }
+
+                    $stored[$quoteItem->getQuoteId()] = $quoteItem->getQuoteId();
                 }
 
-                $stored[$quoteItem->getQuoteId()] = $quoteItem->getQuoteId();
-            }
-
-            if ($resultJson) {
-                $order->setData('intelipost_quotes', $this->helper->serializeData($resultJson));
-                $this->setShipmentOrder($resultJson);
+                if ($resultJson) {
+                    $order->setData('intelipost_quotes', $this->helper->serializeData($resultJson));
+                    $this->setShipmentOrder($resultJson);
+                }
             }
         } catch (\Exception $e) {
             $this->helper->getLogger()->error($e->getMessage());
