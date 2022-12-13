@@ -100,6 +100,7 @@ class Shipping extends \Magento\Framework\App\Action\Action
         $this->getResponse()->setBody(
             $resultPage->getLayout()
                 ->createBlock(\Magento\Framework\View\Element\Template::class)
+                ->setCacheLifetime(false)
                 ->setRates($rates)
                 ->setTemplate($template)
                 ->toHtml()
