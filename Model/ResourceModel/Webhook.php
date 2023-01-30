@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -15,5 +16,4 @@ class Webhook extends AbstractDb
     {
         $this->_init('intelipost_webhooks', 'entity_id');
     }
-
 }

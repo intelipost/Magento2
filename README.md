@@ -81,9 +81,10 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
 *Página de Pedido*  
 ![N|Solid](view/frontend/web/images/readme/invoice-order.png)
 
-*VIA API*
-- "POST" - /V1/intelipost/invoices (Criar nova Invoice)
-- "BODY" 
+*VIA API*  
+- "POST" - /V1/intelipost/invoices (Criar nova Invoice)  
+- "BODY"  
+```
 "{
   "invoice": [
     {
@@ -97,8 +98,23 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
       "cfop": "string"
     }
   ]
-}"
+}"   
+```
 - "GET" - /V1/intelipost/invoices (Listar Invoices)
+```
+curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/invoices?searchCriteria[filterGroups][0][filters][0][field]=order_increment_id&searchCriteria[filterGroups][0][filters][0][value]=000000001&searchCriteria[filterGroups][0][filters][0][conditionType]=eq' \
+--header 'Authorization: Bearer TOKEN_API'
+```
+- "GET" - /V1/intelipost/invoices/:id
+
+
+## Labels
+- "GET" - /V1/intelipost/labels (Listar Etiquetas)
+```
+curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/labels?searchCriteria[filterGroups][0][filters][0][field]=order_increment_id&searchCriteria[filterGroups][0][filters][0][value]=000000001&searchCriteria[filterGroups][0][filters][0][conditionType]=eq' \
+--header 'Authorization: Bearer TOKEN_API'
+```
+- "GET" - /V1/intelipost/labels/:id
 
 
 ## Webhooks

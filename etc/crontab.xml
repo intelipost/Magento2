@@ -11,6 +11,9 @@
         <job name="intelipost_create_order" instance="Intelipost\Shipping\Cron\CreateOrder" method="execute">
             <config_path>crontab/default/jobs/intelipost_create_order/schedule/cron_expr</config_path>
         </job>
+        <job name="intelipost_import_labels" instance="Intelipost\Shipping\Cron\ImportLabels" method="execute">
+            <schedule>55 */2 * * *</schedule>
+        </job>
         <job name="intelipost_retry_order" instance="Intelipost\Shipping\Cron\RetryOrder" method="execute">
             <schedule>40 4 * * *</schedule>
         </job>

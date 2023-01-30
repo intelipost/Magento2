@@ -8,10 +8,13 @@
 
 namespace Intelipost\Shipping\Block\Adminhtml\Order\View\Tab;
 
-use Intelipost\Shipping\Model\ResourceModel\Invoice\CollectionFactory;
-use Intelipost\Shipping\Model\ResourceModel\Webhook\CollectionFactory as WebhookCollectionFactory;
+use Intelipost\Shipping\Model\ResourceModel\Invoice\CollectionFactory as InvoiceCollectionFactory;
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Tab\TabInterface;
+use Magento\Framework\Registry;
 
-class Intelipost extends \Magento\Backend\Block\Template implements \Magento\Backend\Block\Widget\Tab\TabInterface
+class Intelipost extends Template implements TabInterface
 {
     /**
      * Template
@@ -23,32 +26,27 @@ class Intelipost extends \Magento\Backend\Block\Template implements \Magento\Bac
     /**
      * Core registry
      *
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     protected $coreRegistry = null;
 
-    /** @var CollectionFactory */
+    /** @var InvoiceCollectionFactory */
     protected $invoiceCollectionFactory;
 
-    /** @var WebhookCollectionFactory */
-    protected $webhookCollectionFactory;
-
     /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param CollectionFactory $invoiceCollectionFactory
+     * @param Context $context
+     * @param Registry $registry
+     * @param InvoiceCollectionFactory $invoiceCollectionFactory
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        CollectionFactory $invoiceCollectionFactory,
-        WebhookCollectionFactory $webhookCollectionFactory,
+        Context $context,
+        Registry $registry,
+        InvoiceCollectionFactory $invoiceCollectionFactory,
         array $data = []
     ) {
         $this->coreRegistry = $registry;
         $this->invoiceCollectionFactory = $invoiceCollectionFactory;
-        $this->webhookCollectionFactory = $webhookCollectionFactory;
         parent::__construct($context, $data);
     }
 
@@ -134,7 +132,7 @@ class Intelipost extends \Magento\Backend\Block\Template implements \Magento\Bac
      */
     public function canShowTab()
     {
-        if (!$this->getOrder()->getIsVirtual() && $this->_authorization->isAllowed('Intelipost_Shipping::webhooks')) {
+        if (!$this->getOrder()->getIsVirtual()) {
             if ($this->getOrder()->getShippingMethod()) {
                 if (strpos($this->getOrder()->getShippingMethod(), 'intelipost') !== false) {
                     return true;
@@ -161,6 +159,30 @@ class Intelipost extends \Magento\Backend\Block\Template implements \Magento\Bac
     }
 
     /**
+     * @return mixed
+     */
+    public function getWebhooksBlock()
+    {
+        return $this->getLayout()->createBlock(
+            \Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost\Webhooks::class
+        )->setOrder($this->getOrder())
+        ->setOrderId($this->getOrderId())
+        ->toHtml();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLabelsBlock()
+    {
+        return $this->getLayout()->createBlock(
+            \Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost\Labels::class
+        )->setOrder($this->getOrder())
+         ->setOrderId($this->getOrderId())
+         ->toHtml();
+    }
+
+    /**
      * @return \Intelipost\Shipping\Model\ResourceModel\Invoice\Collection
      */
     public function getInvoicesCollection()
@@ -168,15 +190,5 @@ class Intelipost extends \Magento\Backend\Block\Template implements \Magento\Bac
         $invoiceCollection = $this->invoiceCollectionFactory->create();
         $invoiceCollection->addFieldToFilter('order_increment_id', $this->getOrder()->getIncrementId());
         return $invoiceCollection;
-    }
-
-    /**
-     * @return \Intelipost\Shipping\Model\ResourceModel\Webhook\Collection
-     */
-    public function getWebhooksCollection()
-    {
-        $collection = $this->webhookCollectionFactory->create();
-        $collection->addFieldToFilter('order_increment_id', $this->getOrder()->getIncrementId());
-        return $collection;
     }
 }

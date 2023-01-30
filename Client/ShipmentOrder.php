@@ -8,9 +8,12 @@
 
 namespace Intelipost\Shipping\Client;
 
+use Intelipost\Shipping\Client\Intelipost;
+use Intelipost\Shipping\Client\Labels as RequestLabel;
 use Intelipost\Shipping\Helper\Api;
 use Intelipost\Shipping\Helper\Data;
 use Intelipost\Shipping\Api\ShipmentRepositoryInterface;
+use Intelipost\Shipping\Model\Shipment;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
@@ -39,6 +42,9 @@ class ShipmentOrder
     /** @var TimezoneInterface */
     protected $timezone;
 
+    /** @var RequestLabel  */
+    protected $requestLabel;
+
     /**
      * @param ShipmentOrder\Customer $customer
      * @param ShipmentOrder\Volume $volume
@@ -47,6 +53,8 @@ class ShipmentOrder
      * @param Api $helperApi
      * @param ShipmentRepositoryInterface $shipment
      * @param Data $helper
+     * @param RequestLabel $label
+     * @param LabelClient $labelClient
      */
     public function __construct(
         ShipmentOrder\Customer $customer,
@@ -55,7 +63,8 @@ class ShipmentOrder
         TimezoneInterface $timezone,
         Api $helperApi,
         ShipmentRepositoryInterface $shipmentRepository,
-        Data $helper
+        Data $helper,
+        RequestLabel $label
     ) {
         $this->shipmentCustomer = $customer;
         $this->shipmentVolume = $volume;
@@ -64,10 +73,11 @@ class ShipmentOrder
         $this->helperApi = $helperApi;
         $this->shipmentRepository = $shipmentRepository;
         $this->timezone = $timezone;
+        $this->requestLabel = $label;
     }
 
     /**
-     * @param \Intelipost\Shipping\Model\Shipment $shipment
+     * @param Shipment $shipment
      */
     public function execute($shipment)
     {
@@ -109,7 +119,7 @@ class ShipmentOrder
     }
 
     /**
-     * @param \Intelipost\Shipping\Model\Shipment $shipment
+     * @param Shipment $shipment
      * @return \stdClass
      * @throws \Exception
      */
@@ -167,15 +177,18 @@ class ShipmentOrder
     {
         $trackingCode = null;
         $trackingUrl = null;
+        $incrementId = $shipment->getData('order_increment_id');
 
         $response = $this->helperApi->apiRequest('POST', 'shipment_order', $requestBody);
         $result = $this->helper->unserializeData($response);
+        $result = $this->checkExistingOrder($incrementId, $result);
 
-        $shipmentStatus = \Intelipost\Shipping\Model\Shipment::STATUS_CREATED;
+        $shipmentStatus = Shipment::STATUS_CREATED;
         $responseStatus = $result['status'];
+
         $shipmentMessage = $responseStatus;
 
-        if ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_ERROR) {
+        if ($responseStatus == Intelipost::RESPONSE_STATUS_ERROR) {
             $messages = null;
             $errorCount = 1;
 
@@ -185,9 +198,11 @@ class ShipmentOrder
             }
             $this->message = $messages;
 
-            $shipmentStatus = \Intelipost\Shipping\Model\Shipment::STATUS_ERROR;
+            $shipmentStatus = Shipment::STATUS_ERROR;
             $shipmentMessage = $messages;
-        } elseif ($responseStatus == \Intelipost\Shipping\Client\Intelipost::RESPONSE_STATUS_OK) {
+        }
+
+        if ($responseStatus == Intelipost::RESPONSE_STATUS_OK) {
             $trackingCode = '';
             $trackingUrl = $result['content']['tracking_url'];
             if (isset($result['content']['shipment_order_volume_array'])) {
@@ -200,9 +215,10 @@ class ShipmentOrder
                 if (!empty($trackingCodes)) {
                     $trackingCode = implode(', ', $trackingCodes);
                 }
+
+                $this->requestLabel->importPrintingLabels($incrementId, $volume['shipment_order_volume_number']);
             }
 
-            $incrementId = $shipment->getData('order_increment_id');
             $status = $this->helper->getConfig('created_status', 'order_status', 'intelipost_push');
             $order = $this->helper->loadOrder($incrementId);
             $this->updateOrderStatus($order->getId(), $status);
@@ -222,7 +238,7 @@ class ShipmentOrder
      */
     public function updateShipment($shipmentId, $status, $message, $trackingCode, $trackingUrl)
     {
-        /** @var \Intelipost\Shipping\Model\Shipment $shipmentModel */
+        /** @var Shipment $shipmentModel */
         $shipmentModel = $this->shipmentRepository->getById($shipmentId);
         $shipmentModel->setIntelipostStatus($status);
         $shipmentModel->setIntelipostMessage($message);
@@ -266,5 +282,30 @@ class ShipmentOrder
         $localizedDateTimeISO = $this->timezone->date($newDate)->format(DateTime::DATETIME_PHP_FORMAT);
         $now = str_replace(' ', 'T', $localizedDateTimeISO);
         return $now;
+    }
+
+    /**
+     * @param string $incrementId
+     * @param array $result
+     * @return array
+     */
+    protected function checkExistingOrder($incrementId, $result)
+    {
+
+        if ($result['status'] == Intelipost::RESPONSE_STATUS_ERROR && isset($result['messages'])) {
+            if (count($result['messages']) == 1) {
+                $message = $result['messages'][0];
+                if (isset($message['key']) && $message['key'] == Intelipost::ALREADY_EXISTS_KEY) {
+                    $path = sprintf('shipment_order/%s', $incrementId);
+                    $response = $this->helperApi->apiRequest('GET', $path);
+                    $newResult = $this->helper->unserializeData($response);
+                    if ($newResult['status'] == Intelipost::RESPONSE_STATUS_OK) {
+                        $result = $newResult;
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 }

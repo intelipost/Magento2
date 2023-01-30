@@ -186,9 +186,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $aditionalDeliveryDate = (int)$this->scopeConfig->getValue('carriers/intelipost/additional_delivery_date');
             $estimatedDelivery = $estimatedDelivery + $aditionalDeliveryDate;
 
-            $methodCustomTitle = $this->getConfig('custom_title', $carrier);
+            $methodCustomTitle = (string) $this->getConfig('custom_title', $carrier);
             if (!$estimatedDelivery) {
-                $methodCustomTitle = sprintf($this->getConfig('same_day_title', $carrier), $description);
+                $sameDayTitle = (string) $this->getConfig('same_day_title', $carrier);
+                $methodCustomTitle = sprintf($sameDayTitle, $description);
             }
             $text = str_replace(['{method}', '{days}'], [$description, $estimatedDelivery], $methodCustomTitle);
         }
