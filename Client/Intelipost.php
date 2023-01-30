@@ -18,6 +18,7 @@ class Intelipost
     const GET = 'GET';
     const RESPONSE_STATUS_OK = 'OK';
     const RESPONSE_STATUS_ERROR = 'ERROR';
+    const ALREADY_EXISTS_KEY = 'shipmentOrder.save.already.existing.order.number';
 
     const DEAFULT_TIMEOUT = 30;
     const DEAFULT_PLATFORM = 'Magento2.3+';

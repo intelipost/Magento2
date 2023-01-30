@@ -48,7 +48,7 @@ class CreateOrder
             $statuses = explode(',', $status);
 
             $collection = $this->collectionFactory->create();
-            $collection->getSelect()->joinLeft(
+            $collection->getSelect()->join(
                 ['so' => $collection->getConnection()->getTableName('sales_order')],
                 'main_table.order_increment_id = so.increment_id',
                 ['increment_id']

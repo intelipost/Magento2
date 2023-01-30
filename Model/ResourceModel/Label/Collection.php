@@ -6,15 +6,14 @@
  * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
-namespace Intelipost\Shipping\Model\ResourceModel\Webhook;
+namespace Intelipost\Shipping\Model\ResourceModel\Label;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Intelipost\Shipping\Model\Webhook as WebhookModel;
-use Intelipost\Shipping\Model\ResourceModel\Webhook as WebhookResource;
+use Intelipost\Shipping\Model\Label as LabelModel;
+use Intelipost\Shipping\Model\ResourceModel\Label as LabelResource;
 
 class Collection extends AbstractCollection
 {
-
     /**
      * Field name for entity id
      * @var string
@@ -31,13 +30,13 @@ class Collection extends AbstractCollection
      * Object name to access in events
      * @var string
      */
-    protected $_eventObject = 'intelipost_webhooks_collection';
+    protected $_eventObject = 'intelipost_labels_collection';
 
     protected function _construct()
     {
         $this->_init(
-            WebhookModel::class,
-            WebhookResource::class
+            LabelModel::class,
+            LabelResource::class
         );
     }
 

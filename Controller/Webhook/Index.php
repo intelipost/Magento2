@@ -1,8 +1,8 @@
 <?php
 /**
- * @package Intelipost\Shipping
- * @copyright Copyright (c) 2021 Intelipost
- * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
+ * @package   Intelipost\Shipping
+ * @copyright 2023 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
 namespace Intelipost\Shipping\Controller\Webhook;
@@ -16,28 +16,50 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\Serializer\Json;
 
 class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
-    /** @var Data  */
+
+    /**
+     * @var Data
+     */
     protected $helper;
 
-    /** @var Json  */
+    /**
+     * @var Json
+     */
     protected $json;
 
-    /** @var ShipmentRepository  */
+    /**
+     * @var ShipmentRepository
+     */
     private $shipmentRepository;
 
-    /** @var WebhookRepository  */
+    /**
+     * @var WebhookRepository
+     */
     private $webhookRepository;
 
-    /** @var WebhookFactory  */
+    /**
+     * @var WebhookFactory
+     */
     private $webhookFactory;
 
-    /** @var \Intelipost\Shipping\Model\Webhook  */
+    /**
+     * @var \Intelipost\Shipping\Model\Webhook
+     */
     private $webhook;
 
+    /**
+     * @param Context $context
+     * @param Data $helper
+     * @param ShipmentRepository $shipmentRepository
+     * @param WebhookRepository $webhookRepository
+     * @param WebhookFactory $webhookFactory
+     * @param Json $json
+     */
     public function __construct(
         Context $context,
         Data $helper,
@@ -67,8 +89,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     }
 
     /**
-     * @param RequestInterface $request
-     * @return bool|null
+     * @param  RequestInterface $request
+     * @return boolean|null
      */
     public function validateForCsrf(RequestInterface $request): ?bool
     {
@@ -79,8 +101,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
     public function execute()
     {
-        $webhookEnabled = $this->helper->getConfig('webhook_enabled');
-
+        $webhookEnabled = (bool) $this->helper->getConfig('webhook_enabled');
+        $statusCode = 200;
         if ($webhookEnabled) {
             try {
                 /** @var RequestInterface $request */
@@ -98,13 +120,19 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
             } catch (\Exception $e) {
                 $this->helper->getLogger()->error($e->getMessage());
                 $this->saveWebhookMessage($e->getMessage());
+                $statusCode = 500;
             }
         }
+
+        $this->getResponse()->setStatusCode($statusCode);
+        return $this->getResponse();
     }
 
     /**
-     * @param $requestBody
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param  $requestBody
+     * @param $incrementId
+     * @param $status
+     * @throws LocalizedException
      */
     public function saveWebhook($requestBody, $incrementId, $status)
     {
@@ -116,6 +144,11 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
         $this->webhookRepository->save($this->webhook);
     }
 
+    /**
+     * @param $message
+     * @return void
+     * @throws LocalizedException
+     */
     protected function saveWebhookMessage($message)
     {
         if ($this->webhook) {
@@ -125,8 +158,8 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     }
 
     /**
-     * @param $orderIncrementId
-     * @param $requestBody
+     * @param string $orderIncrementId
+     * @param array $requestBody
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function updateOrderStatus($orderIncrementId, $requestBody)
@@ -147,11 +180,11 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
             switch (strtoupper($state)) {
                 case 'NEW':
                     $status = $this->helper->getConfig('status_created');
-                    break;
+                break;
 
                 case 'READY_FOR_SHIPPING':
                     $status = $this->helper->getConfig('status_ready_for_shipment');
-                    break;
+                break;
 
                 case 'SHIPPED':
                     $status = $this->helper->getConfig('status_shipped');
@@ -159,27 +192,27 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                         $trackingUrl = $requestBody['tracking_url'] ?? null;
                         $this->createShipment($orderIncrementId, $trackingUrl);
                     }
-                    break;
+                break;
 
                 case 'IN_TRANSIT':
                     $status = $this->helper->getConfig('status_in_transit');
-                    break;
+                break;
 
                 case 'TO_BE_DELIVERED':
                     $status = $this->helper->getConfig('status_to_be_delivered');
-                    break;
+                break;
 
                 case 'DELIVERED':
                     $status = $this->helper->getConfig('status_delivered');
-                    break;
+                break;
 
                 case 'CLARIFY_DELIVERY_FAIL':
                     $status = $this->helper->getConfig('status_clarify_delivery_failed');
-                    break;
+                break;
 
                 case 'DELIVERY_FAILED':
                     $status = $this->helper->getConfig('status_delivery_failed');
-                    break;
+                break;
             }
 
             $this->updateOrder($orderIncrementId, $status, $comment);

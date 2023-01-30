@@ -10,11 +10,10 @@ namespace Intelipost\Shipping\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
-class Invoice extends AbstractDb
+class Label extends AbstractDb
 {
     protected function _construct()
     {
-        $this->_init('intelipost_invoices', 'entity_id');
+        $this->_init('intelipost_labels', 'entity_id');
     }
-
 }

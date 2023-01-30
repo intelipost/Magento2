@@ -132,7 +132,41 @@ Descrição dos Campos do Body da requisição:
 - products_value: é o valor total dos produtos da nota fiscal e seu type é string no seguinte formato 00.00, com duas casas decimais separadas por ponto
 - cfop: é o código da operação fiscal utilizado na emissão da nota fiscal e seu type é string
 
+
+*Exemplos*  
+- "POST" - /V1/intelipost/invoices (Criar nova Invoice)  
+- "BODY"  
+```
+"{
+  "invoice": [
+    {
+      "number": 0,
+      "order_increment_id": "string",
+      "series": "string",
+      "key": "string",
+      "date": "string",
+      "total_value": "string",
+      "products_value": "string",
+      "cfop": "string"
+    }
+  ]
+}"   
+```
 - "GET" - /V1/intelipost/invoices (Listar Invoices)
+```
+curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/invoices?searchCriteria[filterGroups][0][filters][0][field]=order_increment_id&searchCriteria[filterGroups][0][filters][0][value]=000000001&searchCriteria[filterGroups][0][filters][0][conditionType]=eq' \
+--header 'Authorization: Bearer TOKEN_API'
+```
+- "GET" - /V1/intelipost/invoices/:id
+
+
+## Labels
+- "GET" - /V1/intelipost/labels (Listar Etiquetas)
+```
+curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/labels?searchCriteria[filterGroups][0][filters][0][field]=order_increment_id&searchCriteria[filterGroups][0][filters][0][value]=000000001&searchCriteria[filterGroups][0][filters][0][conditionType]=eq' \
+--header 'Authorization: Bearer TOKEN_API'
+```
+- "GET" - /V1/intelipost/labels/:id
 
 
 ## Webhooks

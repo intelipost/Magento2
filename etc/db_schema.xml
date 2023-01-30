@@ -111,7 +111,7 @@
         </index>
     </table>
 
-    <table name="intelipost_webhooks" resource="default" engine="innodb" comment="Koin Callback">
+    <table name="intelipost_webhooks" resource="default" engine="innodb" comment="Intelipost Webhooks">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="text" name="payload" nullable="false" comment="Payload"/>
         <column xsi:type="varchar" name="status" length="255" nullable="false" comment="Status"/>
@@ -127,6 +127,20 @@
         </index>
         <index referenceId="INTELIPOST_WEBHOOK_STATUS" indexType="btree">
             <column name="status"/>
+        </index>
+    </table>
+
+    <table name="intelipost_labels" resource="default" engine="innodb" comment="Intelipost Labels">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
+        <column xsi:type="varchar" name="url" length="500" nullable="false" comment="URL"/>
+        <column xsi:type="varchar" name="order_increment_id" length="255" nullable="false" comment="Order Increment ID"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated Datetime"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="INTELIPOST_LABELS_INCREMENT_ID" indexType="btree">
+            <column name="order_increment_id"/>
         </index>
     </table>
 

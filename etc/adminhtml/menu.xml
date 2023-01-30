@@ -33,10 +33,18 @@
         <add id="Intelipost_Shipping::webhooks"
              title="Webhooks"
              module="Intelipost_Shipping"
-             sortOrder="200"
+             sortOrder="300"
              parent="Intelipost_Shipping::intelipost"
              resource="Intelipost_Shipping::webhooks"
              action="intelipost/webhooks/"/>
+
+        <add id="Intelipost_Shipping::labels"
+             title="Printing Labels"
+             module="Intelipost_Shipping"
+             sortOrder="400"
+             parent="Intelipost_Shipping::intelipost"
+             resource="Intelipost_Shipping::labels"
+             action="intelipost/labels/"/>
 
         <add id="Intelipost_Shipping::shipping_methods"
              title="Settings"

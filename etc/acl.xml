@@ -15,6 +15,7 @@
                     <resource id="Intelipost_Shipping::shipments" title="Order Shipments" translate="title" sortOrder="100" />
                     <resource id="Intelipost_Shipping::invoices" title="Invoices" translate="title" sortOrder="200"/>
                     <resource id="Intelipost_Shipping::webhooks" title="Webhooks" translate="title" sortOrder="300"/>
+                    <resource id="Intelipost_Shipping::labels" title="Printing Labels" translate="title" sortOrder="400"/>
                     <resource id="Intelipost_Shipping::settings" title="Settings" translate="title" sortOrder="1000"/>
                 </resource>
             </resource>

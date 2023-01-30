@@ -20,5 +20,24 @@
             <resource ref="Intelipost_Shipping::invoice" />
         </resources>
     </route>
+    <route url="/V1/intelipost/invoices/:id" method="GET">
+        <service class="Intelipost\Shipping\Api\InvoiceRepositoryInterface" method="getById" />
+        <resources>
+            <resource ref="Intelipost_Shipping::invoice" />
+        </resources>
+    </route>
+
+    <route url="/V1/intelipost/labels" method="GET">
+        <service class="Intelipost\Shipping\Api\LabelRepositoryInterface" method="getList" />
+        <resources>
+            <resource ref="Intelipost_Shipping::label" />
+        </resources>
+    </route>
+    <route url="/V1/intelipost/labels/:id" method="GET">
+        <service class="Intelipost\Shipping\Api\LabelRepositoryInterface" method="getById" />
+        <resources>
+            <resource ref="Intelipost_Shipping::label" />
+        </resources>
+    </route>
 </routes>
 

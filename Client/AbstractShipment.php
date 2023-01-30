@@ -34,7 +34,7 @@ class AbstractShipment
     /**
      * @param Api $helperApi
      * @param Data $helper
-     * @param Shipment $shipment
+     * @param ShipmentRepositoryInterface $shipmentRepository
      * @param TimezoneInterface $timezone
      */
     public function __construct(
@@ -65,7 +65,7 @@ class AbstractShipment
         return [$body];
     }
 
-    /**
+    /**getConfig
      * @param $shipment
      * @param array $result
      * @return void

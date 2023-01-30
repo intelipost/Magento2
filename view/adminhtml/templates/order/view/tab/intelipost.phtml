@@ -111,7 +111,6 @@ $invoiceCollection = $block->getInvoicesCollection();
                 </form>
             </div>
         </section>
-
         <script>
             require([
                 'jquery',
@@ -132,7 +131,6 @@ $invoiceCollection = $block->getInvoicesCollection();
             })
         </script>
     <?php else: ?>
-
         <section  class="admin__page-section edit-order-invoices-grid">
             <table class="data-table admin__table-primary table-invoice">
                 <thead>
@@ -179,31 +177,7 @@ $invoiceCollection = $block->getInvoicesCollection();
         </script>
     <?php endif ?>
 
+    <?= $block->getWebhooksBlock() ?>
 
-
-    <section  class="admin__page-section edit-order-webhooks-grid">
-        <p class="head_title"><?= __('Webhooks') ?></p>
-        <table class="data-table admin__table-primary table-invoice">
-            <thead>
-            <tr>
-                <th><?= __('Status') ?></th>
-                <th><?= __('Payload') ?></th>
-                <th><?= __('Message') ?></th>
-                <th><?= __('Created At') ?></th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            /** @var \Intelipost\Shipping\Model\Webhook $webhook */
-            foreach($block->getWebhooksCollection() as $webhook): ?>
-                <tr>
-                    <td><?= $block->escapeHtml(__($webhook->getStatus())); ?></td>
-                    <td><?= $block->escapeHtml($webhook->getPayload()) ?></td>
-                    <td><?= $block->escapeHtml(__($webhook->getMessage())) ?></td>
-                    <td><?= $webhook->getCreatedAt() ?></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-    </section>
+    <?= $block->getLabelsBlock() ?>
 </div>

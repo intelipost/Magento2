@@ -84,7 +84,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
      */
     public function getAllowedMethods()
     {
-        return ['intelipost' => $this->getConfigData('title')];
+        return ['intelipost' => (string) $this->getConfigData('title')];
     }
 
     /**
@@ -222,7 +222,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $child['delivery_method_id'] = $this->_code . '_' . $deliveryMethodId;
 
             $method->setCarrier($this->_code);
-            $method->setCarrierTitle($this->getConfigData('title'));
+            $method->setCarrierTitle((string) $this->getConfigData('title'));
             $method->setMethod($child['delivery_method_id']);
 
             $deliveryEstimateBusinessDays = $child['delivery_estimate_business_days'] ?? null;

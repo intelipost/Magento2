@@ -38,7 +38,7 @@ class Invoice
             $invoiceObj->invoice_series = $invoice->getData('series');
             $invoiceObj->invoice_key = $invoice->getData('key');
             $invoiceObj->invoice_date = strtotime($invoiceDate);
-            $invoiceObj->invoice_date_iso = str_replace(' ', 'T', $invoice->getData('date'));
+            $invoiceObj->invoice_date_iso = str_replace(' ', 'T', (string) $invoice->getData('date'));
             $invoiceObj->invoice_total_value = $invoice->getData('total_value');
             $invoiceObj->invoice_products_value = $invoice->getData('products_value');
             $invoiceObj->invoice_cfop = $invoice->getData('cfop');

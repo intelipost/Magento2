@@ -23,6 +23,10 @@
     <preference for="Intelipost\Shipping\Api\WebhookRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\WebhookRepository"/>
     <preference for="Intelipost\Shipping\Api\Data\WebhookSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
 
+    <preference for="Intelipost\Shipping\Api\Data\LabelInterface" type="Intelipost\Shipping\Model\Label"/>
+    <preference for="Intelipost\Shipping\Api\LabelRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\LabelRepository"/>
+    <preference for="Intelipost\Shipping\Api\Data\LabelSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+
     <type name="Magento\Quote\Model\Quote\Address">
         <plugin name="intelipost_quote_address" type="Intelipost\Shipping\Plugin\Quote\Address" sortOrder="2" />
     </type>
@@ -81,12 +85,19 @@
             <argument name="resourceModel" xsi:type="string">Intelipost\Shipping\Model\ResourceModel\Webhook</argument>
         </arguments>
     </virtualType>
+    <virtualType name="IntelipostLabelCollection" type="Intelipost\Shipping\Model\ResourceModel\Label\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">intelipost_labels</argument>
+            <argument name="resourceModel" xsi:type="string">Intelipost\Shipping\Model\ResourceModel\Label</argument>
+        </arguments>
+    </virtualType>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
                 <item name="intelipost_shipping_shipments_listing_data_source" xsi:type="string">IntelipostShipmentCollection</item>
                 <item name="intelipost_shipping_invoices_listing_data_source" xsi:type="string">IntelipostInvoiceCollection</item>
                 <item name="intelipost_shipping_webhooks_listing_data_source" xsi:type="string">IntelipostWebhookCollection</item>
+                <item name="intelipost_shipping_labels_listing_data_source" xsi:type="string">IntelipostLabelCollection</item>
             </argument>
         </arguments>
     </type>
