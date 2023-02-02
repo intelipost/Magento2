@@ -6,7 +6,7 @@
  * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
  */
 
-namespace Intelipost\Shipping\Model\ResourceModel\Webhook\Grid;
+namespace Intelipost\Shipping\Model\ResourceModel\Label\Grid;
 
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use Magento\Framework\Data\Collection\EntityFactoryInterface;
@@ -14,10 +14,6 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class Collection
- * Collection for displaying grid
- */
 class Collection extends SearchResult
 {
     /**
@@ -36,8 +32,8 @@ class Collection extends SearchResult
         LoggerInterface $logger,
         FetchStrategyInterface $fetchStrategy,
         ManagerInterface $eventManager,
-        $mainTable = 'intelipost_webhooks',
-        $resourceModel = 'Intelipost\Shipping\Model\ResourceModel\Webhook',
+        $mainTable = 'intelipost_labels',
+        $resourceModel = 'Intelipost\Shipping\Model\ResourceModel\Label',
         $identifierName = null,
         $connectionName = null
     )
@@ -55,7 +51,7 @@ class Collection extends SearchResult
     }
 
     /**
-     * @return \Intelipost\Shipping\Model\ResourceModel\Webhook\Grid\Collection|void
+     * @return \Intelipost\Shipping\Model\ResourceModel\Label\Grid\Collection|void
      */
     protected function _initSelect()
     {

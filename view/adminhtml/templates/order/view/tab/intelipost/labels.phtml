@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @author Thiago Contardi
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
+ */
+
+/**
+ * @var \Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost\Labels $block
+ * @var \Magento\Framework\Escaper $block
+ */
+$labelsCollection = $block->getLabelsCollection();
+?>
+
+<?php if ($labelsCollection->getSize() > 0): ?>
+    <div id="order_invoice_block">
+        <section  class="admin__page-section edit-order-webhooks-grid">
+            <p class="head_title"><?= __('Print Labels') ?></p>
+            <table class="data-table admin__table-primary table-invoice">
+                <tbody>
+                <?php
+                /** @var \Intelipost\Shipping\Model\Label $label */
+                foreach ($labelsCollection as $label): ?>
+                    <tr>
+                        <td>
+                            <a href="<?= $label->getUrl(); ?>"><?= $label->getUrl() ?></a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </section>
+    </div>
+<?php endif ?>

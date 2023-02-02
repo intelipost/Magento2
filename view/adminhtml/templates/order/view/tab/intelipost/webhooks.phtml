@@ -1,0 +1,40 @@
+<?php
+/**
+ * @package Intelipost\Shipping
+ * @copyright Copyright (c) 2021 Intelipost
+ * @author Thiago Contardi
+ * @license https://opensource.org/licenses/OSL-3.0.php Open Software License 3.0
+ */
+
+/**
+ * @var \Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost\Webhooks $block
+ * @var \Magento\Framework\Escaper $block
+ */
+?>
+<div id="order_invoice_block">
+    <section  class="admin__page-section edit-order-webhooks-grid">
+        <p class="head_title"><?= __('Webhooks') ?></p>
+        <table class="data-table admin__table-primary table-invoice">
+            <thead>
+            <tr>
+                <th><?= __('Status') ?></th>
+                <th><?= __('Payload') ?></th>
+                <th><?= __('Message') ?></th>
+                <th><?= __('Created At') ?></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            /** @var \Intelipost\Shipping\Model\Webhook $webhook */
+            foreach($block->getWebhooksCollection() as $webhook): ?>
+                <tr>
+                    <td><?= $block->escapeHtml(__($webhook->getStatus())); ?></td>
+                    <td><?= $block->escapeHtml($webhook->getPayload()) ?></td>
+                    <td><?= $block->escapeHtml(__($webhook->getMessage())) ?></td>
+                    <td><?= $webhook->getCreatedAt() ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
+</div>

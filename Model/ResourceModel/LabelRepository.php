@@ -8,30 +8,30 @@
 
 namespace Intelipost\Shipping\Model\ResourceModel;
 
-use Intelipost\Shipping\Api\Data\WebhookInterface;
-use Intelipost\Shipping\Model\WebhookFactory;
-use Intelipost\Shipping\Api\Data\WebhookSearchResultsInterfaceFactory;
-use Intelipost\Shipping\Api\WebhookRepositoryInterface;
-use Intelipost\Shipping\Model\ResourceModel\Webhook as ResourceWebhook;
-use Intelipost\Shipping\Model\ResourceModel\Webhook\CollectionFactory as WebhookCollectionFactory;
+use Intelipost\Shipping\Api\Data\LabelInterface;
+use Intelipost\Shipping\Model\LabelFactory;
+use Intelipost\Shipping\Api\Data\LabelSearchResultsInterfaceFactory;
+use Intelipost\Shipping\Api\LabelRepositoryInterface;
+use Intelipost\Shipping\Model\ResourceModel\Label as ResourceLabel;
+use Intelipost\Shipping\Model\ResourceModel\Label\CollectionFactory as LabelCollectionFactory;
 use Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-class WebhookRepository implements WebhookRepositoryInterface
+class LabelRepository implements LabelRepositoryInterface
 {
-    /** @var ResourceWebhook  */
+    /** @var ResourceLabel  */
     protected $resource;
 
-    /** @var WebhookFactory  */
-    protected $webhookFactory;
+    /** @var LabelFactory  */
+    protected $labelFactory;
 
-    /** @var WebhookCollectionFactory  */
-    protected $webhookCollectionFactory;
+    /** @var LabelCollectionFactory  */
+    protected $labelCollectionFactory;
 
-    /** @var WebhookSearchResultsInterfaceFactory  */
+    /** @var LabelSearchResultsInterfaceFactory  */
     protected $searchResultsFactory;
 
     /** @var JoinProcessorInterface  */
@@ -41,26 +41,25 @@ class WebhookRepository implements WebhookRepositoryInterface
     protected $collectionProcessor;
 
     /**
-     * @param ResourceWebhook $resource
-     * @param WebhookFactory $webhookFactory
-     * @param WebhookCollectionFactory $webhookCollectionFactory
-     * @param WebhookSearchResultsInterfaceFactory $searchResultsFactory
+     * @param ResourceLabel $resource
+     * @param LabelFactory $labelFactory
+     * @param LabelCollectionFactory $labelCollectionFactory
+     * @param LabelSearchResultsInterfaceFactory $searchResultsFactory
      * @param CollectionProcessorInterface $collectionProcessor
      * @param JoinProcessorInterface $extensionAttributesJoinProcessor
      */
     public function __construct(
-        ResourceWebhook $resource,
-        WebhookFactory $webhookFactory,
-        WebhookCollectionFactory $webhookCollectionFactory,
-        WebhookSearchResultsInterfaceFactory $searchResultsFactory,
+        ResourceLabel $resource,
+        LabelFactory $labelFactory,
+        LabelCollectionFactory $labelCollectionFactory,
+        LabelSearchResultsInterfaceFactory $searchResultsFactory,
         CollectionProcessorInterface $collectionProcessor,
         JoinProcessorInterface $extensionAttributesJoinProcessor
-    )
-    {
+    ) {
         $this->resource = $resource;
-        $this->webhookCollectionFactory = $webhookCollectionFactory;
+        $this->labelCollectionFactory = $labelCollectionFactory;
         $this->searchResultsFactory = $searchResultsFactory;
-        $this->webhookFactory = $webhookFactory;
+        $this->labelFactory = $labelFactory;
         $this->collectionProcessor = $collectionProcessor;
         $this->extensionAttributesJoinProcessor = $extensionAttributesJoinProcessor;
     }
@@ -69,17 +68,17 @@ class WebhookRepository implements WebhookRepositoryInterface
      * {@inheritdoc}
      */
     public function save(
-        WebhookInterface $webhook
+        LabelInterface $label
     ) {
         try {
-            $webhook = $this->resource->save($webhook);
+            $label = $this->resource->save($label);
         } catch (\Exception $exception) {
             throw new CouldNotSaveException(__(
                 'Could not save the Item: %1',
                 $exception->getMessage()
             ));
         }
-        return $webhook;
+        return $label;
     }
 
     /**
@@ -88,12 +87,26 @@ class WebhookRepository implements WebhookRepositoryInterface
      */
     public function getById($id)
     {
-        $webhook = $this->webhookFactory->create();
-        $this->resource->load($webhook, $id);
-        if (!$webhook->getId()) {
+        $label = $this->labelFactory->create();
+        $this->resource->load($label, $id);
+        if (!$label->getId()) {
             throw new NoSuchEntityException(__('Item with id "%1" does not exist.', $id));
         }
-        return $webhook;
+        return $label;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws NoSuchEntityException
+     */
+    public function getByOrderId($orderId)
+    {
+        $label = $this->labelFactory->create();
+        $this->resource->load($label, $orderId, 'order_increment_id');
+        if (!$label->getId()) {
+            throw new NoSuchEntityException(__('Item with id "%1" does not exist.', $orderId));
+        }
+        return $label;
     }
 
     /**
@@ -102,7 +115,7 @@ class WebhookRepository implements WebhookRepositoryInterface
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
     ) {
-        $collection = $this->webhookCollectionFactory->create();
+        $collection = $this->labelCollectionFactory->create();
 
         $searchResults = $this->searchResultsFactory->create();
 
@@ -112,25 +125,26 @@ class WebhookRepository implements WebhookRepositoryInterface
         }
 
         $items = [];
-        /** @var \Intelipost\Shipping\Model\Webhook $model */
+        /** @var \Intelipost\Shipping\Model\Label $model */
         foreach ($collection as $model) {
             $items[] = $model;
         }
 
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
-
         return $searchResults;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete(WebhookInterface $webhook) {
+    public function delete(
+        LabelInterface $label
+    ) {
         try {
-            $webhookModel = $this->webhookFactory->create();
-            $this->resource->load($webhookModel, $webhook->getEntityId());
-            $this->resource->delete($webhookModel);
+            $labelModel = $this->labelFactory->create();
+            $this->resource->load($labelModel, $label->getEntityId());
+            $this->resource->delete($labelModel);
         } catch (\Exception $exception) {
             throw new CouldNotDeleteException(__(
                 'Could not delete the Item: %1',

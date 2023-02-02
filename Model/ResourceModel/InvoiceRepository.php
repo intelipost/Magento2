@@ -123,6 +123,20 @@ class InvoiceRepository implements InvoiceRepositoryInterface
 
     /**
      * {@inheritdoc}
+     * @throws NoSuchEntityException
+     */
+    public function getByOrderId($orderId)
+    {
+        $invoice = $this->invoiceFactory->create();
+        $this->resource->load($invoice, $orderId, 'order_increment_id');
+        if (!$invoice->getId()) {
+            throw new NoSuchEntityException(__('Item with id "%1" does not exist.', $orderId));
+        }
+        return $invoice;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
