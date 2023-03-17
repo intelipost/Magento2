@@ -42,17 +42,33 @@ class CreateOrder
     public function execute()
     {
         $enable = $this->helper->getConfig('enable_cron', 'order_status', 'intelipost_push');
+        $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
         $status = $this->helper->getConfig('status_to_create', 'order_status', 'intelipost_push');
 
         if ($enable) {
             $statuses = explode(',', $status);
 
             $collection = $this->collectionFactory->create();
-            $collection->getSelect()->join(
-                ['so' => $collection->getConnection()->getTableName('sales_order')],
-                'main_table.order_increment_id = so.increment_id',
-                ['increment_id']
-            );
+            if ($byShipment) {
+                $collection->getSelect()
+                    ->join(
+                        ['so' => $collection->getConnection()->getTableName('sales_order')],
+                        'main_table.order_increment_id = so.increment_id',
+                        ['increment_id']
+                    )
+                    ->join(
+                        ['ss' => $collection->getConnection()->getTableName('sales_shipment')],
+                        'so.entity_id = ss.order_id',
+                        ['increment_id AS shipment_increment_id']
+                    )
+                ;
+            } else {
+                $collection->getSelect()->join(
+                    ['so' => $collection->getConnection()->getTableName('sales_order')],
+                    'main_table.order_increment_id = so.increment_id',
+                    ['increment_id']
+                );
+            }
             $collection
                 ->addFieldToFilter('status', ['in' => $statuses])
                 ->addFieldToFilter('main_table.intelipost_status', Shipment::STATUS_PENDING);
