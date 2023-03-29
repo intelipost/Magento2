@@ -587,7 +587,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if ($this->isAdmin()) {
             $result = 'admin';
         } else {
-            $originalPathInfo = $this->_request->getOriginalPathInfo();
+            $originalPathInfo = (string) $this->_request->getOriginalPathInfo();
             if (!strcmp($originalPathInfo, '/intelipost/product/shipping/')) {
                 $result = 'product';
             }

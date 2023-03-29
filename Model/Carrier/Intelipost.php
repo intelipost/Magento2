@@ -306,8 +306,8 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
             // Type
             if (
-                !strcmp($item->getProductType(), 'configurable')
-                || !strcmp($item->getProductType(), 'bundle')
+                !strcmp((string) $item->getProductType(), 'configurable')
+                || !strcmp((string) $item->getProductType(), 'bundle')
             ) {
                 $parentSku = $product->getSku();
                 $cartItems[$parentSku] = $item;
