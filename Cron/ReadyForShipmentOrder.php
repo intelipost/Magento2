@@ -52,26 +52,20 @@ class ReadyForShipmentOrder
         $status = $this->helper->getConfig('status_to_ready_to_ship', 'order_status', 'intelipost_push');
 
         if ($enable) {
+            $statuses = explode(',', $status);
             /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\Collection $collection */
             $collection = $this->collectionFactory->create();
             if ($byShipment) {
-                $collection->getSelect()->joinLeft(
-                    ['so' => $collection->getConnection()->getTableName('sales_order')],
-                    'main_table.order_increment_id = so.increment_id',
-                    ['increment_id']
-                )->join(
-                    ['ss' => $collection->getConnection()->getTableName('sales_shipment')],
-                    'so.entity_id = ss.order_id',
-                    ['increment_id AS shipment_increment_id']
-                );
+                $cond = 'main_table.intelipost_shipment_id LIKE CONCAT(\'%\', so.increment_id, \'%\')';
             } else {
-                $collection->getSelect()->joinLeft(
-                    ['so' => $collection->getConnection()->getTableName('sales_order')],
-                    'main_table.order_increment_id = so.increment_id',
-                    ['increment_id']
-                );
+                $cond = 'main_table.order_increment_id = so.increment_id';
             }
-            $collection->addFieldToFilter('status', ['eq' => $status])
+            $collection->getSelect()->joinLeft(
+                ['so' => $collection->getConnection()->getTableName('sales_order')],
+                $cond,
+                ['increment_id']
+            );
+            $collection->addFieldToFilter('status', ['in' => $statuses])
                 ->addFieldToFilter(
                     'main_table.intelipost_status',
                     ['neq' => Shipment::STATUS_READY_FOR_SHIPMENT]

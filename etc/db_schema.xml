@@ -82,6 +82,7 @@
         <column xsi:type="varchar" name="order_increment_id" length="255" comment="Order Number"/>
         <column xsi:type="int" name="delivery_method_id" padding="11" comment="Delivery Method ID"/>
         <column xsi:type="int" name="delivery_estimate_business_days" padding="11" comment="Delivery Estimate Business Days" />
+        <column xsi:type="varchar" name="intelipost_shipment_id" length="255" comment="Intelipost Shipment ID" />
         <column xsi:type="varchar" name="shipment_orders_type" length="255" comment="Shipment Orders Type" />
         <column xsi:type="varchar" name="shipment_orders_sub_type" length="255" comment="Shipment Orders Sub Type" />
         <column xsi:type="varchar" name="delivery_method_type" length="255" comment="Delivery Method Type" />

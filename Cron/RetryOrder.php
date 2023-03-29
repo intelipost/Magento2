@@ -50,22 +50,15 @@ class RetryOrder
 
             $collection = $this->collectionFactory->create();
             if ($byShipment) {
-                $collection->getSelect()->joinLeft(
-                    ['so' => $collection->getConnection()->getTableName('sales_order')],
-                    'main_table.order_increment_id = so.increment_id',
-                    ['increment_id']
-                )->join(
-                    ['ss' => $collection->getConnection()->getTableName('sales_shipment')],
-                    'so.entity_id = ss.order_id',
-                    ['increment_id AS shipment_increment_id']
-                );
+                $cond = 'main_table.intelipost_shipment_id LIKE CONCAT(\'%\', so.increment_id, \'%\')';
             } else {
-                $collection->getSelect()->joinLeft(
-                    ['so' => $collection->getConnection()->getTableName('sales_order')],
-                    'main_table.order_increment_id = so.increment_id',
-                    ['increment_id']
-                );
+                $cond = 'main_table.order_increment_id = so.increment_id';
             }
+            $collection->getSelect()->joinLeft(
+                ['so' => $collection->getConnection()->getTableName('sales_order')],
+                $cond,
+                ['increment_id']
+            );
             $collection
                 ->addFieldToFilter('status', ['in' => $statuses])
                 ->addFieldToFilter('main_table.intelipost_status', Shipment::STATUS_ERROR);

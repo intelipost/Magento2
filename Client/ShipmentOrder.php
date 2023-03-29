@@ -125,8 +125,6 @@ class ShipmentOrder
      */
     public function getShipment($shipment)
     {
-        $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
-
         $customerData = $this->shipmentCustomer->getInformation(
             $shipment->getData('order_entity_id'),
             $shipment->getCustomerTaxvat()
@@ -137,13 +135,9 @@ class ShipmentOrder
         $estimateDate = (string) $shipment->getData('delivery_estimate_date_exact_iso');
 
         $body = new \stdClass();
-        if ($byShipment) {
-            $body->order_number = 'E-' . $shipment->getData('shipment_increment_id');
-        } else {
-            $body->order_number = $shipment->getData('order_increment_id');
-        }
-        $body->sales_order_number = $shipment->getData('increment_id');
+        $body->order_number = $shipment->getData('intelipost_shipment_id');
         $body->quote_id = $shipment->getData('quote_id');
+        $body->sales_order_number = $shipment->getData('increment_id');
         $body->delivery_method_id = $shipment->getData('delivery_method_id');
         $body->estimated_delivery_date = str_replace(' ', 'T', $estimateDate);
         $body->customer_shipping_costs = $shipment->getData('customer_shipping_costs');
@@ -297,7 +291,6 @@ class ShipmentOrder
      */
     protected function checkExistingOrder($incrementId, $result)
     {
-
         if ($result['status'] == Intelipost::RESPONSE_STATUS_ERROR && isset($result['messages'])) {
             if (count($result['messages']) == 1) {
                 $message = $result['messages'][0];

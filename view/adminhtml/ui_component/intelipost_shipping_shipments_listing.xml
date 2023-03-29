@@ -105,20 +105,12 @@
             </settings>
         </column>
 
-        <column name="quote_id">
+        <column name="intelipost_shipment_id" sortOrder="40">
             <settings>
                 <filter>text</filter>
                 <bodyTmpl>ui/grid/cells/text</bodyTmpl>
-                <label translate="true">Quote ID</label>
+                <label translate="true">Intelipost Shipment ID</label>
                 <resizeDefaultWidth>100</resizeDefaultWidth>
-            </settings>
-        </column>
-
-        <column name="decription">
-            <settings>
-                <filter>text</filter>
-                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
-                <label translate="true">Description</label>
             </settings>
         </column>
 

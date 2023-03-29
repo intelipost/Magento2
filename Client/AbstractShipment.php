@@ -61,10 +61,10 @@ class AbstractShipment
         $eventDate = $date->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT);
 
         $body = new \stdClass();
-        if ($byShipment) {
-            $body->order_number = 'E-' . $shipment->getData('shipment_increment_id');
-        } else {
+        if (!$byShipment) {
             $body->order_number = $shipment->getData('order_increment_id');
+        } else {
+            $body->order_number = $shipment->getData('intelipost_shipment_id');
         }
         $body->event_date  = str_replace(' ', 'T', $eventDate);
 
