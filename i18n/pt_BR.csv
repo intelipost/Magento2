@@ -47,6 +47,7 @@ Enabled,Habilitado
 "Send Orders to Intelipost","Enviar pedidos para a Intelipost"
 "If enabled it'll send order automatically to Intelipost","Se habilitado, irá enviar os pedidos automaticamente para a Intelipost"
 "Send orders to Intelipost by cron","Enviar pedidos para a Intelipost por cron"
+"Send items to Intelipost by Shipment","Enviar itens para Intelipost por Remessa"
 "Status to Create Orders on Intelipost","Status para criar os pedidos na Intelipost"
 "If enabled, it'll create an order on Intelipost when the order are in one of these status","Se habilitado, irá criar o pedido na Intelipost quando o pedido na loja estiver com os seguintes status"
 "Create Shipment","Criar Envio"

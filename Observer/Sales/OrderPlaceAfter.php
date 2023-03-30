@@ -205,13 +205,13 @@ class OrderPlaceAfter implements ObserverInterface
         foreach ($resultJson['quotes'] as $quotes) {
             $shipment = $this->shipmentFactory->create();
             $shipment->setOrderIncrementId($orderNumber);
-            if ($orderIndex != 1) {
-                $shipment->setOrderIncrementId($orderNumber . '-' . $orderIndex);
-            }
-
             $shipment->setQuoteId($quotes['quote_id']);
             $shipment->setDeliveryMethodId($this->getMethodId($quotes['delivery_method_id']));
             $shipment->setDeliveryEstimateBusinessDays($quotes['delivery_estimated_delivery_business_day']);
+            $shipment->setIntelipostShipmentId($orderNumber);
+            if ($orderIndex != 1) {
+                $shipment->setIntelipostShipmentId($orderNumber . '-' . $orderIndex);
+            }
             $shipment->setShipmentOrderType('NORMAL');
             $shipment->setShipmentOrderSubType('NORMAL');
             $shipment->setDeliveryMethodType($quotes['delivery_method_type']);

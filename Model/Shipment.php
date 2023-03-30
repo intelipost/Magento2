@@ -93,6 +93,22 @@ class Shipment extends AbstractModel implements ShipmentInterface
     /**
      * @inheritDoc
      */
+    public function getIntelipostShipmentId()
+    {
+        return $this->getData(self::INTELIPOST_SHIPMENT_ID);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setIntelipostShipmentId($intelipostShipmentId)
+    {
+        $this->setData(self::INTELIPOST_SHIPMENT_ID, $intelipostShipmentId);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getShipmentOrdersType()
     {
         return $this->getData(self::SHIPMENT_ORDERS_TYPE);

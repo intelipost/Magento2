@@ -25,7 +25,16 @@
                 <field id="enabled">1</field>
             </depends>
         </field>
-        <field id="cron_frequency" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="0" showInStore="0">
+        <field id="order_by_shipment" translate="label comment" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <label>Send items to Intelipost by Shipment</label>
+            <config_path>intelipost_push/order_status/order_by_shipment</config_path>
+            <depends>
+                <field id="enabled">1</field>
+                <field id="enable_cron">1</field>
+            </depends>
+        </field>
+        <field id="cron_frequency" translate="label" type="select" sortOrder="22" showInDefault="1" showInWebsite="0" showInStore="0">
             <label>Frequency</label>
             <source_model>Intelipost\Shipping\Model\Config\Source\Frequency</source_model>
             <backend_model>Intelipost\Shipping\Model\Config\CronConfig</backend_model>

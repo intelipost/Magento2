@@ -46,6 +46,7 @@ Enabled,Enabled
 "Send Orders to Intelipost","Send Orders to Intelipost"
 "If enabled it'll send order automatically to Intelipost","If enabled it'll send order automatically to Intelipost"
 "Send orders to Intelipost by cron","Send orders to Intelipost by cron"
+"Send items to Intelipost by Shipment","Send items to Intelipost by Shipment"
 "Status to Create Orders on Intelipost","Status to Create Orders on Intelipost"
 "If enabled, it'll create an order on Intelipost when the order are in one of these status","If enabled, it'll create an order on Intelipost when the order are in one of these status"
 "Create Shipment","Create Shipment"

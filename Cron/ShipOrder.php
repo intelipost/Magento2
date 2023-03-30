@@ -42,17 +42,22 @@ class ShipOrder
     public function execute()
     {
         $enable = $this->helper->getConfig('enable_cron', 'order_status', 'intelipost_push');
+        $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
         $status = $this->helper->getConfig('status_to_shipped', 'order_status', 'intelipost_push');
 
         if ($enable) {
             /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\Collection $collection */
             $collection = $this->collectionFactory->create();
+            if ($byShipment) {
+                $cond = 'main_table.intelipost_shipment_id LIKE CONCAT(\'%\', so.increment_id, \'%\')';
+            } else {
+                $cond = 'main_table.order_increment_id = so.increment_id';
+            }
             $collection->getSelect()->joinLeft(
                 ['so' => $collection->getConnection()->getTableName('sales_order')],
-                'main_table.order_increment_id = so.increment_id',
+                $cond,
                 ['increment_id']
             );
-
             $collection->addFieldToFilter('status', ['eq' => $status])
                 ->addFieldToFilter(
                     'main_table.intelipost_status',

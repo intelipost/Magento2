@@ -55,11 +55,17 @@ class AbstractShipment
      */
     public function prepareRequestBody($shipment)
     {
+        $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
+
         $date = $this->timezone->date();
         $eventDate = $date->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT);
 
         $body = new \stdClass();
-        $body->order_number = $shipment->getData('order_increment_id');
+        if (!$byShipment) {
+            $body->order_number = $shipment->getData('order_increment_id');
+        } else {
+            $body->order_number = $shipment->getData('intelipost_shipment_id');
+        }
         $body->event_date  = str_replace(' ', 'T', $eventDate);
 
         return [$body];
