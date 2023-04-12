@@ -112,11 +112,12 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
                 $trackingCode = $body['tracking_code'] ?? null;
                 $trackingUrl = $body['tracking_url'] ?? null;
                 $incrementId = $body['order_number'] ?? null;
+                $orderIncrementId = $body['sales_order_number'] ?? null;
                 $intelipostStatus = isset($body['history']) ? $body['history']['shipment_order_volume_state'] : null;
 
                 $this->saveWebhook($request->getContent(), $incrementId, $intelipostStatus);
                 $this->updateTrackingCode($incrementId, $trackingCode, $trackingUrl, $intelipostStatus);
-                $this->updateOrderStatus($incrementId, $body);
+                $this->updateOrderStatus($orderIncrementId, $body);
             } catch (\Exception $e) {
                 $this->helper->getLogger()->error($e->getMessage());
                 $this->saveWebhookMessage($e->getMessage());
@@ -258,7 +259,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     {
         if ($trackingCode || $trackingUrl) {
             try {
-                $shipment = $this->shipmentRepository->getByOrderIncrementId($incrementId);
+                $shipment = $this->shipmentRepository->getByIntelipostShipmentId($incrementId);
                 $shipment->setIntelipostStatus($intelipostStatus);
                 $shipment->setTrackingCode($trackingCode);
                 $shipment->setTrackingUrl($trackingUrl);

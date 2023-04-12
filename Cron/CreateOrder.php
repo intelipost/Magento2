@@ -43,14 +43,19 @@ class CreateOrder
     {
         $enable = $this->helper->getConfig('enable_cron', 'order_status', 'intelipost_push');
         $status = $this->helper->getConfig('status_to_create', 'order_status', 'intelipost_push');
+        $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
 
         if ($enable) {
             $statuses = explode(',', $status);
-
+            if ($byShipment) {
+                $cond = 'main_table.intelipost_shipment_id LIKE CONCAT(\'%\', so.increment_id, \'%\')';
+            } else {
+                $cond = 'main_table.order_increment_id = so.increment_id';
+            }
             $collection = $this->collectionFactory->create();
             $collection->getSelect()->join(
                 ['so' => $collection->getConnection()->getTableName('sales_order')],
-                'main_table.order_increment_id = so.increment_id',
+                $cond,
                 ['increment_id']
             );
             $collection

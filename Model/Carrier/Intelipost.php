@@ -202,7 +202,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $child['available_scheduling_dates'] = null;
             $schedulingEnabled = $child['scheduling_enabled'] ?? false;
 
-            if ($schedulingEnabled) {
+            if ($schedulingEnabled && $pageName) {
                 if ($calendarOnlyCheckout && strcmp($pageName, 'checkout')) {
                     continue;
                 }
@@ -306,8 +306,8 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
             // Type
             if (
-                !strcmp($item->getProductType(), 'configurable')
-                || !strcmp($item->getProductType(), 'bundle')
+                !strcmp((string) $item->getProductType(), 'configurable')
+                || !strcmp((string) $item->getProductType(), 'bundle')
             ) {
                 $parentSku = $product->getSku();
                 $cartItems[$parentSku] = $item;

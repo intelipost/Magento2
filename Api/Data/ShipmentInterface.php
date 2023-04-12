@@ -9,9 +9,9 @@ namespace Intelipost\Shipping\Api\Data;
 
 interface ShipmentInterface
 {
-
     const ENTITY_ID = 'entity_id';
     const ORDER_INCREMENT_ID = 'order_increment_id';
+    const INTELIPOST_SHIPMENT_ID = 'intelipost_shipment_id';
     const DELIVERY_METHOD_ID = 'delivery_method_id';
     const DELIVERY_ESTIMATE_BUSINESS_DAYS = 'delivery_estimate_business_days';
     const SHIPMENT_ORDERS_TYPE = 'shipment_orders_type';
@@ -79,6 +79,17 @@ interface ShipmentInterface
      * @return void
      */
     public function setDeliveryEstimateBusinessDays($deliveryEstimateBusinessDays);
+
+    /**
+    * @return string
+    */
+    public function getIntelipostShipmentId();
+
+    /**
+     * @param $intelipostShipmentId
+     * @return void
+     */
+    public function setIntelipostShipmentId($intelipostShipmentId);
 
     /**
      * @return string
