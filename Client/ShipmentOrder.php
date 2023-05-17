@@ -135,8 +135,8 @@ class ShipmentOrder
         $estimateDate = (string) $shipment->getData('delivery_estimate_date_exact_iso');
 
         $body = new \stdClass();
-        $body->order_number = $shipment->getData('intelipost_shipment_id')
-            ?: $shipment->getData('order_increment_id');
+        $body->order_number = $shipment->getData('intelipost_shipment_id');
+        $body->origin_zip_code = $shipment->getData('origin_zip_code');
         $body->quote_id = $shipment->getData('quote_id');
         $body->sales_order_number = $shipment->getData('increment_id');
         $body->delivery_method_id = $shipment->getData('delivery_method_id');
@@ -162,7 +162,7 @@ class ShipmentOrder
      */
     public function getVolumes($shipment)
     {
-        $volume = $this->shipmentInvoice->getInformation($shipment->getData('order_increment_id'));
+        $volume = $this->shipmentInvoice->getInformation($shipment->getData('intelipost_shipment_id'));
         return $this->shipmentVolume->getInformation(
             $shipment->getData('volumes'),
             $volume
@@ -179,6 +179,7 @@ class ShipmentOrder
         $trackingCode = null;
         $trackingUrl = null;
         $incrementId = $shipment->getData('order_increment_id');
+        $intelipostShipmentId = $shipment->getData('intelipost_shipment_id');
 
         $response = $this->helperApi->apiRequest('POST', 'shipment_order', $requestBody);
         $result = $this->helper->unserializeData($response);
@@ -217,7 +218,7 @@ class ShipmentOrder
                     $trackingCode = implode(', ', $trackingCodes);
                 }
 
-                $this->requestLabel->importPrintingLabels($incrementId, $volume['shipment_order_volume_number']);
+                $this->requestLabel->importPrintingLabels($intelipostShipmentId, $volume['shipment_order_volume_number']);
             }
 
             $status = $this->helper->getConfig('created_status', 'order_status', 'intelipost_push');

@@ -24,12 +24,12 @@ class Invoice
     }
 
     /**
-     * @param $orderNumber
+     * @param $intelipostNumber
      * @return \stdClass
      */
-    public function getInformation($orderNumber)
+    public function getInformation($intelipostNumber)
     {
-        $invoiceCollection = $this->getInvoiceCollection($orderNumber);
+        $invoiceCollection = $this->getInvoiceCollection($intelipostNumber);
         $invoiceObj = new \stdClass();
         foreach ($invoiceCollection as $invoice) {
             $invoiceDate = $invoice->getData('date');
@@ -47,13 +47,13 @@ class Invoice
     }
 
     /**
-     * @param $orderNumber
+     * @param $intelipostNumber
      * @return \Intelipost\Shipping\Model\ResourceModel\Invoice\Collection
      */
-    public function getInvoiceCollection($orderNumber)
+    public function getInvoiceCollection($intelipostNumber)
     {
         $collection = $this->collectionFactory->create();
-        $collection->addFieldToFilter('order_increment_id', $orderNumber);
+        $collection->addFieldToFilter('intelipost_shipment_id', $intelipostNumber);
         return $collection;
     }
 }

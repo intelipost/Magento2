@@ -12,7 +12,7 @@
         <section id="carriers">
             <group id="intelipost_settings" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label comment">
                 <label>Intelipost</label>
-                <comment>In order to use our module, you need Intelipost Credentials and a valid Intelipost account</comment>
+                <comment>In order to use our module, you need Intelipost Credentials and a valid Intelipost account (Version 2.6.2)</comment>
                 <include path="Intelipost_Shipping::system/general.xml"/>
                 <include path="Intelipost_Shipping::system/quote.xml"/>
                 <include path="Intelipost_Shipping::system/push.xml"/>

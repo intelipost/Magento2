@@ -81,6 +81,12 @@ class ImportLabels
                 foreach ($collection as $order) {
                     try {
                         $incrementId = $order->getData('increment_id');
+                        $intelipostShipmentId = $order->getData('intelipost_shipment_id');
+
+                        if (!empty($intelipostShipmentId) && $byShipment) {
+                            $incrementId = $intelipostShipmentId;
+                        }
+
                         $volumes = $this->requestLabel->getVolumes($incrementId);
                         if (!empty($volumes)) {
                             foreach ($volumes as $volume) {
