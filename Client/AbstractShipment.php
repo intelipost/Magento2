@@ -64,7 +64,8 @@ class AbstractShipment
         if (!$byShipment) {
             $body->order_number = $shipment->getData('order_increment_id');
         } else {
-            $body->order_number = $shipment->getData('intelipost_shipment_id');
+            $body->order_number = $shipment->getData('intelipost_shipment_id')
+                ?: $shipment->getData('order_increment_id');
         }
         $body->event_date  = str_replace(' ', 'T', $eventDate);
 

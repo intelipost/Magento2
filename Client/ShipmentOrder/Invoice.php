@@ -9,18 +9,27 @@
 namespace Intelipost\Shipping\Client\ShipmentOrder;
 
 use Intelipost\Shipping\Model\ResourceModel\Invoice\CollectionFactory;
+use Intelipost\Shipping\Helper\Data;
 
 class Invoice
 {
+
+    /** @var Data  */
+    protected $helper;
+
     /** @var CollectionFactory  */
     protected $collectionFactory;
 
     /**
      * @param CollectionFactory $collectionFactory
+     * @param Data $helper
      */
-    public function __construct(CollectionFactory $collectionFactory)
-    {
+    public function __construct(
+        CollectionFactory $collectionFactory,
+        Data $helper
+    ) {
         $this->collectionFactory = $collectionFactory;
+        $this->helper = $helper;
     }
 
     /**
@@ -52,8 +61,14 @@ class Invoice
      */
     public function getInvoiceCollection($intelipostNumber)
     {
+        $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
+
         $collection = $this->collectionFactory->create();
-        $collection->addFieldToFilter('intelipost_shipment_id', $intelipostNumber);
+        if ($byShipment) {
+            $collection->addFieldToFilter('intelipost_shipment_id', $intelipostNumber);
+        } else {
+            $collection->addFieldToFilter('order_increment_id', $intelipostNumber);
+        }
         return $collection;
     }
 }

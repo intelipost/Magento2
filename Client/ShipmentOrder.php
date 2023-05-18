@@ -162,7 +162,9 @@ class ShipmentOrder
      */
     public function getVolumes($shipment)
     {
-        $volume = $this->shipmentInvoice->getInformation($shipment->getData('intelipost_shipment_id'));
+        $incrementId = $shipment->getData('intelipost_shipment_id')
+            ?: $shipment->getData('order_increment_id');
+        $volume = $this->shipmentInvoice->getInformation($incrementId);
         return $this->shipmentVolume->getInformation(
             $shipment->getData('volumes'),
             $volume
@@ -179,7 +181,8 @@ class ShipmentOrder
         $trackingCode = null;
         $trackingUrl = null;
         $incrementId = $shipment->getData('order_increment_id');
-        $intelipostShipmentId = $shipment->getData('intelipost_shipment_id');
+        $intelipostShipmentId = $shipment->getData('intelipost_shipment_id')
+            ?: $shipment->getData('order_increment_id');;
 
         $response = $this->helperApi->apiRequest('POST', 'shipment_order', $requestBody);
         $result = $this->helper->unserializeData($response);
