@@ -135,7 +135,8 @@ class ShipmentOrder
         $estimateDate = (string) $shipment->getData('delivery_estimate_date_exact_iso');
 
         $body = new \stdClass();
-        $body->order_number = $shipment->getData('intelipost_shipment_id');
+        $body->order_number = $shipment->getData('intelipost_shipment_id')
+            ?: $shipment->getData('order_increment_id');
         $body->origin_zip_code = $shipment->getData('origin_zip_code');
         $body->quote_id = $shipment->getData('quote_id');
         $body->sales_order_number = $shipment->getData('increment_id');
