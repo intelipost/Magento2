@@ -381,6 +381,22 @@ class Shipment extends AbstractModel implements ShipmentInterface
     /**
      * @inheritDoc
      */
+    public function getOriginZipCode()
+    {
+        return $this->getData(self::ORIGIN_ZIP_CODE);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setOriginZipCode($originZipCode)
+    {
+        $this->setData(self::ORIGIN_ZIP_CODE, $originZipCode);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getDeliveryEstimateDateExactIso()
     {
         return $this->getData(self::DELIVERY_ESTIMATE_DATE_EXACT_ISO);

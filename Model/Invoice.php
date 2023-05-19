@@ -82,6 +82,22 @@ class Invoice extends AbstractModel implements InvoiceInterface
     /**
      * @inheritDoc
      */
+    public function setIntelipostShipmentId($intelipostNumber)
+    {
+        $this->setData(self::INTELIPOST_SHIPMENT_ID, $intelipostNumber);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIntelipostShipmentId()
+    {
+        return $this->getData(self::INTELIPOST_SHIPMENT_ID);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function setOrderIncrementId($orderNumber)
     {
         $this->setData(self::ORDER_INCREMENT_ID, $orderNumber);

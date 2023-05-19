@@ -31,6 +31,8 @@ interface ShipmentInterface
     const TRACKING_URL = 'tracking_url';
     const INTELIPOST_MESSAGE = 'intelipost_message';
     const PRODUCTS_IDS = 'products_ids';
+
+    const ORIGIN_ZIP_CODE = 'origin_zip_code';
     const DELIVERY_ESTIMATE_DATE_EXACT_ISO = 'delivery_estimate_date_exact_iso';
     const SELECTED_SCHEDULING_DATE = 'selected_scheduling_date';
     const CREATED_AT = 'created_at';
@@ -277,6 +279,17 @@ interface ShipmentInterface
      * @return void
      */
     public function setProductsIds($productsIds);
+
+    /**
+     * @return string
+     */
+    public function getOriginZipCode();
+
+    /**
+     * @param $originZipCode
+     * @return void
+     */
+    public function setOriginZipCode($originZipCode);
 
     /**
      * @return string
