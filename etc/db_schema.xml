@@ -54,6 +54,7 @@
     <table name="intelipost_invoices" resource="default" engine="innodb" comment="Intelipost Invoice">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="varchar" name="order_increment_id" length="255" nullable="false" comment="Order Number"/>
+        <column xsi:type="varchar" name="intelipost_shipment_id" length="255" nullable="false" comment="Intelipost Shipment Id"/>
         <column xsi:type="varchar" name="number" length="255" nullable="false" comment="Invoice Number"/>
         <column xsi:type="varchar" name="series" length="255" nullable="false" comment="Order Series"/>
         <column xsi:type="varchar" name="key" length="255" nullable="false" comment="Invoice Key"/>
@@ -71,6 +72,9 @@
         </index>
         <index referenceId="INTELIPOST_INVOICE_ORDER_INCREMENT_ID" indexType="btree">
             <column name="order_increment_id"/>
+        </index>
+        <index referenceId="INTELIPOST_INVOICE_INTELIPOST_SHIPMENT_ID" indexType="btree">
+            <column name="intelipost_shipment_id"/>
         </index>
         <index referenceId="INTELIPOST_INVOICE_KEY" indexType="btree">
             <column name="key"/>
@@ -100,6 +104,7 @@
         <column xsi:type="varchar" name="tracking_url" length="255" comment="Tracking Url" />
         <column xsi:type="text" name="intelipost_message" comment="Intelipost Message" />
         <column xsi:type="varchar" name="products_ids" length="255" comment="Products Ids" />
+        <column xsi:type="varchar" name="origin_zip_code" length="255" comment="Origin Zip Code" />
         <column xsi:type="timestamp" name="delivery_estimate_date_exact_iso" comment="Delivery Estimate Date Exact" />
         <column xsi:type="timestamp" name="selected_scheduling_date" comment="Selected Scheduling Date" />
         <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
@@ -109,6 +114,9 @@
         </constraint>
         <index referenceId="INTELIPOST_SHIPMENT_ORDER_INCREMENT_ID" indexType="btree">
             <column name="order_increment_id"/>
+        </index>
+        <index referenceId="INTELIPOST_SHIPMENT_INTELIPOST_SHIPMENT_ID" indexType="btree">
+            <column name="intelipost_shipment_id"/>
         </index>
     </table>
 

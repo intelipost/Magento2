@@ -16,6 +16,8 @@ interface InvoiceInterface
     const ENTITY_ID = 'entity_id';
     const NUMBER = 'number';
     const ORDER_INCREMENT_ID = 'order_increment_id';
+
+    const INTELIPOST_SHIPMENT_ID = 'intelipost_shipment_id';
     const SERIES = 'series';
     const KEY = 'key';
     const DATE = 'date';

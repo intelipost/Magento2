@@ -71,7 +71,7 @@ class Labels extends \Magento\Backend\Block\Template
     public function getLabelsCollection()
     {
         $collection = $this->labelsCollectionFactory->create();
-        $collection->addFieldToFilter('order_increment_id', $this->getOrder()->getIncrementId());
+        $collection->addFieldToFilter('order_increment_id', ['like' => '%' . $this->getOrder()->getIncrementId() . '%']);
         return $collection;
     }
 }

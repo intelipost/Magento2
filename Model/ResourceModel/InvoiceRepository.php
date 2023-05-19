@@ -86,13 +86,18 @@ class InvoiceRepository implements InvoiceRepositoryInterface
      */
     public function saveInvoices($invoices)
     {
+
         foreach ($invoices as $nfe) {
+
+            $orderNumber = explode('-', $nfe->getOrderIncrementId());
+            $orderNumber = $orderNumber[0];
 
             /** @var  \Intelipost\Shipping\Model\Invoice $invoice */
             $invoice = $this->invoiceFactory->create();
 
             $invoice->setId($nfe->getId());
-            $invoice->setOrderIncrementId($nfe->getOrderIncrementId());
+            $invoice->setOrderIncrementId($orderNumber);
+            $invoice->setIntelipostShipmentId($nfe->getOrderIncrementId());
             $invoice->setSeries($nfe->getSeries());
             $invoice->setNumber($nfe->getNumber());
             $invoice->setKey($nfe->getKey());
