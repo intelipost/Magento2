@@ -15,7 +15,7 @@
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>carriers/intelipost/active</config_path>
         </field>
-        <field id="api_key" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="api_key" translate="label comment" type="password" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>API Key</label>
             <comment>Key for API</comment>
             <config_path>intelipost_basic/settings/api_key</config_path>
@@ -48,6 +48,34 @@
             <tooltip>Quotes older than 3 months will be deleted automattically</tooltip>
             <comment>If enabled, it can use a huge amount of disk space because it'll save all quotes in a database table, it's only recommended for testing purposes</comment>
         </field>
+        <group id="intelipost_address" translate="label" sortOrder="1000" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Address Attributes</label>
+            <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+            <field id="street" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Street</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Street</source_model>
+                <config_path>carriers/intelipost/street_attribute</config_path>
+            </field>
+
+            <field id="number" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Number</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Street</source_model>
+                <config_path>carriers/intelipost/number_attribute</config_path>
+            </field>
+
+            <field id="complement" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Complement</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Street</source_model>
+                <config_path>carriers/intelipost/complement_attribute</config_path>
+            </field>
+
+            <field id="district" translate="label" type="select" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>District</label>
+                <source_model>Intelipost\Shipping\Model\Config\Source\Street</source_model>
+                <config_path>carriers/intelipost/district_attribute</config_path>
+            </field>
+        </group>
     </group>
 </include>
 

@@ -37,6 +37,10 @@
 Nesses casos, é necessário monitorar a entrega e o processo de pedido para verificar a unidade de entrega mais próxima para retirada.
 Você receberá a notificação de quando sua encomenda estará disponível para retirada.
                 </riskareamsg>
+                <street_attribute>1</street_attribute>
+                <number_attribute>2</number_attribute>
+                <complement_attribute>3</complement_attribute>
+                <district_attribute>4</district_attribute>
                 <height_attribute>height</height_attribute>
                 <freeshipping_text>Frete Grátis</freeshipping_text>
                 <scheduled_title>Entrega Agendada</scheduled_title>

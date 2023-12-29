@@ -154,6 +154,42 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         parent::__construct($context);
     }
 
+    public function getStreetAttribute(): int
+    {
+        $streetAttribute = (int) $this->getConfig('street_attribute');
+        if (!$streetAttribute) {
+            $streetAttribute = 1;
+        }
+        return $streetAttribute;
+    }
+
+    public function getNumberAttribute(): int
+    {
+        $numberAttribute = (int) $this->getConfig('number_attribute');
+        if (!$numberAttribute) {
+            $numberAttribute = 2;
+        }
+        return $numberAttribute;
+    }
+
+    public function getComplementAttribute(): int
+    {
+        $complementAttribute = (int) $this->getConfig('complement_attribute');
+        if (!$complementAttribute) {
+            $complementAttribute = 3;
+        }
+        return $complementAttribute;
+    }
+
+    public function getDistrictAttribute(): int
+    {
+        $districtAttribute = (int) $this->getConfig('district_attribute');
+        if (!$districtAttribute) {
+            $districtAttribute = 4;
+        }
+        return $districtAttribute;
+    }
+
     /**
      * @return string[]
      */
