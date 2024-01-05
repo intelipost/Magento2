@@ -180,3 +180,8 @@ Description,Description
 "Each 15 minutes","Each 15 minutes"
 "Hourly","Hourly"
 "Each 2 hours","Each 2 hours"
+"Address Attributes","Address Attributes"
+"Street","Street"
+"Number","Number"
+"Complement","Complement"
+"District","District"

@@ -8,6 +8,7 @@
 
 namespace Intelipost\Shipping\Client\ShipmentOrder;
 
+use Intelipost\Shipping\Helper\Data;
 use Magento\Sales\Model\ResourceModel\Order\Address\CollectionFactory;
 
 class Customer
@@ -15,12 +16,18 @@ class Customer
     /** @var CollectionFactory  */
     protected $addressCollectionFactory;
 
-    public function __construct(CollectionFactory $addressCollectionFactory)
-    {
+    /** @var Data  */
+    protected $helperData;
+
+    public function __construct(
+        CollectionFactory $addressCollectionFactory,
+        Data $helperData
+    ) {
         $this->addressCollectionFactory = $addressCollectionFactory;
+        $this->helperData = $helperData;
     }
 
-    public function getInformation($orderIncrementId, $taxVat)
+    public function getInformation($orderIncrementId, $taxVat): \stdClass
     {
         $collection = $this->getAddressCollection($orderIncrementId);
 
@@ -33,10 +40,11 @@ class Customer
             $customer->phone = $addressModel->getData('telephone');
             $customer->is_company = false;
             $customer->federal_tax_payer_id = $taxVat;
-            $customer->shipping_address = $addressModel->getStreetLine(1);
-            $customer->shipping_number = $addressModel->getStreetLine(2) ?: $this->getAddressNumber($addressModel);
-            $customer->shipping_additional = $addressModel->getStreetLine(3);
-            $customer->shipping_quarter = $addressModel->getStreetLine(4);
+            $customer->shipping_address = $addressModel->getStreetLine($this->helperData->getStreetAttribute());
+            $customer->shipping_number = $addressModel->getStreetLine($this->helperData->getNumberAttribute())
+                ?: $this->getAddressNumber($addressModel);
+            $customer->shipping_additional = $addressModel->getStreetLine($this->helperData->getComplementAttribute());
+            $customer->shipping_quarter = $addressModel->getStreetLine($this->helperData->getDistrictAttribute());
             $customer->shipping_city = $addressModel->getData('city');
             $customer->shipping_state = $addressModel->getData('region');
             $customer->shipping_zip_code = $addressModel->getData('postcode');
@@ -61,9 +69,9 @@ class Customer
      * @param \Magento\Sales\Model\Order\Address $addressModel
      * @return string
      */
-    public function getAddressNumber($addressModel)
+    public function getAddressNumber($addressModel): string
     {
-        $number = trim((string) $addressModel->getStreetLine(1));
+        $number = trim((string) $addressModel->getStreetLine($this->helperData->getStreetAttribute()));
         $shippingNumber = "s/n";
         if ($number) {
             $number = explode(',', $number);
