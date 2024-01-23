@@ -589,7 +589,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getPageIdentification()
     {
         $result = [
-            'ip' => $_SERVER ['REMOTE_ADDR'],
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? $this->getQuote()->getRemoteIp(),
             'session' => $this->getSessionId(),
             'page_name' => $this->getPageName(),
             'url' => $this->getCurrentUrl()
