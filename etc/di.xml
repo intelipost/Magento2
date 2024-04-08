@@ -31,14 +31,6 @@
         <plugin name="intelipost_quote_address" type="Intelipost\Shipping\Plugin\Quote\Address" sortOrder="2" />
     </type>
 
-    <type name="Magento\Quote\Model\Quote\Address\Rate">
-        <plugin name="intelipost_quote_address_rate" type="Intelipost\Shipping\Plugin\Quote\Address\Rate" sortOrder="2" />
-    </type>
-
-    <type name="Magento\Quote\Model\Cart\ShippingMethodConverter">
-        <plugin name="intelipost_quote_address_cart_shipping_method_converter" type="Intelipost\Shipping\Plugin\Quote\Cart\ShippingMethodConverter" sortOrder="2" />
-    </type>
-
     <type name="Magento\Shipping\Controller\Tracking\Popup">
         <plugin name="intelipost_tracking_popup" type="Intelipost\Shipping\Plugin\Tracking\Popup" sortOrder="2" />
     </type>
