@@ -69,7 +69,8 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
 - Nesse link, é possível ver todas as postagens dos pedidos, com link para o pedido, e as URL dos pedidos
 - Através dessa tela, é possível criar e enviar pedidos para Intelipost através do menu de Ações
 - Dentro de cada pedido tem uma nova aba também para que você possa ver os status desses pedidos
-- ![N|Solid](view/frontend/web/images/readme/order.png)  
+
+![N|Solid](view/frontend/web/images/readme/order.png)  
 
 ## Faturas
 
@@ -81,33 +82,18 @@ Nas configurações da loja, pode-se determinar como o módulo deve funcionar, d
 *Página de Pedido*  
 ![N|Solid](view/frontend/web/images/readme/invoice-order.png)
 
-*VIA API*
-Para criação da invoice no Magento via API é ncessário que seja obtido o token na plataforma Magento relativo a conta do cliente, conforme requisição abaixo:
-
-Cabeçalho da Requisição:
-Method: POST
-URL: {URL_LOJA}/integration/admin/token => o campo URL_LOJA é a URL da loja Magento do cliente
-header 'api-key: '  => Deve ser a API_KEY do cliente na Intelipost, contatar o time de suporte da Intelipost para obte-la
-header 'php-auth-user:  ' => Deve ser a API_KEY do cliente na Intelipost, contatar o time de suporte da Intelipost para obte-la
-header 'Content-Type: application/json' 
-
-Corpo da Requisição:
-data-raw - Json
-{
-    "username": "usuário do admin da plataforma Magento",
-    "password": "senha do usuário do admin da plataforma Magento"
-}
+*VIA API*  
+Para criação da invoice no Magento via API é ncessário que seja obtido o token na plataforma Magento relativo a conta do cliente. 
+Para fazer isso é possivel utilizar um Token de Admin da plataforma Magento.  
 
 Após a obteção do token do Magento na requisição anterior, a inclusão da invoice deverá ser executada conforme a requisição a seguir:
 
-Cabeçalho da Requisição:
-Method: POST
-URL: {URL_LOJA}/intelipost/invoices => o campo URL_LOJA é a URL da loja Magento do cliente
-header 'Authorization: Bearer TOKEN_API' => o campo TOKEN_API deverá ser substituído pelo token retornado na requisição anterior.
-header 'Content-Type: application/json' 
-
-Corpo da Requisição:
-data-raw - Json
+Method: POST  
+URL: `{URL_LOJA}/intelipost/invoices` => o campo URL_LOJA é a URL da loja Magento do cliente  
+header 'Authorization: Bearer TOKEN_API' => o campo TOKEN_API deverá ser substituído pelo token retornado na requisição anterior.  
+header 'Content-Type: application/json'  
+Body:
+```
 {
     "invoice": [
         {
@@ -122,6 +108,7 @@ data-raw - Json
         }
     ]
 }
+```
 Descrição dos Campos do Body da requisição:
 - number: é o número da nota fiscal e seu type é number
 - order_increment_id: é o número do pedido e seu type é string
@@ -153,12 +140,15 @@ Descrição dos Campos do Body da requisição:
   ]
 }"   
 ```
+
 - "GET" - /V1/intelipost/invoices (Listar Invoices)
+
 ```
 curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/invoices?searchCriteria[filterGroups][0][filters][0][field]=order_increment_id&searchCriteria[filterGroups][0][filters][0][value]=000000001&searchCriteria[filterGroups][0][filters][0][conditionType]=eq' \
 --header 'Authorization: Bearer TOKEN_API'
 ```
-- "GET" - /V1/intelipost/invoices/:id
+
+- "GET" - /V1/intelipost/invoices/:id (Uma única Invoice)
 
 
 ## Labels
@@ -175,9 +165,10 @@ curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/labels?searchCrite
 ![N|Solid](view/frontend/web/images/readme/webhooks.png)
 
 - Nesse link, é possível ver todas as notificações via webhook recebidas
-- Lembrando que é preciso cadastrar os webhooks dentro da Intelipost
+- Lembrando que é preciso cadastrar os webhooks dentro da Intelipost em Entregas -> Configuração -> Regras de evento -> Adicionar nova regra.
 
-![N|Solid](view/frontend/web/images/readme/webhook-intelipost.gif)
+![N|Solid](view/frontend/web/images/readme/webhook-intelipost-1.jpeg)  
+![N|Solid](view/frontend/web/images/readme/webhook-intelipost-2.jpeg)
 
 #### A URL deve ser:  
 _https://URL_LOJA/intelipost/webhook_  
