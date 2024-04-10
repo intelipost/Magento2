@@ -21,6 +21,7 @@ use Magento\Framework\Session\SessionManager;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Api\OrderStatusHistoryRepositoryInterface;
 use Magento\Sales\Model\Convert\Order as ConvertOrder;
 use Magento\Sales\Model\Order\Shipment\TrackFactory;
 use Magento\Sales\Model\Order\ShipmentRepository as OrderShipmentRepository;
@@ -42,6 +43,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /** @var OrderRepositoryInterface */
     protected $orderRepository;
+
+    /** @var OrderStatusHistoryRepositoryInterface */
+    protected $orderStatusHistoryRepository;
 
     /** @var SessionManager */
     protected $sessionManager;
@@ -91,31 +95,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /** @var SearchCriteriaBuilder */
     protected $searchCriteriaBuilder;
 
-    /**
-     * @param Context $context
-     * @param QuoteFactory $quoteFactory
-     * @param QuoteRepositoryInterface $quoteRepository
-     * @param OrderRepositoryInterface $orderRepository
-     * @param OrderShipmentRepository $orderShipmentRepository
-     * @param OrderShipmentFactory $orderShipmentFactory
-     * @param ShipmentNotifier $shipmentNotifier
-     * @param ConvertOrder $convertOrder
-     * @param TrackFactory $trackFactory
-     * @param SessionManager $sessionManager
-     * @param Quote $backendSession
-     * @param Json $json
-     * @param Session $checkoutSession
-     * @param CustomerSession $customerSession
-     * @param StoreManagerInterface $storeManager
-     * @param GroupRepository $customerGroupRepository
-     * @param OrderInterface $order
-     * @param State $state
-     */
     public function __construct(
         Context $context,
         QuoteFactory $quoteFactory,
         QuoteRepositoryInterface $quoteRepository,
         OrderRepositoryInterface $orderRepository,
+        OrderStatusHistoryRepositoryInterface $orderStatusHistoryRepository,
         OrderShipmentRepository $orderShipmentRepository,
         OrderShipmentFactory $orderShipmentFactory,
         ShipmentNotifier $shipmentNotifier,
@@ -136,6 +121,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->quoteRepository = $quoteRepository;
         $this->json = $json;
         $this->orderRepository = $orderRepository;
+        $this->orderStatusHistoryRepository = $orderStatusHistoryRepository;
         $this->sessionManager = $sessionManager;
         $this->backendSession = $backendSession;
         $this->checkoutSession = $checkoutSession;
@@ -574,10 +560,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         if (!$status) {
             $status = false;
         }
+
         $notifyCustomer = (bool)$this->getConfig('notify_customer');
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderRepository->get($orderId);
-        $order->addCommentToStatusHistory($comment, $status, $notifyCustomer);
+        $historyItem = $order->addCommentToStatusHistory($comment, $status, $notifyCustomer);
+        $historyItem->setIsCustomerNotified($notifyCustomer);
+
+        $this->orderStatusHistoryRepository->save($historyItem);
         $this->orderRepository->save($order);
     }
 

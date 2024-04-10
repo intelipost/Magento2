@@ -198,10 +198,24 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
 
                 case 'IN_TRANSIT':
                     $status = $this->helper->getConfig('status_in_transit');
+                    if ($status) {
+                        $order = $this->helper->loadOrder($orderIncrementId);
+                        if ($order->canShip()) {
+                            $trackingUrl = $requestBody['tracking_url'] ?? null;
+                            $this->createShipment($orderIncrementId, $trackingUrl);
+                        }
+                    }
                 break;
 
                 case 'TO_BE_DELIVERED':
                     $status = $this->helper->getConfig('status_to_be_delivered');
+                    if ($status) {
+                        $order = $this->helper->loadOrder($orderIncrementId);
+                        if ($order->canShip()) {
+                            $trackingUrl = $requestBody['tracking_url'] ?? null;
+                            $this->createShipment($orderIncrementId, $trackingUrl);
+                        }
+                    }
                 break;
 
                 case 'DELIVERED':
