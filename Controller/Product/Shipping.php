@@ -97,7 +97,7 @@ class Shipping extends \Magento\Framework\App\Action\Action
         }
 
         $resultPage = $this->resultPageFactory->create();
-        $this->getResponse()->setBody(
+        return $this->getResponse()->setBody(
             $resultPage->getLayout()
                 ->createBlock(\Magento\Framework\View\Element\Template::class)
                 ->setCacheLifetime(false)

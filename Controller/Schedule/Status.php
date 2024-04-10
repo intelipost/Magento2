@@ -105,11 +105,13 @@ class Status extends \Magento\Framework\App\Action\Action
                         $item->setSelectedSchedulingPeriod($period);
                     }
 
-                    $this->getResponse()->setBody(
+                    return $this->getResponse()->setBody(
                         __('Delivery Scheduled for: %1 period: %2', $selDate, __(ucfirst($period)))
                     );
                 }
             }
         }
+
+        return $this->_redirect('/');
     }
 }

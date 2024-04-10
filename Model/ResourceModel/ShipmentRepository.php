@@ -103,9 +103,9 @@ class ShipmentRepository implements ShipmentRepositoryInterface
     public function getByIntelipostShipmentId($intelipostShipmentId)
     {
         $shipment = $this->shipmentFactory->create();
-        $this->resource->load($shipment, $intelipostShipmentIdId, 'intelipost_shipment_id');
+        $this->resource->load($shipment, $intelipostShipmentId, 'intelipost_shipment_id');
         if (!$shipment->getId()) {
-            throw new NoSuchEntityException(__('Item with id "%1" does not exist.', $orderIncrementId));
+            throw new NoSuchEntityException(__('Item with id "%1" does not exist.', $intelipostShipmentId));
         }
         return $shipment;
     }

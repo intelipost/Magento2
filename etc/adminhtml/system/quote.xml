@@ -131,15 +131,6 @@
                 <config_path>carriers/intelipost/webhook_enabled</config_path>
             </field>
 
-            <field id="create_shipment_automatically" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Create Shipment Automatically when an order is picked up</label>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <comment>With webhook enabled it'll create a shipment when there's an shipping event on Intelipost.</comment>
-                <config_path>carriers/intelipost/create_shipment_automatically</config_path>
-                <depends>
-                    <field id="webhook_enabled">1</field>
-                </depends>
-            </field>
             <field id="notify_customer" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <label>Notify Customer for each new order update</label>

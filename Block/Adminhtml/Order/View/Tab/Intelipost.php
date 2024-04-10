@@ -165,8 +165,8 @@ class Intelipost extends Template implements TabInterface
     {
         return $this->getLayout()->createBlock(
             \Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost\Webhooks::class
-        )->setOrder($this->getOrder())
-        ->setOrderId($this->getOrderId())
+        )->setData('order', $this->getOrder())
+        ->setData('order_id', $this->getOrderId())
         ->toHtml();
     }
 
@@ -177,8 +177,8 @@ class Intelipost extends Template implements TabInterface
     {
         return $this->getLayout()->createBlock(
             \Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost\Labels::class
-        )->setOrder($this->getOrder())
-         ->setOrderId($this->getOrderId())
+        )->setData('order', $this->getOrder())
+         ->setData('order_id', $this->getOrderId())
          ->toHtml();
     }
 

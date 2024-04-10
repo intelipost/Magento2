@@ -178,6 +178,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
             (in_array($state, $preDispatchEvents) && $trackPreShip)
             || (in_array($state, $postDispatchEvents))
         ) {
+            $status = '';
             switch (strtoupper($state)) {
                 case 'NEW':
                     $status = $this->helper->getConfig('status_created');
