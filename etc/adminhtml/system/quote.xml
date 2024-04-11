@@ -131,15 +131,6 @@
                 <config_path>carriers/intelipost/webhook_enabled</config_path>
             </field>
 
-            <field id="create_shipment_automatically" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Create Shipment Automatically when an order is picked up</label>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <comment>With webhook enabled it'll create a shipment when there's an shipping event on Intelipost.</comment>
-                <config_path>carriers/intelipost/create_shipment_automatically</config_path>
-                <depends>
-                    <field id="webhook_enabled">1</field>
-                </depends>
-            </field>
             <field id="notify_customer" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <label>Notify Customer for each new order update</label>
@@ -178,16 +169,16 @@
                 <config_path>carriers/intelipost/status_shipped</config_path>
             </field>
 
-            <field id="status_to_be_delivered" translate="label" type="select" sortOrder="410" showInDefault="1" showInWebsite="1" showInStore="1">
-                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
-                <label>Status To Be Delivered</label>
-                <config_path>carriers/intelipost/status_to_be_delivered</config_path>
-            </field>
-
             <field id="status_in_transit" translate="label" type="select" sortOrder="420" showInDefault="1" showInWebsite="1" showInStore="1">
                 <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
                 <label>Status In Transit</label>
                 <config_path>carriers/intelipost/status_in_transit</config_path>
+            </field>
+
+            <field id="status_to_be_delivered" translate="label" type="select" sortOrder="430" showInDefault="1" showInWebsite="1" showInStore="1">
+                <source_model>Intelipost\Shipping\Model\Config\Source\Order\ProcessingComplete</source_model>
+                <label>Status To Be Delivered</label>
+                <config_path>carriers/intelipost/status_to_be_delivered</config_path>
             </field>
 
             <field id="status_delivered" translate="label" type="select" sortOrder="500" showInDefault="1" showInWebsite="1" showInStore="1">

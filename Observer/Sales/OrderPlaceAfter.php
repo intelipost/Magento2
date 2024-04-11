@@ -38,6 +38,9 @@ class OrderPlaceAfter implements ObserverInterface
     /** @var StoreManagerInterface  */
     protected $storeManager;
 
+    /** @var ShipmentResourceModel  */
+    protected $shipmentResource;
+
     /**
      * @param QuoteInterface $intelipostQuote
      * @param Data $intelipostHelper
@@ -244,6 +247,7 @@ class OrderPlaceAfter implements ObserverInterface
      */
     public function getMethodId($methodId)
     {
+        $id = 100;
         preg_match_all('!\d+!', $methodId, $matches);
         foreach ($matches as $value) {
             $id = ($value) ? (int)$value[0] : 100;

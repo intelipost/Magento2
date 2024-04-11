@@ -10,7 +10,6 @@ namespace Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost;
 
 use Intelipost\Shipping\Model\ResourceModel\Label\CollectionFactory as LabelCollectionFactory;
 use Intelipost\Shipping\Model\ResourceModel\ShipmentRepository;
-use Intelipost\Shipping\Model\ShipmentFactory;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Registry;
 
@@ -57,11 +56,11 @@ class Labels extends \Magento\Backend\Block\Template
     }
 
     /**
-     * @return \Intelipost\Shipping\Model\ResourceModel\Label\Collection
+     * @return bool
      */
     public function hasOrderCreated()
     {
-        $shipment = $this->shipmentRepository->getByOrderIncrementId($this->getOrder()->getIncrementId());
+        $shipment = $this->shipmentRepository->getByOrderIncrementId($this->getData('order')->getIncrementId());
         return $shipment->getId() ? true : false;
     }
 
@@ -71,7 +70,10 @@ class Labels extends \Magento\Backend\Block\Template
     public function getLabelsCollection()
     {
         $collection = $this->labelsCollectionFactory->create();
-        $collection->addFieldToFilter('order_increment_id', ['like' => '%' . $this->getOrder()->getIncrementId() . '%']);
+        $collection->addFieldToFilter(
+            'order_increment_id',
+            ['like' => '%' . $this->getData('order')->getIncrementId() . '%']
+        );
         return $collection;
     }
 }

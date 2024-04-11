@@ -25,23 +25,6 @@ interface LabelInterface
     const UPDATED_AT = 'updated_at';
 
     /**
-     * Get item id
-     *
-     * @return int|null
-     * @api
-     */
-    public function getEntityId();
-
-    /**
-     * Set item id
-     *
-     * @param int $id
-     * @return void
-     * @api
-     */
-    public function setEntityId($id);
-
-    /**
      * Get invoice number
      *
      * @return string

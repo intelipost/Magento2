@@ -42,22 +42,6 @@ class Invoice extends AbstractModel implements InvoiceInterface
     /**
      * @inheritDoc
      */
-    public function getEntityId()
-    {
-        return $this->getData(self::ENTITY_ID);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setEntityId($id)
-    {
-        $this->setData(self::ENTITY_ID, $id);
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getNumber()
     {
         return $this->getData(self::NUMBER);

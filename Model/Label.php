@@ -41,22 +41,6 @@ class Label extends AbstractModel implements LabelInterface
     }
 
     /**
-     * @inheritDoc
-     */
-    public function getEntityId()
-    {
-        return $this->getData(self::ENTITY_ID);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setEntityId($id)
-    {
-        $this->setData(self::ENTITY_ID, $id);
-    }
-
-    /**
      * @inheirtDoc
      */
     public function getUrl()
@@ -67,9 +51,9 @@ class Label extends AbstractModel implements LabelInterface
     /**
      * @inheritDoc
      */
-    public function setUrl($cfop)
+    public function setUrl($url)
     {
-        $this->setData(self::URL, $cfop);
+        $this->setData(self::URL, $url);
     }
 
     /**

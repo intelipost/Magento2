@@ -211,6 +211,7 @@ class ShipmentOrder
         if ($responseStatus == Intelipost::RESPONSE_STATUS_OK) {
             $trackingCode = '';
             $trackingUrl = $result['content']['tracking_url'];
+            $volume = [];
             if (isset($result['content']['shipment_order_volume_array'])) {
                 $trackingCodes = [];
                 foreach ($result['content']['shipment_order_volume_array'] as $volume) {
@@ -222,7 +223,12 @@ class ShipmentOrder
                     $trackingCode = implode(', ', $trackingCodes);
                 }
 
-                $this->requestLabel->importPrintingLabels($intelipostShipmentId, $volume['shipment_order_volume_number']);
+                if (isset($volume['shipment_order_volume_number'])) {
+                    $this->requestLabel->importPrintingLabels(
+                        $intelipostShipmentId,
+                        $volume['shipment_order_volume_number']
+                    );
+                }
             }
 
             $status = $this->helper->getConfig('created_status', 'order_status', 'intelipost_push');

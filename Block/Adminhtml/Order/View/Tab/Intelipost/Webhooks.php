@@ -56,7 +56,7 @@ class Webhooks extends Template
     public function getWebhooksCollection()
     {
         $collection = $this->webhookCollectionFactory->create();
-        $collection->addFieldToFilter('order_increment_id', $this->getOrder()->getIncrementId());
+        $collection->addFieldToFilter('order_increment_id', $this->getData('order')->getIncrementId());
         return $collection;
     }
 }

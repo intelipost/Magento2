@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Intelipost\Shipping
  * @copyright Copyright (c) 2021 Intelipost
@@ -23,31 +24,18 @@ class Index extends \Magento\Framework\App\Action\Action
     /** @var \Intelipost\Shipping\Helper\Data */
     protected $helper;
 
-    /** @var \Intelipost\Shipping\Model\QuoteFactory */
-    protected $shippingFactory;
-
     /** @var \Magento\Checkout\Model\Session */
     protected $checkoutSession;
 
     /** @var \Magento\Framework\View\Result\PageFactory */
     protected $resultPageFactory;
 
-    /**
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Intelipost\Shipping\Helper\Data $helper
-     * @param \Intelipost\Shipping\Model\QuoteFactory $quoteFactory
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager
-     * @param \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory
-     */
     public function __construct(
-        \Magento\Framework\App\Action\Context                  $context,
-        \Magento\Framework\View\Result\PageFactory             $resultPageFactory,
-        \Intelipost\Shipping\Helper\Data                       $helper,
-        \Intelipost\Shipping\Model\QuoteFactory                $quoteFactory,
-        \Magento\Checkout\Model\Session                        $checkoutSession,
-        \Magento\Framework\Stdlib\CookieManagerInterface       $cookieManager,
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Intelipost\Shipping\Helper\Data $helper,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager,
         \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory $cookieMetadataFactory
     ) {
         $this->helper = $helper;
@@ -116,7 +104,7 @@ class Index extends \Magento\Framework\App\Action\Action
             $metadata
         );
 
-        $this->getResponse()->setBody(
+        return $this->getResponse()->setBody(
             __('Delivery Scheduled for: %1 period: %2', $selDate, __(ucfirst($period)))
         );
     }
