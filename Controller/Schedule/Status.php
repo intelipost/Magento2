@@ -112,6 +112,7 @@ class Status extends \Magento\Framework\App\Action\Action
             }
         }
 
-        return $this->_redirect('/');
+        //Response empty body
+        return $this->getResponse()->setBody('');
     }
 }
