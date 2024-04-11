@@ -181,7 +181,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPreDispatchEvents()
     {
-        return ['NEW', 'READY_FOR_SHIPPING', 'SHIPPED'];
+        return ['NEW', 'READY_FOR_SHIPPING'];
     }
 
     /**
@@ -189,7 +189,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPostDispatchEvents()
     {
-        return ['TO_BE_DELIVERED', 'IN_TRANSIT', 'DELIVERED', 'CLARIFY_DELIVERY_FAIL', 'DELIVERY_FAILED'];
+        return ['SHIPPED', 'TO_BE_DELIVERED', 'IN_TRANSIT', 'DELIVERED', 'CLARIFY_DELIVERY_FAIL', 'DELIVERY_FAILED'];
     }
 
     /**
