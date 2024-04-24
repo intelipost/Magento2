@@ -70,12 +70,6 @@ class Popup
                 $trackingItem = $tracking[0];
                 if (is_array($trackingItem)) {
                     return $trackingItem['number'];
-                } else if ($trackingItem){
-
-                    $trackingDetails = $trackingItem->getAllTrackings();
-                    $trackingDetails = reset($trackingDetails);
-
-                    return $trackingDetails->getData('tracking');
                 }
             }
         }

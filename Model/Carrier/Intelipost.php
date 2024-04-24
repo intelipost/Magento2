@@ -18,8 +18,6 @@ use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory;
-use Magento\Shipping\Model\Tracking\Result as TrackingResult;
-use Magento\Shipping\Model\Tracking\Result\Error as TrackingError;
 use Magento\Shipping\Model\Tracking\Result\ErrorFactory as TrackErrorFactory;
 use Magento\Shipping\Model\Tracking\Result\StatusFactory as TrackStatusFactory;
 use Magento\Shipping\Model\Tracking\ResultFactory as TrackResultFactory;
@@ -462,52 +460,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     public function isTrackingAvailable()
     {
         return true;
-    }
-
-    /**
-     * Get tracking information
-     *
-     * @param string $tracking
-     * @return string|false
-     */
-    public function getTrackingInfo(string $trackingCode): TrackingResult
-    {
-        try {
-            $result = $this->trackResultFactory->create();
-
-            $tracking = $this->trackStatusFactory->create();
-            $tracking->setCarrier($this->getCarrierCode());
-            $tracking->setCarrierTitle($this->getConfigData('title'));
-            $tracking->setTracking($trackingCode);
-            $tracking->addData($this->proccessTrackDetails($trackingCode));
-
-            $result->append($tracking);
-
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-            $error = $this->getTrackingError($trackingCode, 'There was an error request the tracking');
-            $result->append($error);
-        }
-
-        return $result;
-    }
-
-    protected function getTrackingError(string $trackingValue, string $errorMessage): TrackingError
-    {
-        $error = $this->trackErrorFactory->create();
-        $error->setCarrier($this->getCarrierCode());
-        $error->setCarrierTitle($this->getConfigData('title'));
-        $error->setTracking($trackingValue);
-        $error->setErrorMessage(__($errorMessage));
-        return $error;
-    }
-
-    protected function proccessTrackDetails(string $trackingCode): array
-    {
-        return [
-            'activity' => __('Tracking'),
-            'deliverylocation' => $trackingCode
-        ];
     }
 
 }
