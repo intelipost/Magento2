@@ -10,6 +10,7 @@ namespace Intelipost\Shipping\Plugin\Tracking;
 
 use Intelipost\Shipping\Helper\Data;
 use Magento\Shipping\Model\InfoFactory;
+use Magento\Shipping\Model\Tracking\Result\AbstractResult;
 
 class Popup
 {
@@ -45,18 +46,40 @@ class Popup
             $hash = $subject->getRequest()->getParam('hash');
             $shippingInfoModel = $this->shippingInfoFactory->create()->loadByHash($hash);
             $trackingInfo = $shippingInfoModel->getTrackingInfo();
-            if (count($trackingInfo) == 1) {
-                $tracking = reset($trackingInfo);
-                if (isset($tracking[0]) && count($tracking) == 1) {
-                    if (filter_var($tracking[0]['number'], FILTER_VALIDATE_URL) !== false) {
-                        return $subject->getResponse()->setRedirect($tracking[0]['number']);
-                    }
+
+            $trackingNumber = $this->getTrackingNumber($trackingInfo);
+            if ($trackingNumber) {
+                if (filter_var($trackingNumber, FILTER_VALIDATE_URL) !== false) {
+                    $subject->getResponse()->setRedirect($trackingNumber);
+                    return;
                 }
             }
         } catch (\Exception $e) {
             $this->helper->getLogger()->error($e->getMessage());
         }
 
-        return $proceed();
+        $proceed();
+    }
+
+    protected function getTrackingNumber($trackingInfo)
+    {
+        $trackingNumber = '';
+        if (is_array($trackingInfo)) {
+            foreach ($trackingInfo as $tracking) {
+                if (isset($tracking[0]['number'])) {
+                    $trackingNumber = $tracking[0]['number'];
+                    break;
+                }
+            }
+        } else if ($trackingInfo instanceof \Magento\Shipping\Model\Tracking\Result) {
+            $trackingInfo = $trackingInfo->getAllTrackings();
+            foreach ($trackingInfo as $tracking) {
+                if (is_array($tracking)) {
+                    $trackingNumber = $tracking['number'];
+                    break;
+                }
+            }
+        }
+        return $trackingNumber;
     }
 }
