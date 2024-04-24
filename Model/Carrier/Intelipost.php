@@ -464,9 +464,8 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         return true;
     }
 
-    public function getTrackingInfo(string $trackingNumber): TrackingResult
+    public function getTrackingInfo(string $trackingNumber): array
     {
-        $result = $this->trackResultFactory->create();
-        return $result;
+        return ['number' => $trackingNumber];
     }
 }
