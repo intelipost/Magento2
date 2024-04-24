@@ -19,6 +19,8 @@ use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory;
 use Magento\Shipping\Model\Tracking\Result as TrackingResult;
+use Magento\Shipping\Model\Tracking\Result\Error as TrackingError;
+use Magento\Shipping\Model\Tracking\Result\ErrorFactory as TrackErrorFactory;
 use Magento\Shipping\Model\Tracking\Result\StatusFactory as TrackStatusFactory;
 use Magento\Shipping\Model\Tracking\ResultFactory as TrackResultFactory;
 
@@ -55,7 +57,12 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     /**
      * @var TrackResultFactory
      */
-    protected $trackFactory;
+    protected $trackResultFactory;
+
+    /**
+     * @var TrackErrorFactory
+     */
+    protected $trackErrorFactory;
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -65,7 +72,8 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         MethodFactory $rateMethodFactory,
         ProductRepository $productRespository,
         TrackStatusFactory $trackStatusFactory,
-        TrackResultFactory $trackFactory,
+        TrackResultFactory $trackResultFactory,
+        TrackErrorFactory $trackErrorFactory,
         Api $api,
         Data $helper,
         array $data = []
@@ -74,7 +82,8 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         $this->rateMethodFactory = $rateMethodFactory;
         $this->productRepository = $productRespository;
         $this->trackStatusFactory = $trackStatusFactory;
-        $this->trackFactory = $trackFactory;
+        $this->trackResultFactory = $trackResultFactory;
+        $this->trackErrorFactory = $trackErrorFactory;
         $this->scopeConfig = $scopeConfig;
         $this->helper = $helper;
         $this->api = $api;
@@ -464,20 +473,33 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     public function getTrackingInfo(string $trackingCode): TrackingResult
     {
         try {
-            $result = $this->trackFactory->create();
+            $result = $this->trackResultFactory->create();
+
             $tracking = $this->trackStatusFactory->create();
             $tracking->setCarrier($this->getCarrierCode());
             $tracking->setCarrierTitle($this->getConfigData('title'));
             $tracking->setTracking($trackingCode);
             $tracking->addData($this->proccessTrackDetails($trackingCode));
+
             $result->append($tracking);
 
-            return $result;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
+            $error = $this->getTrackingError($trackingCode, 'There was an error request the tracking');
+            $result->append($error);
         }
 
-        return false;
+        return $result;
+    }
+
+    protected function getTrackingError(string $trackingValue, string $errorMessage): TrackingError
+    {
+        $error = $this->trackErrorFactory->create();
+        $error->setCarrier($this->getCarrierCode());
+        $error->setCarrierTitle($this->getConfigData('title'));
+        $error->setTracking($trackingValue);
+        $error->setErrorMessage(__($errorMessage));
+        return $error;
     }
 
     protected function proccessTrackDetails(string $trackingCode): array

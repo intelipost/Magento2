@@ -10,6 +10,7 @@ namespace Intelipost\Shipping\Plugin\Tracking;
 
 use Intelipost\Shipping\Helper\Data;
 use Magento\Shipping\Model\InfoFactory;
+use Magento\Shipping\Model\Tracking\Result;
 use Magento\Shipping\Model\Tracking\Result\AbstractResult;
 
 class Popup
@@ -61,17 +62,20 @@ class Popup
         $proceed();
     }
 
-    protected function getTrackingNumber($trackingInfo)
+    protected function getTrackingNumber(array $trackingInfo): string
     {
         $trackingNumber = '';
-        if (is_array($trackingInfo)) {
-            foreach ($trackingInfo as $tracking) {
-                if (isset($tracking[0])) {
-                    $this->helper->getLogger()->info(json_encode($tracking));
-                    $trackingItem = $tracking[0];
-                    if (is_array($trackingItem)) {
-                        return $trackingItem['number'];
-                    }
+        foreach ($trackingInfo as $tracking) {
+            if (isset($tracking[0])) {
+                $trackingItem = $tracking[0];
+                if (is_array($trackingItem)) {
+                    return $trackingItem['number'];
+                } else if ($trackingItem instanceof Result){
+
+                    $trackingDetails = $trackingItem->getAllTrackings();
+                    $trackingDetails = reset($trackingDetails);
+
+                    return $trackingItem->getData('tracking');
                 }
             }
         }
