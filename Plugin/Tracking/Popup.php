@@ -67,7 +67,7 @@ class Popup
         if (is_array($trackingInfo)) {
             foreach ($trackingInfo as $tracking) {
                 if (isset($tracking[0])) {
-                    $this->helper->getLogger()->log(json_encode($tracking));
+                    $this->helper->getLogger()->info(json_encode($tracking));
                     $trackingItem = $tracking[0];
                     if (is_array($trackingItem)) {
                         return $trackingItem['number'];
