@@ -66,17 +66,17 @@ class Popup
         $trackingNumber = '';
         if (is_array($trackingInfo)) {
             foreach ($trackingInfo as $tracking) {
-                if (isset($tracking[0]['number'])) {
-                    $trackingNumber = $tracking[0]['number'];
-                    break;
-                }
-            }
-        } else if ($trackingInfo instanceof \Magento\Shipping\Model\Tracking\Result) {
-            $trackingInfo = $trackingInfo->getAllTrackings();
-            foreach ($trackingInfo as $tracking) {
                 if (is_array($tracking)) {
-                    $trackingNumber = $tracking['number'];
-                    break;
+                    if (isset($tracking[0]['number'])) {
+                        $trackingNumber = $tracking['number'];
+                        break;
+                    }
+                } else {
+                    $this->helper->getLogger()->error(json_encode($tracking));
+//                    if ($tracking instanceof \Magento\Shipping\Model\Tracking\Result\Status) {
+//                        $trackingNumber = $tracking->getAllData();
+//                        break;
+//                    }
                 }
             }
         }
