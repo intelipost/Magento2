@@ -18,6 +18,8 @@ use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory;
+use Magento\Shipping\Model\Tracking\Result as TrackingResult;
+use Magento\Shipping\Model\Tracking\Result\Error as TrackingError;
 use Magento\Shipping\Model\Tracking\Result\ErrorFactory as TrackErrorFactory;
 use Magento\Shipping\Model\Tracking\Result\StatusFactory as TrackStatusFactory;
 use Magento\Shipping\Model\Tracking\ResultFactory as TrackResultFactory;
@@ -462,4 +464,9 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         return true;
     }
 
+    public function getTrackingInfo(string $trackingNumber): TrackingResult
+    {
+        $result = $this->trackResultFactory->create();
+        return $result;
+    }
 }
