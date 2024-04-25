@@ -18,6 +18,11 @@ use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory;
+use Magento\Shipping\Model\Tracking\Result as TrackingResult;
+use Magento\Shipping\Model\Tracking\Result\Error as TrackingError;
+use Magento\Shipping\Model\Tracking\Result\ErrorFactory as TrackErrorFactory;
+use Magento\Shipping\Model\Tracking\Result\StatusFactory as TrackStatusFactory;
+use Magento\Shipping\Model\Tracking\ResultFactory as TrackResultFactory;
 
 class Intelipost extends AbstractCarrier implements CarrierInterface
 {
@@ -46,17 +51,19 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     /** @var ProductRepository */
     protected $productRepository;
 
+    /** @var TrackStatusFactory  */
+    protected $trackStatusFactory;
+
     /**
-     * @param ScopeConfigInterface $scopeConfig
-     * @param ErrorFactory $rateErrorFactory
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param ResultFactory $rateResultFactory
-     * @param MethodFactory $rateMethodFactory
-     * @param Data $helper
-     * @param Api $api
-     * @param ProductRepository $productRespository
-     * @param array $data
+     * @var TrackResultFactory
      */
+    protected $trackResultFactory;
+
+    /**
+     * @var TrackErrorFactory
+     */
+    protected $trackErrorFactory;
+
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         ErrorFactory $rateErrorFactory,
@@ -64,6 +71,9 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         ResultFactory $rateResultFactory,
         MethodFactory $rateMethodFactory,
         ProductRepository $productRespository,
+        TrackStatusFactory $trackStatusFactory,
+        TrackResultFactory $trackResultFactory,
+        TrackErrorFactory $trackErrorFactory,
         Api $api,
         Data $helper,
         array $data = []
@@ -71,6 +81,9 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
         $this->productRepository = $productRespository;
+        $this->trackStatusFactory = $trackStatusFactory;
+        $this->trackResultFactory = $trackResultFactory;
+        $this->trackErrorFactory = $trackErrorFactory;
         $this->scopeConfig = $scopeConfig;
         $this->helper = $helper;
         $this->api = $api;
@@ -439,5 +452,20 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         }
 
         return $volumes;
+    }
+
+    /**
+     * Check if carrier has shipping tracking option available
+     *
+     * @return bool
+     */
+    public function isTrackingAvailable()
+    {
+        return true;
+    }
+
+    public function getTrackingInfo(string $trackingNumber): array
+    {
+        return ['number' => $trackingNumber];
     }
 }

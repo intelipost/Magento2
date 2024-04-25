@@ -10,6 +10,8 @@ namespace Intelipost\Shipping\Plugin\Tracking;
 
 use Intelipost\Shipping\Helper\Data;
 use Magento\Shipping\Model\InfoFactory;
+use Magento\Shipping\Model\Tracking\Result;
+use Magento\Shipping\Model\Tracking\Result\AbstractResult;
 
 class Popup
 {
@@ -45,18 +47,32 @@ class Popup
             $hash = $subject->getRequest()->getParam('hash');
             $shippingInfoModel = $this->shippingInfoFactory->create()->loadByHash($hash);
             $trackingInfo = $shippingInfoModel->getTrackingInfo();
-            if (count($trackingInfo) == 1) {
-                $tracking = reset($trackingInfo);
-                if (isset($tracking[0]) && count($tracking) == 1) {
-                    if (filter_var($tracking[0]['number'], FILTER_VALIDATE_URL) !== false) {
-                        return $subject->getResponse()->setRedirect($tracking[0]['number']);
-                    }
+
+            $trackingNumber = $this->getTrackingNumber($trackingInfo);
+            if ($trackingNumber) {
+                if (filter_var($trackingNumber, FILTER_VALIDATE_URL) !== false) {
+                    $subject->getResponse()->setRedirect($trackingNumber);
+                    return;
                 }
             }
         } catch (\Exception $e) {
             $this->helper->getLogger()->error($e->getMessage());
         }
 
-        return $proceed();
+        $proceed();
+    }
+
+    protected function getTrackingNumber(array $trackingInfo): string
+    {
+        $trackingNumber = '';
+        foreach ($trackingInfo as $tracking) {
+            if (isset($tracking[0])) {
+                $trackingItem = $tracking[0];
+                if (is_array($trackingItem)) {
+                    return $trackingItem['number'];
+                }
+            }
+        }
+        return $trackingNumber;
     }
 }
