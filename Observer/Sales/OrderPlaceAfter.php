@@ -16,6 +16,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Session\SessionManager;
 use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Sales\Model\Order;
 use Magento\Store\Model\StoreManagerInterface;
 
 class OrderPlaceAfter implements ObserverInterface
@@ -58,8 +59,7 @@ class OrderPlaceAfter implements ObserverInterface
         ShipmentFactory $shipmentFactory,
         ShipmentResourceModel $shipmentResource,
         StoreManagerInterface $storeManager
-    )
-    {
+    ) {
         $this->intelipostQuote = $intelipostQuote;
         $this->helper = $intelipostHelper;
         $this->sessionManager = $sessionManager;
@@ -75,30 +75,14 @@ class OrderPlaceAfter implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
-            /** @var \Magento\Sales\Model\Order $order */
+            /** @var Order $order */
             $order = $observer->getOrder();
 
             if (!$order->getIsVirtual() && $order->getShippingMethod()) {
-                $resultQuotes = [];
-                if (strpos($order->getShippingMethod(), '_') !== false) {
-                    $deliveryMethodId = explode("_", $order->getShippingMethod());
-                    if (count($deliveryMethodId) < 3) {
-                        return;
-                    }
+                $resultQuotes = $this->getResultQuotes($order);
 
-                    $deliveryMethodId = $deliveryMethodId[count($deliveryMethodId) - 2] .
-                        "_" .
-                        $deliveryMethodId[count($deliveryMethodId) - 1];
-
-                    foreach ($this->helper->getResultQuotes() as $quote) {
-                        if ($quote->getDeliveryMethodId() == $deliveryMethodId && $quote->getOrderId() == null) {
-                            $resultQuotes[] = $quote;
-                        }
-                    }
-
-                    if (empty($resultQuotes) && count($resultQuotes) == 0) {
-                        return;
-                    }
+                if (empty($resultQuotes)) {
+                    return;
                 }
 
                 $stored = [];
@@ -200,7 +184,7 @@ class OrderPlaceAfter implements ObserverInterface
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function setShipmentOrder($resultJson)
+    public function setShipmentOrder($resultJson): void
     {
         $orderIndex = 1;
         $orderNumber = $resultJson['order_id'];
@@ -236,7 +220,6 @@ class OrderPlaceAfter implements ObserverInterface
             }
 
             $orderIndex++;
-
             $this->shipmentResource->save($shipment);
         }
     }
@@ -269,5 +252,29 @@ class OrderPlaceAfter implements ObserverInterface
             }
         }
         return $productsArray;
+    }
+
+    /**
+     * @param Order $order
+     * @return array
+     */
+    public function getResultQuotes(Order $order): array
+    {
+        $resultQuotes = [];
+        if (strpos($order->getShippingMethod(), 'intelipost') !== false) {
+            $deliveryMethodId = explode("_", $order->getShippingMethod());
+            if (count($deliveryMethodId) == 3) {
+                $deliveryMethodId = $deliveryMethodId[count($deliveryMethodId) - 2] .
+                    "_" .
+                    $deliveryMethodId[count($deliveryMethodId) - 1];
+
+                foreach ($this->helper->getResultQuotes() as $quote) {
+                    if ($quote->getDeliveryMethodId() == $deliveryMethodId && $quote->getOrderId() == null) {
+                        $resultQuotes[] = $quote;
+                    }
+                }
+            }
+        }
+        return $resultQuotes;
     }
 }

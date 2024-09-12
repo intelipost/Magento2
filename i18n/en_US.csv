@@ -185,3 +185,7 @@ Description,Description
 "Number","Number"
 "Complement","Complement"
 "District","District"
+"Send items to Intelipost by Multi Shipment","Send items to Intelipost by Multi Shipment"
+"Send warehouse code to Intelipost","Send warehouse code to Intelipost"
+"When the order has the source attributed, it'll send it to Intelipost","When the order has the source attributed, it'll send it to Intelipost"
+"The order must have shipment in order to allow the module get the source from the order","The order must have shipment in order to allow the module get the source from the order"
