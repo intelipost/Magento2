@@ -9,6 +9,16 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <csp>
+            <policies>
+                <storefront_checkout_index_index>
+                    <scripts>
+                        <inline>1</inline>
+                        <event_handlers>1</event_handlers>
+                    </scripts>
+                </storefront_checkout_index_index>
+            </policies>
+        </csp>
         <intelipost_basic>
             <settings>
                 <api_url><![CDATA[https://api.intelipost.com.br/api/v1/]]></api_url>
