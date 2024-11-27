@@ -49,9 +49,9 @@ class ReadyForShipmentOrder
     {
         $enable = $this->helper->getConfig('enable_cron', 'order_status', 'intelipost_push');
         $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
-        $status = $this->helper->getConfig('status_to_ready_to_ship', 'order_status', 'intelipost_push');
+        $status = (string) $this->helper->getConfig('status_to_ready_to_ship', 'order_status', 'intelipost_push');
 
-        if ($enable) {
+        if ($enable && $status) {
             $statuses = explode(',', $status);
             /** @var \Intelipost\Shipping\Model\ResourceModel\Shipment\Collection $collection */
             $collection = $this->collectionFactory->create();

@@ -290,7 +290,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
      * @param $postData
      * @return array
      */
-    public function getProductData($request, $postData)
+    public function getProductData($request, $postData): array
     {
         // Default Config
         $heightAttribute = $this->getConfigData('height_attribute');
@@ -395,7 +395,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
      * @param $qtdVolumes
      * @return array
      */
-    public function setProductsQuantity($qtdProducts, $qtdVolumes)
+    public function setProductsQuantity($qtdProducts, $qtdVolumes): array
     {
         $arrayVol = [];
         $result = (int) ($qtdProducts / $qtdVolumes);
@@ -416,10 +416,14 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
      * @return false|string|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getOriginZipcode($request)
+    public function getOriginZipcode($request): string
     {
         // Zipcodes
-        return $request->getOriginZipcode() ?: $this->getConfigData('source_zip');
+        $originPostCode = $request->getOriginZipcode() ?: (string) $this->getConfigData('source_zip');
+        if (!$originPostCode) {
+            $originPostCode = (string) $this->helper->getConfig('postcode', 'origin', 'shipping');
+        }
+        return $originPostCode;
     }
 
     /**
@@ -427,7 +431,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
      * @param $cartQty
      * @return array
      */
-    public function getVolumes($response, $cartQty)
+    public function getVolumes($response, $cartQty): array
     {
         $volumes = [];
         $volCount = count($response['content']['volumes']);

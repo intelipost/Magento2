@@ -17,21 +17,30 @@
             <comment>If enabled it'll send order automatically to Intelipost</comment>
             <config_path>intelipost_push/order_status/enabled</config_path>
         </field>
+        <field id="order_by_shipment" translate="label comment" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <label>Send items to Intelipost by Multi Shipment</label>
+            <config_path>intelipost_push/order_status/order_by_shipment</config_path>
+            <depends>
+                <field id="enabled">1</field>
+            </depends>
+        </field>
+        <field id="send_warehouse_code" translate="label comment" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <label>Send warehouse code to Intelipost</label>
+            <config_path>intelipost_push/order_status/send_warehouse_code</config_path>
+            <comment>When the order has the source attributed, it'll send it to Intelipost</comment>
+            <tooltip>The order must have shipment in order to allow the module get the source from the order</tooltip>
+            <depends>
+                <field id="enabled">1</field>
+            </depends>
+        </field>
         <field id="enable_cron" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <label>Send orders to Intelipost by cron</label>
             <config_path>intelipost_push/order_status/enable_cron</config_path>
             <depends>
                 <field id="enabled">1</field>
-            </depends>
-        </field>
-        <field id="order_by_shipment" translate="label comment" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
-            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-            <label>Send items to Intelipost by Shipment</label>
-            <config_path>intelipost_push/order_status/order_by_shipment</config_path>
-            <depends>
-                <field id="enabled">1</field>
-                <field id="enable_cron">1</field>
             </depends>
         </field>
         <field id="cron_frequency" translate="label" type="select" sortOrder="22" showInDefault="1" showInWebsite="0" showInStore="0">

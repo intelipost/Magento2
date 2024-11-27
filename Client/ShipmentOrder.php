@@ -8,7 +8,6 @@
 
 namespace Intelipost\Shipping\Client;
 
-use Intelipost\Shipping\Client\Intelipost;
 use Intelipost\Shipping\Client\Labels as RequestLabel;
 use Intelipost\Shipping\Helper\Api;
 use Intelipost\Shipping\Helper\Data;
@@ -16,6 +15,8 @@ use Intelipost\Shipping\Api\ShipmentRepositoryInterface;
 use Intelipost\Shipping\Model\Shipment;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Intelipost\Shipping\Model\ResourceModel\GetSourcesForOrder;
+use Magento\Sales\Model\Order;
 
 class ShipmentOrder
 {
@@ -46,6 +47,11 @@ class ShipmentOrder
     protected $requestLabel;
 
     /**
+     * @var GetSourcesForOrder
+     */
+    private $getSourcesForOrder;
+
+    /**
      * @param ShipmentOrder\Customer $customer
      * @param ShipmentOrder\Volume $volume
      * @param ShipmentOrder\Invoice $shipmentInvoice
@@ -54,7 +60,7 @@ class ShipmentOrder
      * @param ShipmentRepositoryInterface $shipment
      * @param Data $helper
      * @param RequestLabel $label
-     * @param LabelClient $labelClient
+     * GetSourceCodeByShipmentId $getSourceCodeByShipmentId
      */
     public function __construct(
         ShipmentOrder\Customer $customer,
@@ -64,7 +70,8 @@ class ShipmentOrder
         Api $helperApi,
         ShipmentRepositoryInterface $shipmentRepository,
         Data $helper,
-        RequestLabel $label
+        RequestLabel $label,
+        GetSourcesForOrder $getAllocatedSourcesForOrder
     ) {
         $this->shipmentCustomer = $customer;
         $this->shipmentVolume = $volume;
@@ -74,6 +81,7 @@ class ShipmentOrder
         $this->shipmentRepository = $shipmentRepository;
         $this->timezone = $timezone;
         $this->requestLabel = $label;
+        $this->getSourcesForOrder = $getAllocatedSourcesForOrder;
     }
 
     /**
@@ -113,17 +121,18 @@ class ShipmentOrder
             'increment_id' => $order->getIncrementId()
         ]);
 
-        $requestBody = $this->getShipment($shipment);
+        $requestBody = $this->getShipment($order, $shipment);
         $this->sendShipmentRequest($this->helper->serializeData($requestBody), $shipment);
         return $this;
     }
 
     /**
+     * @param Order $order
      * @param Shipment $shipment
      * @return \stdClass
      * @throws \Exception
      */
-    public function getShipment($shipment)
+    public function getShipment($order, $shipment)
     {
         $customerData = $this->shipmentCustomer->getInformation(
             $shipment->getData('order_entity_id'),
@@ -138,6 +147,19 @@ class ShipmentOrder
         $body->order_number = $shipment->getData('intelipost_shipment_id')
             ?: $shipment->getData('order_increment_id');
         $body->origin_zip_code = $shipment->getData('origin_zip_code');
+        $body->destination_zip_code = $shipment->getData('destination_zip_code');
+
+        $sendWarehouseCode = $this->helper->getConfig(
+            'send_warehouse_code',
+            'order_status',
+            'intelipost_push'
+        );
+        if ($sendWarehouseCode) {
+            $sourceForOrder = $this->getSourcesForOrder->execute($order->getId());
+            if (!empty($sourceForOrder)) {
+                $body->origin_warehouse_code = $sourceForOrder['source_code'];
+            }
+        }
         $body->quote_id = $shipment->getData('quote_id');
         $body->sales_order_number = $shipment->getData('increment_id');
         $body->delivery_method_id = $shipment->getData('delivery_method_id');

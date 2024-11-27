@@ -187,3 +187,7 @@ Description,Descrição
 "District","Bairro"
 "Ship to Applicable Countries","Enviar para Países Aplicáveis"
 "Ship to Specific Countries","Enviar para Países Específicos"
+"Send items to Intelipost by Multi Shipment","Enviar itens para Intelipost por Multi Envio"
+"Send warehouse code to Intelipost","Enviar código do armazém para Intelipost"
+"When the order has the source attributed, it'll send it to Intelipost","Quando o pedido tiver o atributo de origem, irá enviar para a Intelipost"
+"The order must have shipment in order to allow the module get the source from the order","O pedido deve ter um envio para permitir que o módulo pegue a origem do pedido"
