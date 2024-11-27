@@ -42,10 +42,10 @@ class CreateOrder
     public function execute()
     {
         $enable = $this->helper->getConfig('enable_cron', 'order_status', 'intelipost_push');
-        $status = $this->helper->getConfig('status_to_create', 'order_status', 'intelipost_push');
+        $status = (string) $this->helper->getConfig('status_to_create', 'order_status', 'intelipost_push');
         $byShipment = (boolean) $this->helper->getConfig('order_by_shipment', 'order_status', 'intelipost_push');
 
-        if ($enable) {
+        if ($enable && $status) {
             $statuses = explode(',', $status);
             if ($byShipment) {
                 $cond = 'main_table.intelipost_shipment_id LIKE CONCAT(\'%\', so.increment_id, \'%\')';
