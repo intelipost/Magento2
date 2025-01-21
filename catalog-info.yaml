@@ -1,0 +1,16 @@
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: Magento2
+  description: some description
+  annotations:
+    argocd/app-name: Magento2
+    github.com/project-slug: intelipost/Magento2
+    sonarqube.org/project-key: Magento2
+spec:
+  type: service
+  lifecycle: production
+  owner: devteam
+  childof: 
+    - group:tms-engineering-managers
