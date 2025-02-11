@@ -310,6 +310,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
         // Cart Sort Order: simple, bundle, configurable
         $parentSku = null;
+        $parentSpecialPrice = null;
         foreach ($request->getAllItems() as $item) {
             try {
                 $product = $this->productRepository->getById($item->getProductId());
@@ -323,6 +324,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
                 || !strcmp((string) $item->getProductType(), 'bundle')
             ) {
                 $parentSku = $product->getSku();
+                $parentSpecialPrice = $product->getSpecialPrice();
                 $cartItems[$parentSku] = $item;
                 $cartItems[$parentSku]['product'] = $product;
                 continue;
@@ -356,6 +358,9 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $weight = $item->getWeight() / $weightUnit; // always kg
 
             $productPrice = $product->getFinalPrice();
+            if(!empty($parentSpecialPrice)) {
+                $productPrice = round($productPrice * ($parentSpecialPrice/100), 2);
+            }
             if (!$productPrice) {
                 $productPrice = floatval($valueOnZero);
             }
