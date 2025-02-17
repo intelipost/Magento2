@@ -149,7 +149,7 @@ class ShipmentOrder
         $body->origin_zip_code = $shipment->getData('origin_zip_code');
         $body->destination_zip_code = $shipment->getData('destination_zip_code');
 
-        $sendWarehouseCode = $this->helper->getConfig(
+        $sendWarehouseCode = (bool) $this->helper->getConfig(
             'send_warehouse_code',
             'order_status',
             'intelipost_push'
