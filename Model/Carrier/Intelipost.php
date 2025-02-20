@@ -10,6 +10,7 @@ namespace Intelipost\Shipping\Model\Carrier;
 
 use Intelipost\Shipping\Helper\Api;
 use Intelipost\Shipping\Helper\Data;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
@@ -301,12 +302,12 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         $defaultHeight = $this->getConfigData('default_height');
         $defaultWidth = $this->getConfigData('default_width');
         $defaultLength = $this->getConfigData('default_length');
-        $valueOnZero = $this->getConfigData('value_on_zero');
+        $valueOnZero = (float) $this->getConfigData('value_on_zero');
 
         $cartWeight = 0;
         $cartAmount = 0;
         $cartQty = 0;
-        $cartItems = null;
+        $cartItems = [];
 
         // Cart Sort Order: simple, bundle, configurable
         $parentSku = null;
@@ -321,12 +322,12 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $isConfigurable = !strcmp((string) $item->getProductType(), 'configurable');
             $isBundle = !strcmp((string) $item->getProductType(), 'bundle');
 
-            if ( $isBundle || $isConfigurable ) {
+            if ($isBundle || $isConfigurable) {
                 $parentSku = $product->getSku();
                 $cartItems[$parentSku] = $item;
                 $cartItems[$parentSku]['product'] = $product;
 
-                if($isBundle) {
+                if ($isBundle) {
                     $currentDate = date('Y-m-d');
                     $fromDate = $product->getSpecialFromDate();
                     $toDate = $product->getSpecialToDate();
@@ -364,12 +365,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $length = ($lengthAttribute) ? $product->getData($lengthAttribute) : null;
             $weight = $item->getWeight() / $weightUnit; // always kg
 
-            $productPrice = $product->getFinalPrice();
-            if (!$productPrice) {
-                $productPrice = floatval($valueOnZero);
-            }else if( !empty($cartItems[$parentSku]['special_price']) ) {
-                $productPrice = round($productPrice * ($cartItems[$parentSku]['special_price']/100), 2);
-            }
+            $productPrice = $this->getProductPrice($product->getFinalPrice(), $valueOnZero, $cartItems, $parentSku);
 
             $productFinalHeight = $this->helper->haveData($height, $heightConfigurable, $defaultHeight);
             $productFinalWidth = $this->helper->haveData($width, $widthConfigurable, $defaultWidth);
@@ -482,5 +478,30 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
     public function getTrackingInfo(string $trackingNumber): array
     {
         return ['number' => $trackingNumber];
+    }
+
+    /**
+     * @param float $productPrice
+     * @param float $valueOnZero
+     * @param array $cartItems
+     * @param string|null $parentSku
+     * @return float
+     */
+    public function getProductPrice(
+        float $productPrice,
+        float $valueOnZero,
+        array $cartItems,
+        ?string $parentSku = null
+    ): float {
+
+        if (!$productPrice) {
+            return $valueOnZero;
+        }
+
+        if (!empty($cartItems[$parentSku]['special_price'])) {
+            return round($productPrice * ($cartItems[$parentSku]['special_price'] / 100), 2);
+        }
+
+        return $productPrice;
     }
 }
