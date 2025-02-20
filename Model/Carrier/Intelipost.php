@@ -310,7 +310,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
         // Cart Sort Order: simple, bundle, configurable
         $parentSku = null;
-        $parentSpecialPrice = null;
         foreach ($request->getAllItems() as $item) {
             try {
                 $product = $this->productRepository->getById($item->getProductId());
@@ -319,14 +318,22 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             }
 
             // Type
-            if (
-                !strcmp((string) $item->getProductType(), 'configurable')
-                || !strcmp((string) $item->getProductType(), 'bundle')
-            ) {
+            $isConfigurable = !strcmp((string) $item->getProductType(), 'configurable');
+            $isBundle = !strcmp((string) $item->getProductType(), 'bundle');
+
+            if ( $isBundle || $isConfigurable ) {
                 $parentSku = $product->getSku();
-                $parentSpecialPrice = $product->getSpecialPrice();
                 $cartItems[$parentSku] = $item;
                 $cartItems[$parentSku]['product'] = $product;
+
+                if($isBundle) {
+                    $currentDate = date('Y-m-d');
+                    $fromDate = $product->getSpecialFromDate();
+                    $toDate = $product->getSpecialToDate();
+                    if ((!$fromDate || $currentDate >= $fromDate) && (!$toDate || $currentDate <= $toDate)) {
+                        $cartItems[$parentSku]['special_price'] = $product->getSpecialPrice();
+                    }
+                }
                 continue;
             }
 
@@ -358,11 +365,10 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $weight = $item->getWeight() / $weightUnit; // always kg
 
             $productPrice = $product->getFinalPrice();
-            if(!empty($parentSpecialPrice)) {
-                $productPrice = round($productPrice * ($parentSpecialPrice/100), 2);
-            }
             if (!$productPrice) {
                 $productPrice = floatval($valueOnZero);
+            }else if( !empty($cartItems[$parentSku]['special_price']) ) {
+                $productPrice = round($productPrice * ($cartItems[$parentSku]['special_price']/100), 2);
             }
 
             $productFinalHeight = $this->helper->haveData($height, $heightConfigurable, $defaultHeight);
