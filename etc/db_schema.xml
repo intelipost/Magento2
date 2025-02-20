@@ -93,6 +93,7 @@
         <column xsi:type="varchar" name="delivery_method_name" length="255" comment="Delivery Method Name" />
         <column xsi:type="varchar" name="description" length="255" comment="Description" />
         <column xsi:type="varchar" name="sales_channel" length="255" comment="Sales Channel" />
+        <column xsi:type="varchar" name="source_code" length="255" default="" comment="Source Code" />
         <column xsi:type="varchar" name="provider_shipping_costs" length="255" comment="Provider Shipping Costs" />
         <column xsi:type="varchar" name="customer_shipping_costs" length="255" comment="Customer Shipping Costs" />
         <column xsi:type="varchar" name="intelipost_status" length="255" comment="Status" />

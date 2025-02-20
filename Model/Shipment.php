@@ -202,6 +202,16 @@ class Shipment extends AbstractModel implements ShipmentInterface
         $this->setData(self::SALES_CHANNEL, $salesChannel);
     }
 
+    public function getSourceCode()
+    {
+        return $this->getData(self::SOURCE_CODE);
+    }
+
+    public function setSourceCode($sourceCode)
+    {
+        $this->setData(self::SOURCE_CODE, $sourceCode);
+    }
+
     /**
      * @inheritDoc
      */
