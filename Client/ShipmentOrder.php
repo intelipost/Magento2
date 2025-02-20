@@ -149,15 +149,11 @@ class ShipmentOrder
         $body->origin_zip_code = $shipment->getData('origin_zip_code');
         $body->destination_zip_code = $shipment->getData('destination_zip_code');
 
-        $sendWarehouseCode = (bool) $this->helper->getConfig(
-            'send_warehouse_code',
-            'order_status',
-            'intelipost_push'
-        );
-        if ($sendWarehouseCode) {
-            $sourceForOrder = $this->getSourcesForOrder->execute($order->getId());
-            if (!empty($sourceForOrder)) {
-                $body->origin_warehouse_code = $sourceForOrder['source_code'];
+        if ($this->sendWarehouseCode()) {
+            $shipmentSourceCode = (string) $shipment->getData('source_code');
+            $sourceCode = $this->getSourcesForOrder->execute($order->getId(), $shipmentSourceCode);
+            if ($sourceCode) {
+                $body->origin_warehouse_code = $sourceCode;
             }
         }
         $body->quote_id = $shipment->getData('quote_id');
@@ -177,6 +173,14 @@ class ShipmentOrder
         $body->created = $created;
 
         return $body;
+    }
+
+    /**
+     * @return bool
+     */
+    public function sendWarehouseCode(): bool
+    {
+        return (bool) $this->helper->getConfig('send_warehouse_code', 'order_status', 'intelipost_push');
     }
 
     /**

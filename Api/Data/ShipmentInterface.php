@@ -20,6 +20,7 @@ interface ShipmentInterface
     const DELIVERY_METHOD_NAME = 'delivery_method_name';
     const DESCRIPTION = 'description';
     const SALES_CHANNEL = 'sales_channel';
+    const SOURCE_CODE = 'source_code';
     const PROVIDER_SHIPPING_COSTS = 'provider_shipping_costs';
     const CUSTOMER_SHIPPING_COSTS = 'customer_shipping_costs';
     const INTELIPOST_STATUS = 'intelipost_status';
@@ -158,6 +159,17 @@ interface ShipmentInterface
      * @return void
      */
     public function setSalesChannel($salesChannel);
+
+    /**
+     * @return string
+     */
+    public function getSourceCode();
+
+    /**
+     * @param $sourceCode
+     * @return void
+     */
+    public function setSourceCode($sourceCode);
 
     /**
      * @return float
