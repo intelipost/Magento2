@@ -243,7 +243,10 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $deliveryEstimateDateExactISO = $child['delivery_estimate_date_exact_iso'] ?? null;
 
             if ($deliveryEstimateDateExactISO) {
-                $child['delivery_estimate_business_days'] = date('d/m/Y', strtotime($deliveryEstimateDateExactISO));
+                $tz       = new \DateTimeZone('America/Sao_Paulo');
+                $today    = new \DateTimeImmutable('today', $tz);
+                $estimate = new \DateTimeImmutable($deliveryEstimateDateExactISO);
+                $child['delivery_estimate_business_days'] = max(1, (int) $estimate->diff($today)->format('%a'));
                 $method->setDeliveryEstimateDateExactIso($deliveryEstimateDateExactISO);
             }
 
