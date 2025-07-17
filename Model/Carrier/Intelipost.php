@@ -243,28 +243,19 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $deliveryEstimateDateExactISO = $child['delivery_estimate_date_exact_iso'] ?? null;
 
             if ($deliveryEstimateDateExactISO) {
-                $tz       = new \DateTimeZone('America/Sao_Paulo');
-                $today    = new \DateTimeImmutable('today', $tz);
-                $estimate = (new \DateTimeImmutable($deliveryEstimateDateExactISO, $tz))
-                    ->setTime(23, 59, 59);
-                $child['delivery_estimate_business_days'] = max(1, (int) $estimate->diff($today)->format('%a'));
                 $method->setDeliveryEstimateDateExactIso($deliveryEstimateDateExactISO);
             }
-
-            $child['delivery_estimate_business_days'] = ($deliveryEstimateDateExactISO)
-                ? $child['delivery_estimate_business_days']
-                : $deliveryEstimateBusinessDays;
 
             $methodTitle = $this->helper->getCustomCarrierTitle(
                 $this->_code,
                 $child['description'],
-                $child['delivery_estimate_business_days'],
+                $deliveryEstimateBusinessDays,
                 $schedulingEnabled
             );
             $methodDescription = $this->helper->getCustomCarrierTitle(
                 $this->_code,
                 $child['delivery_method_name'],
-                $child['delivery_estimate_business_days'],
+                $deliveryEstimateBusinessDays,
                 $schedulingEnabled
             );
 
@@ -272,7 +263,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
             $method->setMethodDescription($methodDescription);
             $method->setDeliveryMethodType($child['delivery_method_type']);
 
-            $child['delivery_estimate_business_days'] = $deliveryEstimateBusinessDays;
             $amount = $child['final_shipping_cost'];
             $cost = $child['provider_shipping_cost'];
 
