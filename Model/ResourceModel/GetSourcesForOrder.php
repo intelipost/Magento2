@@ -67,7 +67,7 @@ class GetSourcesForOrder
      * @param int $orderId
      * @return mixed
      */
-    public function getShipmentIds(int $orderId): mixed
+    public function getShipmentIds(int $orderId)
     {
         $salesConnection = $this->resourceConnection->getConnection('sales');
         $shipmentTableName = $this->resourceConnection->getTableName('sales_shipment', 'sales');
