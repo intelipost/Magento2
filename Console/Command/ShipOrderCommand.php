@@ -25,7 +25,7 @@ class ShipOrderCommand extends Command
      */
     public function __construct(
         ShipOrder $shipOrder,
-        string $name = null
+        ?string $name = null
     ) {
         $this->shipOrder = $shipOrder;
         parent::__construct($name);
@@ -51,7 +51,7 @@ class ShipOrderCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Starting to ship orders to Intelipost...</info>');
-        
+
         try {
             $this->shipOrder->execute();
             $output->writeln('<info>Orders shipped successfully.</info>');

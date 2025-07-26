@@ -25,7 +25,7 @@ class ReadyForShipmentOrderCommand extends Command
      */
     public function __construct(
         ReadyForShipmentOrder $readyForShipmentOrder,
-        string $name = null
+        ?string $name = null
     ) {
         $this->readyForShipmentOrder = $readyForShipmentOrder;
         parent::__construct($name);
@@ -51,7 +51,7 @@ class ReadyForShipmentOrderCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Processing orders ready for shipment...</info>');
-        
+
         try {
             $this->readyForShipmentOrder->execute();
             $output->writeln('<info>Orders processed successfully.</info>');

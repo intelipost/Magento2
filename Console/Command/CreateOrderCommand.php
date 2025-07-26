@@ -25,7 +25,7 @@ class CreateOrderCommand extends Command
      */
     public function __construct(
         CreateOrder $createOrder,
-        string $name = null
+        ?string $name = null
     ) {
         $this->createOrder = $createOrder;
         parent::__construct($name);
@@ -51,7 +51,7 @@ class CreateOrderCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Starting to create orders in Intelipost...</info>');
-        
+
         try {
             $this->createOrder->execute();
             $output->writeln('<info>Orders created successfully.</info>');

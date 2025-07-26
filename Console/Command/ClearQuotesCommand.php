@@ -25,7 +25,7 @@ class ClearQuotesCommand extends Command
      */
     public function __construct(
         ClearQuotes $clearQuotes,
-        string $name = null
+        ?string $name = null
     ) {
         $this->clearQuotes = $clearQuotes;
         parent::__construct($name);
@@ -51,7 +51,7 @@ class ClearQuotesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Starting to clear old Intelipost quotes...</info>');
-        
+
         try {
             $this->clearQuotes->execute();
             $output->writeln('<info>Old quotes cleared successfully.</info>');
