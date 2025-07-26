@@ -189,3 +189,4 @@ Description,Description
 "Send warehouse code to Intelipost","Send warehouse code to Intelipost"
 "When the order has the source attributed, it'll send it to Intelipost","When the order has the source attributed, it'll send it to Intelipost"
 "The order must have shipment in order to allow the module get the source from the order","The order must have shipment in order to allow the module get the source from the order"
+"Add New Invoice","Add New Invoice"

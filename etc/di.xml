@@ -27,6 +27,11 @@
     <preference for="Intelipost\Shipping\Api\LabelRepositoryInterface" type="Intelipost\Shipping\Model\ResourceModel\LabelRepository"/>
     <preference for="Intelipost\Shipping\Api\Data\LabelSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
 
+    <!-- NFe Import Preferences -->
+    <preference for="Intelipost\Shipping\Api\NfeImportInterface" type="Intelipost\Shipping\Model\NfeImport"/>
+    <preference for="Intelipost\Shipping\Api\Data\NfeImportItemInterface" type="Intelipost\Shipping\Model\NfeImportItem"/>
+    <preference for="Intelipost\Shipping\Api\Data\NfeImportResultInterface" type="Intelipost\Shipping\Model\NfeImportResult"/>
+
     <type name="Magento\Quote\Model\Quote\Address">
         <plugin name="intelipost_quote_address" type="Intelipost\Shipping\Plugin\Quote\Address" sortOrder="2" />
     </type>
@@ -96,6 +101,18 @@
 
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="intelipost_data_to_sales_order" type="Intelipost\Shipping\Plugin\AddDataToSaleOrder" />
+    </type>
+
+    <!-- Console Commands -->
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="intelipostClearQuotesCommand" xsi:type="object">Intelipost\Shipping\Console\Command\ClearQuotesCommand</item>
+                <item name="intelipostReadyForShipmentOrderCommand" xsi:type="object">Intelipost\Shipping\Console\Command\ReadyForShipmentOrderCommand</item>
+                <item name="intelipostShipOrderCommand" xsi:type="object">Intelipost\Shipping\Console\Command\ShipOrderCommand</item>
+                <item name="intelipostCreateOrderCommand" xsi:type="object">Intelipost\Shipping\Console\Command\CreateOrderCommand</item>
+            </argument>
+        </arguments>
     </type>
 </config>
 

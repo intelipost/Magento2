@@ -26,6 +26,23 @@ interface InvoiceInterface
     const CFOP = 'cfop';
 
     /**
+     * Get entity ID
+     *
+     * @return int|null
+     * @api
+     */
+    public function getId();
+
+    /**
+     * Set entity ID
+     *
+     * @param int $id
+     * @return void
+     * @api
+     */
+    public function setId($id);
+
+    /**
      * Get invoice number
      *
      * @return int|null

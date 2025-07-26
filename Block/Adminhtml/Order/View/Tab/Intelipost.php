@@ -61,6 +61,16 @@ class Intelipost extends Template implements TabInterface
     }
 
     /**
+     * XML Import URL getter
+     *
+     * @return string
+     */
+    public function getXmlImportUrl()
+    {
+        return $this->getUrl('intelipost/invoices/importxml');
+    }
+
+    /**
      * Remove NFE url
      *
      * @param $invoiceId
