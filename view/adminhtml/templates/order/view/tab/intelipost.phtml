@@ -13,171 +13,282 @@
 $invoiceCollection = $block->getInvoicesCollection();
 ?>
 <div id="order_invoice_block">
-    <?php if ($invoiceCollection->getSize() == 0): ?>
-        <section class="admin__page-section edit-order-invoices">
-            <div class="order-invoice-block" id="invoice_form">
-                <form id="submit_invoice_form" method="POST" action="<?= $block->getSubmitUrl() ?>" data-mage-init='{"validation": {}}'>
-                    <input type="hidden" name="form_key" value="<?= $block->getFormKey() ?>" />
-                    <input type="hidden" name="order_increment_id" value="<?= $block->getOrder()->getIncrementId() ?>" />
-                    <input type="hidden" name="order_id" value="<?= $block->getOrder()->getId() ?>" />
-
-                    <div class="admin__field">
-                        <label for="number" class="admin__field-label">
-                            <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Number')) ?>
-                        </label>
-                        <div class="admin__field-control">
-                            <input type="text" id="intelipost-invoice-number" name="number" maxlength="9"
-                                   placeholder="<?= $block->escapeHtml(__('Invoice Number with up to 9 digits')) ?>"
-                                   class="admin__control-text required-entry validate-integer validate-greater-than-zero"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="admin__field">
-                        <label for="series" class="admin__field-label">
-                            <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Series')) ?>
-                        </label>
-                        <div class="admin__field-control">
-                            <input type="text" id="intelipost-invoice-series" name="series" maxlength="3"
-                                   placeholder="<?= $block->escapeHtml(__('Invoice Series with up to 3 digits')) ?>"
-                                   class="admin__control-text required-entry validate-integer validate-greater-than-zero"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="admin__field">
-                        <label for="key" class="admin__field-label">
-                            <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Key')) ?>
-                        </label>
-                        <div class="admin__field-control">
-                            <input type="text" id="intelipost-invoice-key" name="invoice_key"
-                                   placeholder="<?= $block->escapeHtml(__('Invoice Key with 44 digits')) ?>"
-                                   maxlength="44"
-                                   class="admin__control-text required-entry validate-integer validate-greater-than-zero"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="admin__field">
-                        <label for="date" class="admin__field-label">
-                            <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Date')) ?>
-                        </label>
-                        <div class="admin__field-control">
-                            <input type="text" id="intelipost-invoice-date" name="date"
-                                   class="admin__control-text required-entry"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="admin__field">
-                        <label for="products_value" class="admin__field-label">
-                            <span class="required">*</span> <?= $block->escapeHtml(__('Products Value')) ?>
-                        </label>
-                        <div class="admin__field-control">
-                            <input type="text" id="intelipost-invoice-products-value" name="products_value"
-                                   placeholder="<?= $block->escapeHtml(__('Total products; you should use '.' as decimal separator, e.g. 1567.19')) ?>"
-                                   class="admin__control-text required-entry validate-number"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="admin__field">
-                        <label for="total_value" class="admin__field-label">
-                            <span class="required">*</span> <?= $block->escapeHtml(__('Total Value')) ?>
-                        </label>
-                        <div class="admin__field-control">
-                            <input type="text" id="intelipost-invoice-total-value"
-                                   name="total_value"
-                                   placeholder="<?= $block->escapeHtml(__('Total order; you should use '.' as decimal separator, e.g. 2543.19')) ?>"
-                                   class="admin__control-text required-entry validate-number"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="admin__field">
-                        <label for="cfop" class="admin__field-label">
-                            <?= $block->escapeHtml(__('CFOP')) ?>
-                        </label>
-                        <div class="admin__field-control">
-                            <input type="text" id="cfop" name="intelipost-invoice-cfop" class="admin__control-text validate-number validate-greater-than-zero" maxlength="4"/>
-                        </div>
-                    </div>
-
-                    <div class="order-invoice-actions">
-                        <button type="submit" title="<?= __('Send') ?>" type="button" class="action-default scalable action-save action-secondary">
-                            <span><?= __('Send') ?></span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-        <script>
-            require([
-                'jquery',
-                'mage/translate',
-                'mage/calendar'
-            ], function ($, $t) {
-                $('#intelipost-invoice-date').calendar({
-                    changeMonth: true,
-                    changeYear: true,
-                    showButtonPanel: true,
-                    currentText: $t('Go Today'),
-                    closeText: $t('Close'),
-                    showWeek: false,
-                    showOn: "both",
-                    showsTime: false,
-                    dateFormat: 'dd/mm/yy'
-                });
-            })
-        </script>
-    <?php else: ?>
-        <section  class="admin__page-section edit-order-invoices-grid">
-            <table class="data-table admin__table-primary table-invoice">
-                <thead>
+    <?php if ($invoiceCollection->getSize() > 0): ?>
+    <section  class="admin__page-section edit-order-invoices-grid">
+        <table class="data-table admin__table-primary table-invoice">
+            <thead>
+            <tr>
+                <th><?= __('Invoice Number') ?></th>
+                <th><?= __('Invoice Series') ?></th>
+                <th><?= __('Invoice Key') ?></th>
+                <th><?= __('Invoice Date') ?></th>
+                <th><?= __('Products Value') ?></th>
+                <th><?= __('Total Value') ?></th>
+                <th><?= __('CFOP') ?></th>
+                <th><?= __('Actions') ?></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            /** @var \Intelipost\Shipping\Model\Invoice $invoice */
+            foreach($block->getInvoicesCollection() as $invoice): ?>
                 <tr>
-                    <th><?= __('Invoice Number') ?></th>
-                    <th><?= __('Invoice Series') ?></th>
-                    <th><?= __('Invoice Key') ?></th>
-                    <th><?= __('Invoice Date') ?></th>
-                    <th><?= __('Products Value') ?></th>
-                    <th><?= __('Total Value') ?></th>
-                    <th><?= __('CFOP') ?></th>
-                    <th><?= __('Actions') ?></th>
+                    <td><?= $invoice->getNumber() ?></td>
+                    <td><?= $invoice->getSeries() ?></td>
+                    <td><?= $invoice->getKey() ?></td>
+                    <td><?= $invoice->getDate() ?></td>
+                    <td><?= $invoice->getProductsValue() ?></td>
+                    <td><?= $invoice->getTotalValue() ?></td>
+                    <td><?= $invoice->getCfop() ?></td>
+                    <td>
+                        <button type="button" onclick="intelipostAlerter('<?= $block->getDeleteUrl($invoice->getId()) ?>')" class="button">
+                            <?= __('Delete') ?>
+                        </button>
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                <?php
-                /** @var \Intelipost\Shipping\Model\Invoice $invoice */
-                foreach($block->getInvoicesCollection() as $invoice): ?>
-                    <tr>
-                        <td><?= $invoice->getNumber() ?></td>
-                        <td><?= $invoice->getSeries() ?></td>
-                        <td><?= $invoice->getKey() ?></td>
-                        <td><?= $invoice->getDate() ?></td>
-                        <td><?= $invoice->getProductsValue() ?></td>
-                        <td><?= $invoice->getTotalValue() ?></td>
-                        <td><?= $invoice->getCfop() ?></td>
-                        <td>
-                            <button type="button" onclick="intelipostAlerter('<?= $block->getDeleteUrl($invoice->getId()) ?>')" class="button">
-                                <?= __('Delete') ?>
-                            </button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-        </section>
-        <script>
-            function intelipostAlerter(url) {
-                let yes = confirm("<?= __('Are you sure?') ?>");
-                if(yes) {
-                    submitAndReloadArea($('order_invoice_block').parentNode, url);
-                }
-            }
-        </script>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </section>
     <?php endif ?>
 
-    <?= $block->getWebhooksBlock() ?>
+    <h2 class="admin__page-section-title"><?= $block->escapeHtml(__('Add New Invoice')) ?></h2>
+    <section class="admin__page-section edit-order-invoices">
+        <div class="order-invoice-block" id="invoice_form">
+            <form id="submit_invoice_form" method="POST" action="<?= $block->getSubmitUrl() ?>" data-mage-init='{"validation": {}}'>
+                <input type="hidden" name="form_key" value="<?= $block->getFormKey() ?>" />
+                <input type="hidden" name="order_increment_id" value="<?= $block->getOrder()->getIncrementId() ?>" />
+                <input type="hidden" name="order_id" value="<?= $block->getOrder()->getId() ?>" />
 
+                <div class="admin__field">
+                    <label for="number" class="admin__field-label">
+                        <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Number')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="intelipost-invoice-number" name="number" maxlength="9"
+                               placeholder="<?= $block->escapeHtml(__('Invoice Number with up to 9 digits')) ?>"
+                               class="admin__control-text required-entry validate-integer validate-greater-than-zero"
+                        />
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="series" class="admin__field-label">
+                        <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Series')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="intelipost-invoice-series" name="series" maxlength="3"
+                               placeholder="<?= $block->escapeHtml(__('Invoice Series with up to 3 digits')) ?>"
+                               class="admin__control-text required-entry validate-integer validate-greater-than-zero"
+                        />
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="key" class="admin__field-label">
+                        <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Key')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="intelipost-invoice-key" name="invoice_key"
+                               placeholder="<?= $block->escapeHtml(__('Invoice Key with 44 digits')) ?>"
+                               maxlength="44"
+                               class="admin__control-text required-entry validate-integer validate-greater-than-zero"
+                        />
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="date" class="admin__field-label">
+                        <span class="required">*</span> <?= $block->escapeHtml(__('Invoice Date')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="intelipost-invoice-date" name="date"
+                               class="admin__control-text required-entry"
+                        />
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="products_value" class="admin__field-label">
+                        <span class="required">*</span> <?= $block->escapeHtml(__('Products Value')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="intelipost-invoice-products-value" name="products_value"
+                               placeholder="<?= $block->escapeHtml(__('Total products; you should use '.' as decimal separator, e.g. 1567.19')) ?>"
+                               class="admin__control-text required-entry validate-number"
+                        />
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="total_value" class="admin__field-label">
+                        <span class="required">*</span> <?= $block->escapeHtml(__('Total Value')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="intelipost-invoice-total-value"
+                               name="total_value"
+                               placeholder="<?= $block->escapeHtml(__('Total order; you should use '.' as decimal separator, e.g. 2543.19')) ?>"
+                               class="admin__control-text required-entry validate-number"
+                        />
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="cfop" class="admin__field-label">
+                        <?= $block->escapeHtml(__('CFOP')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="cfop" name="intelipost-invoice-cfop" class="admin__control-text validate-number validate-greater-than-zero" maxlength="4"/>
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="nfe_xml" class="admin__field-label">
+                        <?= $block->escapeHtml(__('Or paste NFe XML')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <textarea id="nfe-xml-content" name="nfe_xml"
+                                  placeholder="<?= $block->escapeHtml(__('Paste the NFe XML content here (optional)')) ?>"
+                                  class="admin__control-textarea"
+                                  rows="10"
+                                  style="width: 100%;"></textarea>
+                    </div>
+                    <div class="admin__field-note">
+                        <?= $block->escapeHtml(__('If you paste an NFe XML, it will extract the invoice data automatically and override the fields above.')) ?>
+                    </div>
+                </div>
+
+                <div class="order-invoice-actions">
+                    <button type="submit" title="<?= __('Send') ?>" type="button" class="action-default scalable action-save action-secondary">
+                        <span><?= __('Send') ?></span>
+                    </button>
+                    <button type="button" id="import-xml-btn" title="<?= __('Import from XML') ?>" class="action-default scalable action-secondary" style="margin-left: 10px;">
+                        <span><?= __('Import from XML') ?></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+        require([
+            'jquery',
+            'mage/translate',
+            'mage/calendar',
+            'Magento_Ui/js/modal/alert',
+            'jquery/ui',
+            'mage/backend/notification'
+        ], function ($, $t, calendar, alert) {
+            $('#intelipost-invoice-date').calendar({
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                currentText: $t('Go Today'),
+                closeText: $t('Close'),
+                showWeek: false,
+                showOn: "both",
+                showsTime: false,
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $('#import-xml-btn').on('click', function(e) {
+                e.preventDefault();
+
+                var xmlContent = $('#nfe-xml-content').val();
+                if (!xmlContent.trim()) {
+                    alert({
+                        title: $t('Error'),
+                        content: $t('Please paste the NFe XML content first.')
+                    });
+                    return;
+                }
+
+                // Show loading
+                $('body').trigger('processStart');
+
+                $.ajax({
+                    url: '<?= $block->getXmlImportUrl() ?>',
+                    type: 'POST',
+                    data: {
+                        form_key: '<?= $block->getFormKey() ?>',
+                        xml_content: xmlContent,
+                        order_id: '<?= $block->getOrder()->getId() ?>'
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        $('body').trigger('processStop');
+
+                        if (response.success) {
+                            // Fill the form fields with extracted data
+                            $('#intelipost-invoice-number').val(response.data.number || '');
+                            $('#intelipost-invoice-series').val(response.data.series || '');
+                            $('#intelipost-invoice-key').val(response.data.key || '');
+                            $('#intelipost-invoice-date').val(response.data.date || '');
+                            $('#intelipost-invoice-products-value').val(response.data.products_value || '');
+                            $('#intelipost-invoice-total-value').val(response.data.total_value || '');
+                            $('#cfop').val(response.data.cfop || '');
+
+                            alert({
+                                title: $t('Success'),
+                                content: $t('NFe data imported successfully. Please review the fields and click Send.')
+                            });
+                        } else {
+                            alert({
+                                title: $t('Error'),
+                                content: response.message || $t('Error importing NFe XML.')
+                            });
+                        }
+                    },
+                    error: function() {
+                        $('body').trigger('processStop');
+                        alert({
+                            title: $t('Error'),
+                            content: $t('An error occurred while importing the NFe XML.')
+                        });
+                    }
+                });
+            });
+            window.intelipostAlerter = function(url) {
+                let yes = confirm("<?= __('Are you sure?') ?>");
+                if(yes) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            form_key: '<?= $block->getFormKey() ?>'
+                        },
+                        dataType: 'json',
+                        showLoader: true,
+                        success: function(response) {
+                            if (response.success) {
+                                alert({
+                                    title: '<?= __('Success') ?>',
+                                    content: response.message,
+                                    actions: {
+                                        always: function() {
+                                            // Reload the page to refresh all data
+                                            location.reload();
+                                        }
+                                    }
+                                });
+                            } else {
+                                alert({
+                                    title: '<?= __('Error') ?>',
+                                    content: response.message || '<?= __('Error deleting invoice') ?>'
+                                });
+                            }
+                        },
+                        error: function() {
+                            alert({
+                                title: '<?= __('Error') ?>',
+                                content: '<?= __('An error occurred while deleting the invoice.') ?>'
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+
+    <?= $block->getWebhooksBlock() ?>
     <?= $block->getLabelsBlock() ?>
 </div>

@@ -62,25 +62,30 @@ class Delete extends Action implements HttpPostActionInterface
     public function execute()
     {
         $invoiceId = $this->getRequest()->getParam('invoice_id');
+        $resultJson = $this->resultJsonFactory->create();
 
         if($invoiceId) {
             try {
                 $this->invoiceRepository->deleteById($invoiceId);
-
-                $resultPageFactory = $this->layoutFactory->create();
-                $html = $resultPageFactory->getLayout()->createBlock('Intelipost\Shipping\Block\Adminhtml\Order\View\Tab\Intelipost')->toHtml();
-
-                $resultRaw = $this->rawFactory->create();
-                $resultRaw->setContents($html);
-                return $resultRaw;
+                
+                // Return success response that will trigger a page reload
+                $resultJson->setData([
+                    'success' => true, 
+                    'message' => __('Invoice deleted successfully.'),
+                    'reload' => true
+                ]);
+                return $resultJson;
             } catch (\Exception $e) {
                 $this->helper->getLogger()->critical($e->getMessage());
+                $resultJson->setData([
+                    'error' => true, 
+                    'message' => __('Error deleting invoice: %1', $e->getMessage())
+                ]);
+                return $resultJson;
             }
         }
 
-        $resultJson = $this->resultJsonFactory->create();
-        $resultJson->setData(['error' => true, 'message' => __('It was not possible to remove the item')]);
+        $resultJson->setData(['error' => true, 'message' => __('Invoice ID not provided.')]);
         return $resultJson;
-
     }
 }

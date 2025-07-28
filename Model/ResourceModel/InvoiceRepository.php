@@ -71,7 +71,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         InvoiceInterface $invoice
     ) {
         try {
-            $invoice = $this->resource->save($invoice);
+            $this->resource->save($invoice);
         } catch (\Exception $exception) {
             throw new CouldNotSaveException(__(
                 'Could not save the Item: %1',

@@ -39,5 +39,25 @@
             <resource ref="Intelipost_Shipping::label" />
         </resources>
     </route>
+
+    <!-- NFe Import endpoints -->
+    <route url="/V1/intelipost/nfe/import" method="POST">
+        <service class="Intelipost\Shipping\Api\NfeImportInterface" method="importNfeXml" />
+        <resources>
+            <resource ref="Intelipost_Shipping::invoice" />
+        </resources>
+    </route>
+    <route url="/V1/intelipost/nfe/import-multiple" method="POST">
+        <service class="Intelipost\Shipping\Api\NfeImportInterface" method="importMultipleNfeXml" />
+        <resources>
+            <resource ref="Intelipost_Shipping::invoice" />
+        </resources>
+    </route>
+    <route url="/V1/intelipost/nfe/validate" method="POST">
+        <service class="Intelipost\Shipping\Api\NfeImportInterface" method="validateNfeXml" />
+        <resources>
+            <resource ref="Intelipost_Shipping::invoice" />
+        </resources>
+    </route>
 </routes>
 

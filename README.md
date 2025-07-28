@@ -150,6 +150,58 @@ curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/invoices?searchCri
 
 - "GET" - /V1/intelipost/invoices/:id (Uma única Invoice)
 
+## NFe Import API
+
+O módulo agora suporta importação de NFe (Nota Fiscal Eletrônica) via API. As seguintes endpoints estão disponíveis:
+
+### Importar NFe Individual
+
+- "POST" - /V1/intelipost/nfe/import
+- Importa uma única NFe XML
+- Body:
+```json
+{
+  "xmlContent": "base64_encoded_xml_content",
+  "orderIncrementId": "000000001" // opcional
+}
+```
+
+### Importar Múltiplas NFes
+
+- "POST" - /V1/intelipost/nfe/import-multiple
+- Importa múltiplas NFes de uma vez
+- Body:
+```json
+{
+  "items": [
+    {
+      "xmlContent": "base64_encoded_xml_content",
+      "orderIncrementId": "000000001" // opcional
+    },
+    {
+      "xmlContent": "base64_encoded_xml_content",
+      "orderIncrementId": "000000002" // opcional
+    }
+  ]
+}
+```
+
+### Validar NFe XML
+
+- "POST" - /V1/intelipost/nfe/validate
+- Valida se o XML da NFe está correto sem importar
+- Body:
+```json
+{
+  "xmlContent": "base64_encoded_xml_content"
+}
+```
+
+**Observações:**
+- O conteúdo XML deve ser enviado em formato base64
+- Se o orderIncrementId não for fornecido, o sistema tentará extraí-lo do XML
+- As NFes importadas são automaticamente enviadas para a API da Intelipost se houver um envio associado ao pedido
+
 
 ## Labels
 - "GET" - /V1/intelipost/labels (Listar Etiquetas)
@@ -158,6 +210,37 @@ curl --location -g --request GET 'URL_LOJA/rest/V1/intelipost/labels?searchCrite
 --header 'Authorization: Bearer TOKEN_API'
 ```
 - "GET" - /V1/intelipost/labels/:id
+
+
+## Comandos Console
+
+O módulo fornece comandos de console para executar manualmente as tarefas agendadas (cron jobs):
+
+### Limpar Cotações Antigas
+```bash
+php bin/magento intelipost:quotes:clear
+```
+Remove cotações antigas do banco de dados conforme configurado no sistema.
+
+### Processar Pedidos Prontos para Envio
+```bash
+php bin/magento intelipost:order:ready-for-shipment
+```
+Processa pedidos que estão prontos para serem enviados para a Intelipost.
+
+### Enviar Pedidos
+```bash
+php bin/magento intelipost:order:ship
+```
+Envia pedidos para processamento na Intelipost.
+
+### Criar Pedidos
+```bash
+php bin/magento intelipost:order:create
+```
+Cria novos pedidos na Intelipost baseado nos pedidos do Magento.
+
+**Observação:** Estes comandos executam as mesmas tarefas que os cron jobs configurados no módulo, permitindo execução manual quando necessário.
 
 
 ## Webhooks
