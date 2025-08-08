@@ -42,6 +42,7 @@ class NfeXmlParser
             // Handle different NFe XML structures
             $nfe = null;
             $infNfe = null;
+            $nfeProc = null;
             
             // First check if we have nfeProc structure
             if (isset($xmlArray['nfeProc'])) {
@@ -81,7 +82,7 @@ class NfeXmlParser
                 throw new LocalizedException(__('Could not find infNFe element in XML'));
             }
             
-            return $this->extractInvoiceData($infNfe, $nfe);
+            return $this->extractInvoiceData($infNfe, $nfeProc ?: $nfe, $xmlArray);
         } catch (\Exception $e) {
             throw new LocalizedException(__('Error parsing NFe XML: %1', $e->getMessage()));
         }
@@ -92,9 +93,10 @@ class NfeXmlParser
      *
      * @param array $infNfe
      * @param array $nfe
+     * @param array $xmlArray
      * @return array
      */
-    private function extractInvoiceData($infNfe, $nfe = null)
+    private function extractInvoiceData($infNfe, $nfe = null, $xmlArray = null)
     {
         $ide = $infNfe['ide'];
         $dest = $infNfe['dest'];
@@ -108,6 +110,20 @@ class NfeXmlParser
             $key = $infNfe['_attribute']['Id'];
         }
         
+        // Extract protocol number (nProt) from protNFe
+        $protocol = '';
+        if ($xmlArray && isset($xmlArray['nfeProc']['protNFe']['infProt']['nProt'])) {
+            $protocol = $xmlArray['nfeProc']['protNFe']['infProt']['nProt'];
+        } elseif ($nfe && isset($nfe['protNFe']['infProt']['nProt'])) {
+            $protocol = $nfe['protNFe']['infProt']['nProt'];
+        }
+        
+        // Extract invoice type (tpNF) and convert to string
+        $invoiceType = '';
+        if (isset($ide['tpNF'])) {
+            $invoiceType = $ide['tpNF'] == '1' ? 'SAIDA' : ($ide['tpNF'] == '0' ? 'ENTRADA' : $ide['tpNF']);
+        }
+        
         $invoiceData = [
             'series' => $ide['serie'] ?? '',
             'number' => $ide['nNF'] ?? '',
@@ -116,7 +132,9 @@ class NfeXmlParser
             'total_value' => $total['vNF'] ?? '0.00',
             'products_value' => $total['vProd'] ?? '0.00',
             'cfop' => $this->extractCfop($infNfe),
-            'order_increment_id' => $this->extractOrderNumber($infNfe)
+            'order_increment_id' => $this->extractOrderNumber($infNfe),
+            'invoice_protocol' => $protocol,
+            'invoice_type' => $invoiceType
         ];
         
         // Clean the key - remove NFe prefix if present

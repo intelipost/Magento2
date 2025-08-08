@@ -182,5 +182,37 @@ class Invoice extends AbstractModel implements InvoiceInterface
     {
         $this->setData(self::CFOP, $cfop);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getInvoiceProtocol()
+    {
+        return $this->getData(self::INVOICE_PROTOCOL);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setInvoiceProtocol($invoiceProtocol)
+    {
+        $this->setData(self::INVOICE_PROTOCOL, $invoiceProtocol);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getInvoiceType()
+    {
+        return $this->getData(self::INVOICE_TYPE);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setInvoiceType($invoiceType)
+    {
+        $this->setData(self::INVOICE_TYPE, $invoiceType);
+    }
 }
 

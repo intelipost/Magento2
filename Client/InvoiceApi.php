@@ -169,7 +169,9 @@ class InvoiceApi
                     'invoice_date' => $invoiceDateIso,
                     'invoice_total_value' => number_format((float) $invoice->getTotalValue(), 2, '.', ''),
                     'invoice_products_value' => number_format((float) $invoice->getProductsValue(), 2, '.', ''),
-                    'invoice_cfop' => (string) $invoice->getCfop()
+                    'invoice_cfop' => (string) $invoice->getCfop(),
+//                    'invoice_protocol' => (string) $invoice->getInvoiceProtocol(),
+//                    'invoice_type' => (string) $invoice->getInvoiceType()
                 ]
             ]
         ];

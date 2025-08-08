@@ -24,6 +24,8 @@ interface InvoiceInterface
     const TOTAL_VALUE = 'total_value';
     const PRODUCTS_VALUE = 'products_value';
     const CFOP = 'cfop';
+    const INVOICE_PROTOCOL = 'invoice_protocol';
+    const INVOICE_TYPE = 'invoice_type';
 
     /**
      * Get entity ID
@@ -177,5 +179,39 @@ interface InvoiceInterface
      * @api
      */
     public function setCfop($cfop);
+
+    /**
+     * Get invoice protocol
+     *
+     * @return string|null
+     * @api
+     */
+    public function getInvoiceProtocol();
+
+    /**
+     * Set invoice protocol
+     *
+     * @param string $invoiceProtocol
+     * @return void
+     * @api
+     */
+    public function setInvoiceProtocol($invoiceProtocol);
+
+    /**
+     * Get invoice type
+     *
+     * @return string|null
+     * @api
+     */
+    public function getInvoiceType();
+
+    /**
+     * Set invoice type
+     *
+     * @param string $invoiceType
+     * @return void
+     * @api
+     */
+    public function setInvoiceType($invoiceType);
 
 }
