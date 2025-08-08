@@ -102,6 +102,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
             $invoice->setNumber($nfe->getNumber());
             $invoice->setKey($nfe->getKey());
             $invoice->setDate($nfe->getDate());
+            $invoice->setIntelipostShipmentId($orderNumber);
             $invoice->setTotalValue($nfe->getTotalValue());
             $invoice->setProductsValue($nfe->getProductsValue());
             $invoice->setCfop($nfe->getCfop());
