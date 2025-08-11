@@ -25,6 +25,8 @@ $invoiceCollection = $block->getInvoicesCollection();
                 <th><?= __('Products Value') ?></th>
                 <th><?= __('Total Value') ?></th>
                 <th><?= __('CFOP') ?></th>
+                <th><?= __('Protocol') ?></th>
+                <th><?= __('Type') ?></th>
                 <th><?= __('Actions') ?></th>
             </tr>
             </thead>
@@ -40,6 +42,8 @@ $invoiceCollection = $block->getInvoicesCollection();
                     <td><?= $invoice->getProductsValue() ?></td>
                     <td><?= $invoice->getTotalValue() ?></td>
                     <td><?= $invoice->getCfop() ?></td>
+                    <td><?= $invoice->getInvoiceProtocol() ?></td>
+                    <td><?= $invoice->getInvoiceType() ?></td>
                     <td>
                         <button type="button" onclick="intelipostAlerter('<?= $block->getDeleteUrl($invoice->getId()) ?>')" class="button">
                             <?= __('Delete') ?>
@@ -138,7 +142,32 @@ $invoiceCollection = $block->getInvoicesCollection();
                         <?= $block->escapeHtml(__('CFOP')) ?>
                     </label>
                     <div class="admin__field-control">
-                        <input type="text" id="cfop" name="intelipost-invoice-cfop" class="admin__control-text validate-number validate-greater-than-zero" maxlength="4"/>
+                        <input type="text" id="cfop" name="cfop" class="admin__control-text validate-number validate-greater-than-zero" maxlength="4"/>
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="invoice_protocol" class="admin__field-label">
+                        <?= $block->escapeHtml(__('Protocol (nProt)')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="intelipost-invoice-protocol" name="invoice_protocol"
+                               placeholder="<?= $block->escapeHtml(__('Invoice Protocol Number')) ?>"
+                               class="admin__control-text"
+                        />
+                    </div>
+                </div>
+
+                <div class="admin__field">
+                    <label for="invoice_type" class="admin__field-label">
+                        <?= $block->escapeHtml(__('Type (tpNF)')) ?>
+                    </label>
+                    <div class="admin__field-control">
+                        <select id="intelipost-invoice-type" name="invoice_type" class="admin__control-select">
+                            <option value=""><?= $block->escapeHtml(__('-- Select Type --')) ?></option>
+                            <option value="ENTRADA"><?= $block->escapeHtml(__('Input')) ?></option>
+                            <option value="SAIDA"><?= $block->escapeHtml(__('Output')) ?></option>
+                        </select>
                     </div>
                 </div>
 
@@ -226,6 +255,8 @@ $invoiceCollection = $block->getInvoicesCollection();
                             $('#intelipost-invoice-products-value').val(response.data.products_value || '');
                             $('#intelipost-invoice-total-value').val(response.data.total_value || '');
                             $('#cfop').val(response.data.cfop || '');
+                            $('#intelipost-invoice-protocol').val(response.data.invoice_protocol || '');
+                            $('#intelipost-invoice-type').val(response.data.invoice_type || '');
 
                             alert({
                                 title: $t('Success'),

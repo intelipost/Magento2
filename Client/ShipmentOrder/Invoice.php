@@ -51,6 +51,8 @@ class Invoice
             $invoiceObj->invoice_total_value = $invoice->getData('total_value');
             $invoiceObj->invoice_products_value = $invoice->getData('products_value');
             $invoiceObj->invoice_cfop = $invoice->getData('cfop');
+            $invoiceObj->invoice_protocol = $invoice->getData('invoice_protocol');
+            $invoiceObj->invoice_type = $invoice->getData('invoice_type');
         }
         return $invoiceObj;
     }

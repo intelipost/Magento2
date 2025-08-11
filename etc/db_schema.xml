@@ -62,6 +62,8 @@
         <column xsi:type="decimal" name="products_value" precision="12" scale="4" nullable="false" comment="Invoice Products Value"/>
         <column xsi:type="decimal" name="total_value" precision="12" scale="4" nullable="false" comment="Invoice Total Value"/>
         <column xsi:type="varchar" name="cfop" length="255" nullable="false" comment="Invoice CFOP"/>
+        <column xsi:type="varchar" name="invoice_protocol" length="255" nullable="false" default="" comment="Invoice Protocol (nProt)"/>
+        <column xsi:type="varchar" name="invoice_type" length="255" nullable="false" default="" comment="Invoice Type (tpNF)"/>
         <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
         <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated Datetime"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
