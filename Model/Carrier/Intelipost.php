@@ -174,7 +174,7 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         }
 
         // Free Shipping
-        if ($request->getFreeShipping() === true) {
+        if ((bool) $request->getFreeShipping()) {
             $response = $this->helper->checkFreeShipping($response);
         }
 
