@@ -11,6 +11,7 @@ namespace Intelipost\Shipping\Client\ShipmentOrder;
 use Intelipost\Shipping\Helper\Data;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Helper\Image;
 
 class Volume
 {
@@ -28,19 +29,25 @@ class Volume
     /** @var ProductRepositoryInterface */
     protected $productRepository;
 
+    /** @var Image */
+    protected $imageHelper;
+
     /**
      * @param Data $helper
      * @param ScopeConfigInterface $scopeConfig
      * @param ProductRepositoryInterface $productRepository
+     * @param Image $imageHelper
      */
     public function __construct(
         Data $helper,
         ScopeConfigInterface $scopeConfig,
-        ProductRepositoryInterface $productRepository
+        ProductRepositoryInterface $productRepository,
+        Image $imageHelper
     ) {
         $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
         $this->productRepository = $productRepository;
+        $this->imageHelper = $imageHelper;
     }
 
     /**
