@@ -169,7 +169,7 @@ class ShipmentOrder
         $body->shipment_order_type = $shipment->getData('shipment_order_type');
         $body->shipment_order_sub_type = $shipment->getData('shipment_order_sub_type');
         $body->end_customer = $customerData;
-        $body->shipment_order_volume_array = $this->getVolumes($shipment);
+        $body->shipment_order_volume_array = $this->getVolumes($shipment, $order);
         $body->created = $created;
 
         return $body;
@@ -185,16 +185,18 @@ class ShipmentOrder
 
     /**
      * @param $shipment
+     * @param $order
      * @return array
      */
-    public function getVolumes($shipment)
+    public function getVolumes($shipment, $order = null)
     {
         $incrementId = $shipment->getData('intelipost_shipment_id')
             ?: $shipment->getData('order_increment_id');
         $volume = $this->shipmentInvoice->getInformation($incrementId);
         return $this->shipmentVolume->getInformation(
             $shipment->getData('volumes'),
-            $volume
+            $volume,
+            $order
         );
     }
 
