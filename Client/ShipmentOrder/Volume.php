@@ -17,6 +17,7 @@ class Volume
     const TYPE_CODE = 'BOX';
     const PRODUCTS_NATURE = 'products';
     const IS_ICMS_EXEMPT = false;
+    const CONFIG_PATH_CARRIER = 'carriers/intelipost/';
 
     /** @var Data */
     protected $helper;
@@ -130,6 +131,15 @@ class Volume
 
                 $products[] = $productData;
             } catch (\Exception $e) {
+                $this->helper->getLogger()->error(
+                    'Error processing product data for Intelipost shipment',
+                    [
+                        'product_id' => $item->getProductId(),
+                        'sku' => $item->getSku(),
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]
+                );
                 // Skip product if there's an error, but continue with others
                 continue;
             }
@@ -158,6 +168,16 @@ class Volume
                 $value = $product->getData($attributeName);
             }
         } catch (\Exception $e) {
+            $this->helper->getLogger()->warning(
+                'Error getting product dimension attribute',
+                [
+                    'product_id' => $product->getId(),
+                    'sku' => $product->getSku(),
+                    'dimension' => $dimension,
+                    'attribute_name' => $attributeName,
+                    'error' => $e->getMessage()
+                ]
+            );
             $value = 0;
         }
 
@@ -169,12 +189,12 @@ class Volume
      * Get configuration data for shipping carrier
      *
      * @param string $field
-     * @return mixed
+     * @return string
      */
     private function getConfigData($field)
     {
-        return $this->scopeConfig->getValue(
-            'carriers/intelipost/' . $field,
+        return (string) $this->scopeConfig->getValue(
+            self::CONFIG_PATH_CARRIER . $field,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
@@ -191,6 +211,14 @@ class Volume
             $imageUrl = $product->getImageUrl();
             return $imageUrl ?: null;
         } catch (\Exception $e) {
+            $this->helper->getLogger()->warning(
+                'Error getting product image URL',
+                [
+                    'product_id' => $product->getId(),
+                    'sku' => $product->getSku(),
+                    'error' => $e->getMessage()
+                ]
+            );
             return null;
         }
     }
