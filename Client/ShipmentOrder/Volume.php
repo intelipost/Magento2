@@ -8,11 +8,39 @@
 
 namespace Intelipost\Shipping\Client\ShipmentOrder;
 
+use Intelipost\Shipping\Helper\Data;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+
 class Volume
 {
     const TYPE_CODE = 'BOX';
     const PRODUCTS_NATURE = 'products';
     const IS_ICMS_EXEMPT = false;
+
+    /** @var Data */
+    protected $helper;
+
+    /** @var ScopeConfigInterface */
+    protected $scopeConfig;
+
+    /** @var ProductRepositoryInterface */
+    protected $productRepository;
+
+    /**
+     * @param Data $helper
+     * @param ScopeConfigInterface $scopeConfig
+     * @param ProductRepositoryInterface $productRepository
+     */
+    public function __construct(
+        Data $helper,
+        ScopeConfigInterface $scopeConfig,
+        ProductRepositoryInterface $productRepository
+    ) {
+        $this->helper = $helper;
+        $this->scopeConfig = $scopeConfig;
+        $this->productRepository = $productRepository;
+    }
 
     /**
      * @param $volumes
@@ -72,53 +100,83 @@ class Volume
     private function getProductsData($order)
     {
         $products = [];
+        $weightUnit = $this->getConfigData('weight_unit') == 'gr' ? 1000 : 1;
+        $defaultWeight = intval($this->getConfigData('default_weight')) / $weightUnit;
 
         foreach ($order->getAllVisibleItems() as $item) {
-            $product = $item->getProduct();
+            try {
+                // Get full product data from repository to ensure we have all attributes
+                $product = $this->productRepository->getById($item->getProductId());
 
-            $productData = [
-                'weight' => (float) $item->getWeight() ?: 0.1,
-                'width' => $this->getProductDimension($product, 'width'),
-                'height' => $this->getProductDimension($product, 'height'),
-                'length' => $this->getProductDimension($product, 'length'),
-                'price' => (float) $item->getPrice(),
-                'description' => $this->truncateString($product->getName(), 250),
-                'sku' => $item->getSku(),
-                'quantity' => (int) $item->getQtyOrdered()
-            ];
+                // Calculate weight using same logic as Carrier class
+                $itemWeight = $item->getWeight() / $weightUnit;
+                $finalWeight = $this->helper->haveData($itemWeight, $defaultWeight, 0.1);
 
-            $imageUrl = $this->getProductImageUrl($product);
-            if ($imageUrl) {
-                $productData['image_url'] = $this->truncateString($imageUrl, 250);
+                $productData = [
+                    'weight' => (float) $finalWeight,
+                    'width' => $this->getProductDimension($product, 'width'),
+                    'height' => $this->getProductDimension($product, 'height'),
+                    'length' => $this->getProductDimension($product, 'length'),
+                    'price' => (float) $item->getPrice(),
+                    'description' => $this->truncateString($product->getName(), 250),
+                    'sku' => $item->getSku(),
+                    'quantity' => (int) $item->getQtyOrdered()
+                ];
+
+                $imageUrl = $this->getProductImageUrl($product);
+                if ($imageUrl) {
+                    $productData['image_url'] = $this->truncateString($imageUrl, 250);
+                }
+
+                $products[] = $productData;
+            } catch (\Exception $e) {
+                // Skip product if there's an error, but continue with others
+                continue;
             }
-
-            $products[] = $productData;
         }
 
         return $products;
     }
 
     /**
-     * Get product dimension attribute value
+     * Get product dimension attribute value using existing configuration system
      *
      * @param \Magento\Catalog\Model\Product $product
-     * @param string $dimension
+     * @param string $dimension (height, width, length)
      * @return float
      */
     private function getProductDimension($product, $dimension)
     {
+        // Get configured attribute name for this dimension
+        $attributeName = $this->getConfigData($dimension . '_attribute');
+        $defaultValue = $this->getConfigData('default_' . $dimension);
+
         $value = 0;
 
         try {
-            $attributeValue = $product->getData($dimension);
-            if ($attributeValue) {
-                $value = (float) $attributeValue;
+            if ($attributeName) {
+                $value = $product->getData($attributeName);
             }
         } catch (\Exception $e) {
             $value = 0;
         }
 
-        return $value ?: 1;
+        // Use helper's haveData to handle fallback logic
+        return $this->helper->haveData($value, $defaultValue, 1);
+    }
+
+    /**
+     * Get configuration data for shipping carrier
+     *
+     * @param string $field
+     * @return mixed
+     */
+    private function getConfigData($field)
+    {
+        return $this->scopeConfig->getValue(
+            'carriers/intelipost/' . $field,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
