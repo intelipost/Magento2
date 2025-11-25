@@ -38,6 +38,7 @@ class Customer
             $customer->last_name = $addressModel->getData('lastname');
             $customer->email = $addressModel->getData('email');
             $customer->phone = $addressModel->getData('telephone');
+            $customer->cellphone = $addressModel->getData('telephone');
             $customer->is_company = false;
             $customer->federal_tax_payer_id = $taxVat;
             $customer->shipping_address = $addressModel->getStreetLine($this->helperData->getStreetAttribute());

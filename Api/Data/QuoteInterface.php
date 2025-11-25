@@ -32,6 +32,9 @@ interface QuoteInterface
     const DELIVERY_METHOD_TYPE = 'delivery_method_type';
     const QUOTE_VOLUME = 'quote_volume';
     const ORIGIN_ZIP_CODE = 'origin_zip_code';
+    const PUDO_ID = 'pudo_id';
+    const PUDO_EXTERNAL_ID = 'pudo_external_id';
+    const PICKUP_ADDRESS = 'pickup_address';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
@@ -310,5 +313,36 @@ interface QuoteInterface
      */
     public function setUpdatedAt($updatedAt);
 
+    /**
+     * @return int|null
+     */
+    public function getPudoId();
 
+    /**
+     * @param $pudoId
+     * @return void
+     */
+    public function setPudoId($pudoId);
+
+    /**
+     * @return string|null
+     */
+    public function getPudoExternalId();
+
+    /**
+     * @param $pudoExternalId
+     * @return void
+     */
+    public function setPudoExternalId($pudoExternalId);
+
+    /**
+     * @return string|null
+     */
+    public function getPickupAddress();
+
+    /**
+     * @param $pickupAddress
+     * @return void
+     */
+    public function setPickupAddress($pickupAddress);
 }

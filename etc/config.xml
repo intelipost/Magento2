@@ -65,6 +65,8 @@ Você receberá a notificação de quando sua encomenda estará disponível para
                 <value_on_zero><![CDATA[0.01]]></value_on_zero>
                 <calendar_only_checkout>1</calendar_only_checkout>
                 <showmethod>1</showmethod>
+                <pickup_enabled>0</pickup_enabled>
+                <pickup_title><![CDATA[{method} - {name}, {street}, {number} - {city}/{state}]]></pickup_title>
             </intelipost>
         </carriers>
     </default>

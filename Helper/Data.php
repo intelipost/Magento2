@@ -220,6 +220,32 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Format pickup point title with address placeholders
+     *
+     * @param string $description
+     * @param array $pickupAddress
+     * @return string
+     */
+    public function getCustomPickupTitle($description, $pickupAddress)
+    {
+        $template = $this->getConfig('pickup_title');
+
+        $replacements = [
+            '{method}' => $description,
+            '{name}' => $pickupAddress['name'] ?? '',
+            '{street}' => $pickupAddress['street'] ?? '',
+            '{number}' => $pickupAddress['number'] ?? '',
+            '{city}' => $pickupAddress['city'] ?? '',
+            '{state}' => $pickupAddress['state_code'] ?? '',
+            '{quarter}' => $pickupAddress['quarter'] ?? '',
+            '{zip}' => $pickupAddress['zip_code'] ?? '',
+            '{additional}' => $pickupAddress['additional'] ?? '',
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $template);
+    }
+
+    /**
      * @return string
      */
     public function getSessionId()
@@ -269,6 +295,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         if (array_key_exists('delivery_method_type', $method)) {
             $intelipostQuote->setDeliveryMethodType($method['delivery_method_type']);
+        }
+
+        if (array_key_exists('pudo_id', $method)) {
+            $intelipostQuote->setPudoId($method['pudo_id']);
+        }
+        if (array_key_exists('pudo_external_id', $method)) {
+            $intelipostQuote->setPudoExternalId($method['pudo_external_id']);
+        }
+        if (array_key_exists('pickup_address', $method)) {
+            $intelipostQuote->setPickupAddress($this->serializeData($method['pickup_address']));
         }
 
         $intelipostQuote->setAvailableSchedulingDates($method['available_scheduling_dates']);

@@ -32,6 +32,9 @@
         <column xsi:type="varchar" name="delivery_method_type" length="255" nullable="false" comment="Delivery Method Type" />
         <column xsi:type="text" name="quote_volume" nullable="false" comment="Volume Quote Information" />
         <column xsi:type="varchar" name="origin_zip_code" nullable="false" comment="Warehouse origin zip code" />
+        <column xsi:type="int" name="pudo_id" padding="10" unsigned="true" nullable="true" comment="Pickup Point ID"/>
+        <column xsi:type="varchar" name="pudo_external_id" length="255" nullable="true" comment="Pickup Point External ID"/>
+        <column xsi:type="text" name="pickup_address" nullable="true" comment="Pickup Address Data (JSON)"/>
         <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created Datetime"/>
         <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated Datetime"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">

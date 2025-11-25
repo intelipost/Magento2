@@ -103,6 +103,24 @@
             </field>
         </group>
 
+        <group id="intelipost_pickup" translate="label" sortOrder="1500" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Pick-Up Points Settings</label>
+            <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
+
+            <field id="pickup_enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Enable Pick-Up Points</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>carriers/intelipost/pickup_enabled</config_path>
+                <comment>When enabled, uses the pickup quote API endpoint to show pickup locations</comment>
+            </field>
+
+            <field id="pickup_title" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Pick-Up Point Title</label>
+                <config_path>carriers/intelipost/pickup_title</config_path>
+                <comment><![CDATA[Available placeholders: {method}, {name}, {street}, {number}, {city}, {state}, {quarter}, {additional}]]></comment>
+            </field>
+        </group>
+
         <group id="intelipost_freeshipping" translate="label" sortOrder="2000" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Free Shipping Conditions</label>
             <frontend_model>Magento\Config\Block\System\Config\Form\Fieldset</frontend_model>
