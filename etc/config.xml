@@ -67,6 +67,7 @@ Você receberá a notificação de quando sua encomenda estará disponível para
                 <showmethod>1</showmethod>
                 <pickup_enabled>0</pickup_enabled>
                 <pickup_title><![CDATA[{method} - {name}, {street}, {number} - {city}/{state}]]></pickup_title>
+                <pickup_nearest_limit>5</pickup_nearest_limit>
             </intelipost>
         </carriers>
     </default>

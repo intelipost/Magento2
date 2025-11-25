@@ -151,7 +151,12 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
         // Check if pickup is enabled and select endpoint
         $pickupEnabled = (bool) $this->getConfigData('pickup_enabled');
-        $apiEndpoint = $pickupEnabled ? Api::QUOTE_PICKUP_BY_PRODUCT : Api::QUOTE_BY_PRODUCT;
+        $apiEndpoint = Api::QUOTE_BY_PRODUCT;
+
+        if ($pickupEnabled) {
+            $nearestLimit = (int) $this->getConfigData('pickup_nearest_limit') ?: 5;
+            $apiEndpoint = Api::QUOTE_PICKUP_BY_PRODUCT . '?nearest_items_limit=' . $nearestLimit;
+        }
 
         $resultQuotes = [];
         try {

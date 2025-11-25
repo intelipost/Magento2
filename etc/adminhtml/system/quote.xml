@@ -119,6 +119,13 @@
                 <config_path>carriers/intelipost/pickup_title</config_path>
                 <comment><![CDATA[Available placeholders: {method}, {name}, {street}, {number}, {city}, {state}, {quarter}, {additional}]]></comment>
             </field>
+
+            <field id="pickup_nearest_limit" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <label>Nearest Items Limit</label>
+                <config_path>carriers/intelipost/pickup_nearest_limit</config_path>
+                <comment>Maximum number of nearest pickup points to display (default: 5)</comment>
+                <validate>validate-digits</validate>
+            </field>
         </group>
 
         <group id="intelipost_freeshipping" translate="label" sortOrder="2000" showInDefault="1" showInWebsite="1" showInStore="1">
