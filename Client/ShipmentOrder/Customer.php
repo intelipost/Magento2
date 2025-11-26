@@ -76,7 +76,7 @@ class Customer
         $shippingNumber = "s/n";
         if ($number) {
             $number = explode(',', $number);
-            if (is_numeric(trim($number[1]))) {
+            if (isset($number[1]) && is_numeric(trim($number[1]))) {
                 $shippingNumber = trim($number[1]);
             }
         }
