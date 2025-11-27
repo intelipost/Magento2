@@ -18,6 +18,7 @@ class Api
     const GET = 'GET';
 
     const QUOTE_BY_PRODUCT = 'quote_by_product/';
+    const QUOTE_PICKUP_BY_PRODUCT = 'quote/pickup_quote_by_product';
     const QUOTE_BUSINESS_DAYS = 'quote/business_days/';
     const QUOTE_AVAILABLE_SCHEDULING_DATES = 'quote/available_scheduling_dates/';
 

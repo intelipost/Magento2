@@ -38,6 +38,7 @@ class Customer
             $customer->last_name = $addressModel->getData('lastname');
             $customer->email = $addressModel->getData('email');
             $customer->phone = $addressModel->getData('telephone');
+            $customer->cellphone = $addressModel->getData('telephone');
             $customer->is_company = false;
             $customer->federal_tax_payer_id = $taxVat;
             $customer->shipping_address = $addressModel->getStreetLine($this->helperData->getStreetAttribute());
@@ -75,7 +76,7 @@ class Customer
         $shippingNumber = "s/n";
         if ($number) {
             $number = explode(',', $number);
-            if (is_numeric(trim($number[1]))) {
+            if (isset($number[1]) && is_numeric(trim($number[1]))) {
                 $shippingNumber = trim($number[1]);
             }
         }

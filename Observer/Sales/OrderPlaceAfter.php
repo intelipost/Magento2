@@ -261,17 +261,16 @@ class OrderPlaceAfter implements ObserverInterface
     public function getResultQuotes(Order $order): array
     {
         $resultQuotes = [];
-        if (strpos($order->getShippingMethod(), 'intelipost') !== false) {
-            $deliveryMethodId = explode("_", $order->getShippingMethod());
-            if (count($deliveryMethodId) == 3) {
-                $deliveryMethodId = $deliveryMethodId[count($deliveryMethodId) - 2] .
-                    "_" .
-                    $deliveryMethodId[count($deliveryMethodId) - 1];
+        $shippingMethod = $order->getShippingMethod();
 
-                foreach ($this->helper->getResultQuotes() as $quote) {
-                    if ($quote->getDeliveryMethodId() == $deliveryMethodId && $quote->getOrderId() == null) {
-                        $resultQuotes[] = $quote;
-                    }
+        if (strpos($shippingMethod, 'intelipost') !== false) {
+            // Remove carrier prefix "intelipost_" to get the method code
+            // Format: intelipost_intelipost_XXX or intelipost_intelipost_XXX_pudo_YYYYY
+            $deliveryMethodId = preg_replace('/^intelipost_/', '', $shippingMethod);
+
+            foreach ($this->helper->getResultQuotes() as $quote) {
+                if ($quote->getDeliveryMethodId() == $deliveryMethodId && $quote->getOrderId() == null) {
+                    $resultQuotes[] = $quote;
                 }
             }
         }

@@ -104,7 +104,9 @@ Body:
             "date": "",
             "total_value": "",
             "products_value": "",
-            "cfop": ""
+            "cfop": "",
+            "invoice_protocol": "",
+            "invoice_type": ""
         }
     ]
 }
@@ -118,12 +120,14 @@ Descrição dos Campos do Body da requisição:
 - total_value: é o valor total da nota fiscal e seu type é string no seguinte formato 00.00, com duas casas decimais separadas por ponto
 - products_value: é o valor total dos produtos da nota fiscal e seu type é string no seguinte formato 00.00, com duas casas decimais separadas por ponto
 - cfop: é o código da operação fiscal utilizado na emissão da nota fiscal e seu type é string
+- invoice_protocol: é o número do protocolo de autorização da NFe (nProt) e seu type é string
+- invoice_type: é o tipo da nota fiscal (tpNF) e seu type é string (ENTRADA ou SAIDA)
 
 
 *Exemplos*
 
-- "POST" - /V1/intelipost/invoices (Criar nova Invoice)  
-- "BODY"  
+- "POST" - /V1/intelipost/invoices (Criar nova Invoice)
+- "BODY"
 ```
 "{
   "invoice": [
@@ -135,10 +139,12 @@ Descrição dos Campos do Body da requisição:
       "date": "string",
       "total_value": "string",
       "products_value": "string",
-      "cfop": "string"
+      "cfop": "string",
+      "invoice_protocol": "string",
+      "invoice_type": "string"
     }
   ]
-}"   
+}"
 ```
 
 - "GET" - /V1/intelipost/invoices (Listar Invoices)

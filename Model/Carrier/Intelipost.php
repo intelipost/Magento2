@@ -149,12 +149,21 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         // Result
         $result = $this->rateResultFactory->create();
 
+        // Check if pickup is enabled and select endpoint
+        $pickupEnabled = (bool) $this->getConfigData('pickup_enabled');
+        $apiEndpoint = Api::QUOTE_BY_PRODUCT;
+
+        if ($pickupEnabled) {
+            $nearestLimit = (int) $this->getConfigData('pickup_nearest_limit') ?: 5;
+            $apiEndpoint = Api::QUOTE_PICKUP_BY_PRODUCT . '?nearest_items_limit=' . $nearestLimit;
+        }
+
         $resultQuotes = [];
         try {
             $this->logger->debug('Enviando solicitação para a API');
             $response = $this->api->quoteRequest(
                 \Intelipost\Shipping\Client\Intelipost::POST,
-                Api::QUOTE_BY_PRODUCT,
+                $apiEndpoint,
                 $postData
             );
             $intelipostQuoteId = $response['content']['id'];
@@ -189,8 +198,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
         // Methods
         foreach ($response['content']['delivery_options'] as $child) {
-            $method = $this->rateMethodFactory->create();
-
             $deliveryNote = $child['delivery_note'] ?? null;
             if (!empty($deliveryNote) && !$riskWarning) {
                 $riskWarning = true;
@@ -210,69 +217,91 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
                 }
             }
 
-            $method->setScheduled(false);
+            // Check if this is a pickup option with addresses
+            $pickupAddresses = $child['pickup_addresses'] ?? [];
+            $deliveryMethodType = $child['delivery_method_type'] ?? '';
+            $isPickup = $deliveryMethodType === 'PICKUP' && !empty($pickupAddresses);
 
-            // Scheduling
-            $child['available_scheduling_dates'] = null;
-            $schedulingEnabled = $child['scheduling_enabled'] ?? false;
+            if ($isPickup) {
+                // Create one shipping method per pickup address
+                foreach ($pickupAddresses as $pickupAddress) {
+                    $pickupMethod = $this->createPickupMethod(
+                        $child,
+                        $pickupAddress,
+                        $intelipostQuoteId,
+                        $postData,
+                        $volumes,
+                        $resultQuotes
+                    );
+                    $result->append($pickupMethod);
+                }
+            } else {
+                // Standard delivery method processing
+                $method = $this->rateMethodFactory->create();
+                $method->setScheduled(false);
 
-            if ($schedulingEnabled && $pageName) {
-                if ($calendarOnlyCheckout && strcmp($pageName, 'checkout')) {
-                    continue;
+                // Scheduling
+                $child['available_scheduling_dates'] = null;
+                $schedulingEnabled = $child['scheduling_enabled'] ?? false;
+
+                if ($schedulingEnabled && $pageName) {
+                    if ($calendarOnlyCheckout && strcmp($pageName, 'checkout')) {
+                        continue;
+                    }
+
+                    $schedulingResponse = $this->api->getAvailableSchedulingDates(
+                        $originZipcode,
+                        $destPostcode,
+                        $child['delivery_method_id']
+                    );
+
+                    $availableBusinessDays = $schedulingResponse['content']['available_business_days'];
+                    $child['available_scheduling_dates'] = $this->helper->serializeData($availableBusinessDays);
                 }
 
-                $response = $this->api->getAvailableSchedulingDates(
-                    $originZipcode,
-                    $destPostcode,
-                    $child['delivery_method_id']
+                // Data
+                $deliveryMethodId = $child['delivery_method_id'];
+                $child['delivery_method_id'] = $this->_code . '_' . $deliveryMethodId;
+
+                $method->setCarrier($this->_code);
+                $method->setCarrierTitle((string) $this->getConfigData('title'));
+                $method->setMethod($child['delivery_method_id']);
+
+                $deliveryEstimateBusinessDays = $child['delivery_estimate_business_days'] ?? null;
+                $deliveryEstimateDateExactISO = $child['delivery_estimate_date_exact_iso'] ?? null;
+
+                if ($deliveryEstimateDateExactISO) {
+                    $method->setDeliveryEstimateDateExactIso($deliveryEstimateDateExactISO);
+                }
+
+                $methodTitle = $this->helper->getCustomCarrierTitle(
+                    $this->_code,
+                    $child['description'],
+                    $deliveryEstimateBusinessDays,
+                    $schedulingEnabled
+                );
+                $methodDescription = $this->helper->getCustomCarrierTitle(
+                    $this->_code,
+                    $child['delivery_method_name'],
+                    $deliveryEstimateBusinessDays,
+                    $schedulingEnabled
                 );
 
-                $availableBusinessDays = $response['content']['available_business_days'];
-                $child['available_scheduling_dates'] = $this->helper->serializeData($availableBusinessDays);
+                $method->setMethodTitle($methodTitle);
+                $method->setMethodDescription($methodDescription);
+                $method->setDeliveryMethodType($child['delivery_method_type']);
+
+                $amount = $child['final_shipping_cost'];
+                $cost = $child['provider_shipping_cost'];
+
+                $method->setPrice($amount);
+                $method->setCost($cost);
+
+                // Save
+                $resultQuotes[] = $this->helper->saveQuote($this->_code, $intelipostQuoteId, $child, $postData, $volumes);
+
+                $result->append($method);
             }
-
-            // Data
-            $deliveryMethodId = $child['delivery_method_id'];
-            $child['delivery_method_id'] = $this->_code . '_' . $deliveryMethodId;
-
-            $method->setCarrier($this->_code);
-            $method->setCarrierTitle((string) $this->getConfigData('title'));
-            $method->setMethod($child['delivery_method_id']);
-
-            $deliveryEstimateBusinessDays = $child['delivery_estimate_business_days'] ?? null;
-            $deliveryEstimateDateExactISO = $child['delivery_estimate_date_exact_iso'] ?? null;
-
-            if ($deliveryEstimateDateExactISO) {
-                $method->setDeliveryEstimateDateExactIso($deliveryEstimateDateExactISO);
-            }
-
-            $methodTitle = $this->helper->getCustomCarrierTitle(
-                $this->_code,
-                $child['description'],
-                $deliveryEstimateBusinessDays,
-                $schedulingEnabled
-            );
-            $methodDescription = $this->helper->getCustomCarrierTitle(
-                $this->_code,
-                $child['delivery_method_name'],
-                $deliveryEstimateBusinessDays,
-                $schedulingEnabled
-            );
-
-            $method->setMethodTitle($methodTitle);
-            $method->setMethodDescription($methodDescription);
-            $method->setDeliveryMethodType($child['delivery_method_type']);
-
-            $amount = $child['final_shipping_cost'];
-            $cost = $child['provider_shipping_cost'];
-
-            $method->setPrice($amount);
-            $method->setCost($cost);
-
-            // Save
-            $resultQuotes[] = $this->helper->saveQuote($this->_code, $intelipostQuoteId, $child, $postData, $volumes);
-
-            $result->append($method);
         }
 
         $this->helper->saveResultQuotes($resultQuotes);
@@ -497,5 +526,66 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         }
 
         return $productPrice;
+    }
+
+    /**
+     * Create a shipping method for a pickup address
+     *
+     * @param array $deliveryOption
+     * @param array $pickupAddress
+     * @param string $quoteId
+     * @param array $postData
+     * @param array $volumes
+     * @param array $resultQuotes
+     * @return \Magento\Quote\Model\Quote\Address\RateResult\Method
+     */
+    protected function createPickupMethod(
+        array $deliveryOption,
+        array $pickupAddress,
+        $quoteId,
+        array $postData,
+        array $volumes,
+        array &$resultQuotes
+    ) {
+        $method = $this->rateMethodFactory->create();
+
+        // Use pudo_id in method code to make it unique
+        $pudoId = $pickupAddress['pudo_id'];
+        $deliveryMethodId = $deliveryOption['delivery_method_id'];
+        $methodCode = $this->_code . '_' . $deliveryMethodId . '_pudo_' . $pudoId;
+
+        $method->setCarrier($this->_code);
+        $method->setCarrierTitle((string) $this->getConfigData('title'));
+        $method->setMethod($methodCode);
+
+        // Format title with pickup address
+        $methodTitle = $this->helper->getCustomPickupTitle(
+            $deliveryOption['description'],
+            $pickupAddress
+        );
+        $method->setMethodTitle($methodTitle);
+        $method->setMethodDescription($pickupAddress['additional'] ?? '');
+        $method->setDeliveryMethodType($deliveryOption['delivery_method_type']);
+
+        $deliveryEstimateDateExactISO = $deliveryOption['delivery_estimate_date_exact_iso'] ?? null;
+        if ($deliveryEstimateDateExactISO) {
+            $method->setDeliveryEstimateDateExactIso($deliveryEstimateDateExactISO);
+        }
+
+        $method->setPrice($deliveryOption['final_shipping_cost']);
+        $method->setCost($deliveryOption['provider_shipping_cost']);
+
+        // Prepare data for saving quote with pickup info
+        $childData = $deliveryOption;
+        $childData['delivery_method_id'] = $methodCode;
+        $childData['pudo_id'] = $pudoId;
+        $childData['pudo_external_id'] = $pickupAddress['pudo_external_id'] ?? '';
+        $childData['pickup_address'] = $pickupAddress;
+        $childData['available_scheduling_dates'] = null;
+
+        // Save quote with pickup data
+        $resultQuotes[] = $this->helper->saveQuote($this->_code, $quoteId, $childData, $postData, $volumes);
+
+        return $method;
     }
 }
