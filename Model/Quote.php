@@ -414,4 +414,52 @@ class Quote extends AbstractModel implements QuoteInterface
     {
         $this->setData(self::UPDATED_AT, $updatedAt);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPudoId()
+    {
+        return $this->getData(self::PUDO_ID);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setPudoId($pudoId)
+    {
+        $this->setData(self::PUDO_ID, $pudoId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPudoExternalId()
+    {
+        return $this->getData(self::PUDO_EXTERNAL_ID);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setPudoExternalId($pudoExternalId)
+    {
+        $this->setData(self::PUDO_EXTERNAL_ID, $pudoExternalId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPickupAddress()
+    {
+        return $this->getData(self::PICKUP_ADDRESS);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setPickupAddress($pickupAddress)
+    {
+        $this->setData(self::PICKUP_ADDRESS, $pickupAddress);
+    }
 }

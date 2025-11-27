@@ -207,7 +207,7 @@ class Volume
     }
 
     /**
-     * Get product image URL
+     * Get product image URL using Magento's Image Helper
      *
      * @param \Magento\Catalog\Model\Product $product
      * @return string|null
@@ -215,7 +215,10 @@ class Volume
     private function getProductImageUrl($product)
     {
         try {
-            $imageUrl = $product->getImageUrl();
+            // Use Magento's Image Helper for proper image URL generation
+            $imageUrl = $this->imageHelper->init($product, 'small_image')
+                ->setImageFile($product->getSmallImage())
+                ->getUrl();
             return $imageUrl ?: null;
         } catch (\Exception $e) {
             $this->helper->getLogger()->warning(
