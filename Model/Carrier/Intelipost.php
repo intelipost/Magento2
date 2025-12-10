@@ -190,7 +190,6 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
 
         // Volumes
         $volumes = $this->getVolumes($response, $postData['cart_qty']);
-        $riskWarning = false;
 
         // Risk Area
         $deliveryRiskAreas = (bool) $this->getConfigData('delivery_risk_areas');
@@ -199,22 +198,19 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
         // Methods
         foreach ($response['content']['delivery_options'] as $child) {
             $deliveryNote = $child['delivery_note'] ?? null;
-            if (!empty($deliveryNote) && !$riskWarning) {
-                $riskWarning = true;
-
-                /** @var \Magento\Quote\Model\Quote\Address\RateResult\Error $error */
-                $error = $this->_rateErrorFactory->create();
-
-                $error->setCarrier($this->_code);
-                $error->setCarrierTitle($this->getConfigData('title'));
-                $error->setErrorMessage($riskAreaMessage ?: $deliveryNote);
-
-                $result->setError(true);
-                $result->append($error);
+            if (!empty($deliveryNote)) {
 
                 if (!$deliveryRiskAreas) {
+                    // Risk areas disabled — skip only this method
                     continue;
                 }
+
+                $this->logger->warning('Risk area delivery note detected', [
+                    'delivery_note' => $deliveryNote,
+                    'risk_area_message' => $riskAreaMessage,
+                    'delivery_risk_areas_enabled' => $deliveryRiskAreas
+                ]);
+
             }
 
             // Check if this is a pickup option with addresses
