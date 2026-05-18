@@ -43,8 +43,8 @@ class Collection extends AbstractCollection
         FetchStrategyInterface $fetchStrategy,
         ManagerInterface $eventManager,
         StoreManagerInterface $storeManager,
-        AdapterInterface $connection = null,
-        AbstractDb $resource = null
+        AdapterInterface|null $connection = null,
+        AbstractDb|null $resource = null
     )
     {
         $this->_init(
