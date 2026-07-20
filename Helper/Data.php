@@ -369,7 +369,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * @param array|null $data
      */
-    public function saveResultQuotes(array $data = null)
+    public function saveResultQuotes(?array $data = null)
     {
         $this->customerSession->setData(self::RESULT_QUOTES, $data);
     }
@@ -539,7 +539,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return array|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getAdditionalInformation(array $additional = null)
+    public function getAdditionalInformation(?array $additional = null)
     {
         $result = [
             'client_type' => $this->getCustomerGroup(),
