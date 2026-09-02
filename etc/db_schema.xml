@@ -89,6 +89,7 @@
     <table name="intelipost_shipments" resource="default" engine="innodb" comment="Intelipost Shipment">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="ID"/>
         <column xsi:type="varchar" name="order_increment_id" length="255" comment="Order Number"/>
+        <column xsi:type="varchar" name="quote_id" length="255" comment="Quote ID"/>
         <column xsi:type="int" name="delivery_method_id" padding="11" comment="Delivery Method ID"/>
         <column xsi:type="int" name="delivery_estimate_business_days" padding="11" comment="Delivery Estimate Business Days" />
         <column xsi:type="varchar" name="intelipost_shipment_id" length="255" comment="Intelipost Shipment ID" />
