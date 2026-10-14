@@ -12,6 +12,7 @@ use Intelipost\Shipping\Model\ResourceModel\ShipmentRepository;
 use Intelipost\Shipping\Model\ResourceModel\WebhookRepository;
 use Intelipost\Shipping\Model\WebhookFactory;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\App\CsrfAwareActionInterface;
@@ -19,7 +20,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\Serializer\Json;
 
-class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
+class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface, HttpPostActionInterface
 {
 
     /**
