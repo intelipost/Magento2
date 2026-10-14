@@ -96,7 +96,7 @@ class Index extends \Magento\Framework\App\Action\Action implements CsrfAwareAct
     {
         $authUser = $request->getServer('PHP_AUTH_USER');
         $configApiKey = $this->helper->getConfig('api_key', 'settings', 'intelipost_basic');
-        return ($authUser == $configApiKey);
+        return !empty($configApiKey) && hash_equals((string) $configApiKey, (string) $authUser);
     }
 
     public function execute()
