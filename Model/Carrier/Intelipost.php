@@ -361,6 +361,11 @@ class Intelipost extends AbstractCarrier implements CarrierInterface
                 continue;
             }
 
+            // A standalone item must not inherit the previous configurable/bundle parent
+            if (!$item->getParentItem()) {
+                $parentSku = null;
+            }
+
             // Configurable
             $heightConfigurable = 0;
             $widthConfigurable = 0;
